@@ -1,0 +1,4 @@
+.ropeproject
+.*.sw?
+*.pyc
+/.idea/

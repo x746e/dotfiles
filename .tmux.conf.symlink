@@ -1,0 +1,31 @@
+##
+# Options
+##
+#set -g status off
+setw -g automatic-rename off
+set -g history-limit 1500000
+# XXX: uncomment
+#set -g visual-silence on
+
+##
+# Keybindings
+##
+
+# prefix
+#set -g prefix `
+#unbind C-b
+bind q send-prefix
+
+# screen key-bindings
+bind Space next-window
+bind ^H previous-window
+bind ^b last-window
+bind A command-prompt "rename-window '%%'"
+bind k confirm-before kill-window
+bind ^[ copy-mode
+bind _ setw monitor-silence 2
+
+# misc bindings
+bind r command-prompt "neww '%%'"
+bind / neww top
+bind W choose-tree

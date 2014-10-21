@@ -1,0 +1,233 @@
+" vim: foldmethod=marker
+"
+
+" Settings {{{
+syntax on
+
+syntax enable
+filetype on
+filetype plugin on
+filetype indent on
+
+"set keymap=russian-jcukenwin
+"set iminsert=0
+"set langmap=йq,цw,уe,кr,еt,нy,гu,шi,щo,зp,х[,ъ],фa,ыs,вd,аf,пg,рh,оj,лk,дl,ж\\;,э',яz,чx,сc,мv,иb,тn,ьm,б\\,,ю.,ЙQ,ЦW,УE,КR,ЕT,НY,ГU,ШI,ЩO,ЗP,Х{,Ъ},ФA,ЫS,ВD,АF,ПG,РH,ОJ,ЛK,ДL,Ж:,Э\\",ЯZ,ЧX,СC,МV,ИB,ТN,ЬM,Б<,Ю>,Ё~,№#
+" \\,?,  \\"@, \\;$, :^, ?&, ./
+
+" Automatically setting options in various files
+set modeline
+
+" Available TAGS files
+set tags=./TAGS,./tags,tags
+
+" Don't add EOF at end of file
+set noendofline
+
+" don't refuse to change files
+set hidden
+
+" Search settings
+set incsearch
+set ignorecase
+set smartcase
+
+set showcmd
+set showmode
+
+" Vim beeping go to the hell...
+set noerrorbells
+set visualbell
+set t_vb=
+
+"" tabs and company
+" A four-space tab indent width is the prefered coding style for Python (and
+" everything else!), although of course some disagree. This page generally
+" assumes you want 4-space indents.
+set tabstop=8
+" People like using real tab character instead of spaces because it makes it
+" easier when pressing BACKSPACE or DELETE, since if the indent is using
+" spaces it will take 4 keystrokes to delete the indent. Using this setting,
+" however, makes VIM see multiple space characters as tabstops, and so <BS>
+" does the right thing and will delete four spaces (assuming 4 is your
+" setting).
+set softtabstop=4 
+" This allows you to use the < and > keys from VIM's visual (marking) mode
+" to block indent/unindent regions
+set shiftwidth=4 
+" Use spaces instead of tabs
+set expandtab
+" Round indent to multiple of 'shiftwidth'.
+set shiftround
+
+set foldmethod=marker 
+set listchars=eol:$,tab:>-
+set backspace=indent,eol,start
+
+" wild settings
+set wildmode=list:longest,full
+
+" Wrapping settings
+set linebreak
+set showbreak=->
+set display=lastline
+
+colorscheme torte
+
+" Status line settings {{{
+":set ruler
+" Display a status-bar.
+set laststatus=2
+if has("statusline")
+    " TODO: show not only $line, but $line/$total_lines
+    set statusline=%5*%{GetID()}%0*%<%f\ %3*%m%1*%r%0*\ %2*%y%4*%w%0*%=[%b\ 0x%B]\ \ %8l,%10([%v/%{strlen(getline(line('.')))}]%)\ %P
+endif
+" }}}
+
+" Setting end }}}
+
+" Mappings {{{
+nmap <S-F7> :!python %<CR>
+" mapping for quickfix   " TODO center (zz) after :cp or :cn
+nmap <F5> :cp<CR>
+nmap <F6> :cn<CR>
+" <S-F5>  " TODO this doesn't work!
+nmap [15;2~ :cpf<CR>
+" <S-F6>  " TODO this doesn't work!
+nmap [17;2~ :cnf<CR>
+" TODO:
+"  * make file pattern according to filtype:
+"    * **/*.(py\|html\|txt\|rst) for python
+"    * **/*.(c\|h\|cpp\|txt) for c/cpp
+"  * push :vim command to history
+"nmap <LocalLeader>* :execute "vimgrep /" . expand("<cword>") . "/j **/*.py" <Bar> clist<CR>
+nmap <LocalLeader>* :execute "vimgrep /\\<" . expand("<cword>") . "\\>\\C/ **/*.py" <Bar> clist
+
+set pastetoggle=<F12>
+
+" make Y work like D and C.  Not vi-compatable
+map Y y$
+
+" tagbar
+nnoremap <silent> <F9> :TagbarToggle<CR>
+" buffexplorer
+nnoremap <silent> <F10> :BufExplorer<CR>
+
+" Mappings End }}}
+
+" Functions {{{
+
+" Function GetID() {{{
+" - used in statusline.
+" If you are root, function return "# " string --> it is showed at begin of
+"                                                  statusline
+" If you aren't root, function return empty string --> nothing is visible
+let g:get_id=""
+if executable("id")
+    " Check for your name ID
+    let g:get_id = $USER
+    " If you are root, set to '#', else set to ''
+    if g:get_id == "root"
+        let g:get_id = "# "
+    else
+        let g:get_id = ""
+    endif
+endif
+fun! GetID()
+    return g:get_id
+endfun
+" GetID() }}}
+
+"" EndFunctions }}}
+
+" Python {{{
+"autocmd FileType python set omnifunc=pythoncomplete#Complete
+"autocmd FileType python compiler pylint
+let g:pylint_onwrite = 0
+
+set tags+=$HOME/.vim/tags/python.ctags
+
+let g:no_pep8_maps = 1
+command Pep8 call Pep8()
+
+" }}}
+
+" for postgresql {{{
+if match(getcwd(), "/pgsql") >=0 || match(getcwd(), "/postgres") >= 0
+    set cinoptions=(0
+    set tabstop=4
+    set shiftwidth=4
+endif
+" }}}
+
+
+" tagbar
+let g:tagbar_autoclose = 1
+let g:tagbar_autofocus = 1
+let g:tagbar_width = 60
+let g:tagbar_compact = 1
+let g:tagbar_foldlevel = 0
+
+" buffexplorer
+let g:bufExplorerShowRelativePath=1
+let g:bufExplorerSplitOutPathName=0
+
+" pathogen
+"call pathogen#infect()
+
+" Vundle
+set rtp+=~/.vim/bundle/vundle/
+call vundle#rc()
+
+Bundle 'gmarik/vundle'
+Bundle 'scrooloose/nerdtree'
+Bundle 'davidhalter/jedi-vim'
+Bundle 'tpope/vim-dispatch'
+Bundle 'nvie/vim-flake8'
+Bundle 'derekwyatt/vim-scala'
+
+" Flake8
+let g:flake8_ignore="E126,E128,E121,E124"
+
+" NERDTree
+nmap <F8> :NERDTree<CR>
+let g:NERDTreeQuitOnOpen = 1
+let g:NERDTreeShowBookmarks = 1
+
+" Convenient command to see the difference between the current buffer and the
+" file it was loaded from, thus the changes you made.
+" Only define it when not defined already.
+" TODO: define a way to exit this
+if !exists(":DiffOrig")
+  command DiffOrig vert new | set bt=nofile | r # | 0d_ | diffthis
+       \ | wincmd p | diffthis
+endif
+
+" XXX: wtf?
+runtime! ftplugin/man.vim
+
+" jedi
+let $PYTHONPATH .= ":/home/tn/hz/jedi/venv/lib/python2.7/site-packages"
+let g:jedi#use_tabs_not_buffers = 0
+let g:jedi#auto_vim_configuration = 0
+let g:jedi#popup_on_dot = 0
+let g:jedi#popup_select_first = 0
+let g:jedi#show_call_signatures = 0
+
+" digraphs
+" https://en.wikipedia.org/wiki/Unicode_subscripts_and_superscripts#Other_superscript_and_subscript_characters
+digraphs ^n 8319 " ⁿ
+
+" rope {{{
+"source /home/tn/mfiles/vimrope/rope.vim
+"let $PYTHONPATH .= ":/home/tn/mfiles/vimpy/rope:/home/tn/mfiles/vimpy/ropemode:/home/tn/mfiles/vimpy/ropevim"
+"source /home/tn/mfiles/vimpy/ropevim/ropevim.vim
+"let ropevim_enable_shortcuts = 1
+"let ropevim_vim_completion = 1
+"let ropevim_extended_complete = 1
+"let g:ropevim_autoimport_modules = ["os.*", "traceback", "django.*", "xml.etree", "networkx.*"]
+"imap <C-space> <C-R>=RopeCodeAssistInsertMode()<CR>
+"imap <F2> <C-R>=RopeCodeAssistInsertMode()<CR>
+"<C-R>=RopeCodeAssistInsertMode()<CR>
+" }}}
+
+vmap <Leader>h :<C-U>!hg blame -fu <C-R>=expand("%:p") <CR> \| sed -n <C-R>=line("'<") <CR>,<C-R>=line("'>") <CR>p <CR>

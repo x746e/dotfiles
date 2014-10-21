@@ -1,0 +1,18 @@
+# Filenames that should be ignored wherever they appear
+~$
+(?i)(^|/)TAGS$
+(^|/)ID$
+(^|/)\.DS_Store$
+# python
+^\w+.egg-info/
+^\.ropeproject/
+
+syntax: glob
+# python
+*.pyc
+*.pyo
+# C, C++
+*.o
+*.so
+# vim swap files
+*.sw?

@@ -1,0 +1,108 @@
+# vim: filetype=cfg
+[alias]
+qs = qseries -v --summary
+ds = diff --stat
+qds = diff -r qparent: --stat
+glog = log -G
+ll = log -G -f
+dd = diff -c .
+dds = dd --stat
+lb = log -r 'branch(branch(.))' -G
+#hh = log -r 'head() and not closed() and (user(kirill) or user(tn))'
+hh = heads .
+# moving up/down thorugh the history
+gpo = up -r 'parents(.)'
+gpu = up -r 'children(.)'
+postreview = postreview -g
+bb = log -r 'bookmark()' --template '\033[1;31m[{bookmarks}]\033[0m \033[33m{node|short}\033[0m {desc|firstline|strip}\n'
+inc = incoming -G
+out = outgoing -G
+
+[trusted]
+users = tn
+
+[diff]
+git = 1
+
+[extensions]
+hgext.graphlog = 
+hgext.record =
+hgext.extdiff =
+hgext.patchbomb =
+hgext.highlight=
+fetch =
+hgk =
+hgext.convert =
+mq =
+eol =
+rebase =
+color =
+progress =
+bookmarks =
+pager =
+#git =
+#hgsubversion =
+histedit =
+#~/code/__python__/__hg__/histedit/hg_histedit.py
+#collapse = ~/code/__python__/__hg__/hgcollapse/hgext/collapse.py
+#reviewboard = ~/code/__python__/__hg__/mercurial-reviewboard
+#review = ~/buildfarm/__python__/hg-review/review/
+prompt = ~/code/__python__/__hg__/hg-prompt/prompt.py
+hgext.convert =
+
+[ui]
+ignore = ~/.hgignore
+style = ~/.hg.d/templates/map-cmdline.compact
+#merge = return 1
+
+[merge-tools]
+kdiff3.args = $base $local $other -o $output
+#vimdiff.executable = vim
+##vimdiff.args = -d $output $other
+#vimdiff.args = -d $base $local $output $other 
+#+close +close
+
+#[extdiff]
+#cmd.wdiff = cwdiff
+#opts.wdiff = --diff --ab
+#cmd.vimdiff =
+#opts.vimdiff = '+execute "DirDiff" argv(0) argv(1)'
+
+[phases]
+publish = False
+
+[progress]
+delay = 1.5
+refresh = 0.1
+disable = False
+assume-tty = True
+
+[web]
+# enable snapshot downloads
+allow_archive = gz zip bz2
+#cacerts = /usr/local/share/certs/ca-root-nss.crt
+pygments_style = emacs
+
+[email]
+method = /usr/sbin/sendmail
+
+[pager]
+pager = LESS='FXR' less
+attend = annotate, cat, diff, export, glog, log, qdiff, heads, heap, incoming, out, help, ll, dd, ds, dds, branches, lb, qs
+
+[color]
+mode = terminfo
+
+[bookmarks]
+track.current = True
+
+[email]
+method = smtp
+from = kirill@emediate.se
+cc =
+
+[smtp]
+host = mail.emediate.se
+port = 10025
+username = kirill
+password = pH9qedes

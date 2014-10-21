@@ -1,0 +1,63 @@
+# mine prompt theme
+
+prompt_mine_help () {
+  cat <<'EOF'
+This prompt is color-scheme-able.  You can invoke it thus:
+
+  prompt mine [<color1> [<color2> [<color3>]]]
+
+where the colors are for the user@host background, current working
+directory, and current working directory if the prompt is split over
+two lines respectively.  The default colors are blue, cyan and green.
+This theme works best with a dark background.
+
+Recommended fonts for this theme: nexus or vga or similar.  If you
+don't have any of these, then specify the `plain' option to use 7-bit
+replacements for the 8-bit characters.
+
+EOF
+}
+
+prompt_mine_setup () {
+  prompt_adam1_color1=${1:-'blue'}
+  prompt_adam1_color2=${2:-'cyan'}
+  prompt_adam1_color3=${3:-'green'}
+  prompt_adam1_color4=${4:-'yellow'}
+
+  base_prompt="%K{$prompt_adam1_color1}%n@%F{$prompt_adam1_color4}%m%k "
+  post_prompt="%b%f%k"
+
+  base_prompt_no_color="%n@%F{$prompt_adam1_color4}%m"
+  post_prompt_no_color="%b%f"
+
+  add-zsh-hook precmd prompt_mine_precmd
+}
+
+prompt_mine_precmd () {
+  setopt noxtrace localoptions
+  local base_prompt_expanded_no_color base_prompt_etc
+  local prompt_length space_left
+  local venv_prompt hg_prompt
+
+  if [ -n "$VIRTUAL_ENV" ]; then
+    venv_prompt="(`basename \"$VIRTUAL_ENV\"`) "
+  fi
+
+  hg_prompt=$(hg prompt --angle-brackets '%F{red}<branch> <%B[<bookmark>]%b >%f%F{yellow}%B<<tags> >%b%f%F{green}<status|modified|unknown><update>%f ' 2>/dev/null)
+
+  base_prompt_expanded_no_color=$(print -P "$base_prompt_no_color")
+  base_prompt_etc=$(print -P "$base_prompt%(4~|...|)%3~")
+  prompt_length=${#base_prompt_etc}
+  if [[ $prompt_length -lt 40 ]]; then
+    path_prompt="%B%F{$prompt_adam1_color2}%(4~|...|)%3~%F{white}"
+  else
+    space_left=$(( $COLUMNS - $#base_prompt_expanded_no_color - 2 ))
+    path_prompt="%B%F{$prompt_adam1_color3}%${space_left}<...<%~$prompt_newline%F{$white}"
+  fi
+  PS1="$base_prompt$venv_prompt$hg_prompt$path_prompt %# $post_prompt"
+  PS2="$base_prompt$path_prompt %_> $post_prompt"
+  PS3="$base_prompt$path_prompt ?# $post_prompt"
+}
+
+prompt_mine_setup "$@"
+# vim: ft=zsh

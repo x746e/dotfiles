@@ -1,0 +1,33 @@
+[user]
+    name = Kirill Spitsyn
+    #email = tn@0x746e.org.ua
+    email = kyrylo@fb.com
+
+[merge]
+    tool = vimdiff
+
+[alias]
+    cin = commit
+    ci = commit --all
+    cia = commit --amend --all
+    co = checkout
+    st = status --short
+    di = diff -M
+    ds = diff --stat -M
+    dc = diff --cached -M
+    dcs = diff --cached --stat -M
+    dd = log -1 -p -M
+    dds = log -1 --stat -M
+    gl = log --decorate --graph --date=relative --pretty=format:'%C(yellow)%h%Creset - %s %C(red)%d%Creset%C(bold blue)<%aN>%Creset (%ad)'
+    glog = log --decorate --graph --date=relative --pretty=format:'%C(yellow)%h%Creset - %s %C(red)%d%Creset%C(bold blue)<%aN>%Creset (%ad)' --all
+    forget = rm --cached
+    # 'add file'. as hg add.
+    af = add -N
+
+[color]
+    ui = true
+
+[core]
+    excludesfile = ~/.gitignore
+[push]
+    default = current
