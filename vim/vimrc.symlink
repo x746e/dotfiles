@@ -1,6 +1,19 @@
 " vim: foldmethod=marker
 "
 
+" Vundle
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+
+Plugin 'gmarik/Vundle.vim'
+Plugin 'scrooloose/nerdtree'
+Plugin 'davidhalter/jedi-vim'
+Plugin 'tpope/vim-dispatch'
+Plugin 'nvie/vim-flake8'
+Plugin 'derekwyatt/vim-scala'
+
+call vundle#end()
+
 " Settings {{{
 syntax on
 
@@ -171,19 +184,6 @@ let g:tagbar_foldlevel = 0
 let g:bufExplorerShowRelativePath=1
 let g:bufExplorerSplitOutPathName=0
 
-" pathogen
-"call pathogen#infect()
-
-" Vundle
-set rtp+=~/.vim/bundle/vundle/
-call vundle#rc()
-
-Bundle 'gmarik/vundle'
-Bundle 'scrooloose/nerdtree'
-Bundle 'davidhalter/jedi-vim'
-Bundle 'tpope/vim-dispatch'
-Bundle 'nvie/vim-flake8'
-Bundle 'derekwyatt/vim-scala'
 
 " Flake8
 let g:flake8_ignore="E126,E128,E121,E124"
