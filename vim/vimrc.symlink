@@ -14,6 +14,11 @@ Plugin 'derekwyatt/vim-scala'
 
 call vundle#end()
 
+" fb stuff
+if filereadable($ADMIN_SCRIPTS . '/master.vimrc')
+    source $ADMIN_SCRIPTS/master.vimrc
+endif
+
 " Settings {{{
 syntax on
 
@@ -84,7 +89,7 @@ set linebreak
 set showbreak=->
 set display=lastline
 
-colorscheme torte
+colorscheme sg
 
 " Status line settings {{{
 ":set ruler

@@ -54,6 +54,7 @@ hgext.convert =
 ignore = ~/.hgignore
 style = ~/.hg.d/templates/map-cmdline.compact
 #merge = return 1
+username = Kyrylo Spitsyn <kyrylo@fb.com>
 
 [merge-tools]
 kdiff3.args = $base $local $other -o $output
