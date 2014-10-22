@@ -1,4 +1,3 @@
-# vim: filetype=cfg
 [alias]
 qs = qseries -v --summary
 ds = diff --stat
@@ -58,19 +57,9 @@ username = Kyrylo Spitsyn <kyrylo@fb.com>
 
 [merge-tools]
 kdiff3.args = $base $local $other -o $output
-#vimdiff.executable = vim
-##vimdiff.args = -d $output $other
-#vimdiff.args = -d $base $local $output $other 
-#+close +close
 
-#[extdiff]
-#cmd.wdiff = cwdiff
-#opts.wdiff = --diff --ab
-#cmd.vimdiff =
-#opts.vimdiff = '+execute "DirDiff" argv(0) argv(1)'
-
-[phases]
-publish = False
+#[phases]
+#publish = False
 
 [progress]
 delay = 1.5
@@ -84,9 +73,6 @@ allow_archive = gz zip bz2
 #cacerts = /usr/local/share/certs/ca-root-nss.crt
 pygments_style = emacs
 
-[email]
-method = /usr/sbin/sendmail
-
 [pager]
 pager = LESS='FXr' less
 attend = annotate, cat, diff, export, glog, log, qdiff, heads, heap, incoming, out, help, ll, dd, ds, dds, branches, lb, qs
@@ -97,13 +83,15 @@ mode = terminfo
 [bookmarks]
 track.current = True
 
-[email]
-method = smtp
-from = kirill@emediate.se
-cc =
+#[email]
+#method = smtp
+#from = kirill@emediate.se
+#cc =
+#
+#[smtp]
+#host = mail.emediate.se
+#port = 10025
+#username = kirill
+#password = pH9qedes
 
-[smtp]
-host = mail.emediate.se
-port = 10025
-username = kirill
-password = pH9qedes
+# vim: filetype=cfg
