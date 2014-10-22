@@ -88,7 +88,7 @@ pygments_style = emacs
 method = /usr/sbin/sendmail
 
 [pager]
-pager = LESS='FXR' less
+pager = LESS='FXr' less
 attend = annotate, cat, diff, export, glog, log, qdiff, heads, heap, incoming, out, help, ll, dd, ds, dds, branches, lb, qs
 
 [color]
