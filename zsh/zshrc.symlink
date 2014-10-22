@@ -51,7 +51,7 @@ alias la='l -a'
 alias lla='ll -a'
 alias bkd='date +%FT%H%M'
 case `uname` in
-    "Linux")
+    "Linux"|CYGWIN*)
         alias ll='ls -lF --color=auto'
         alias l='ls -FG --color=auto'
         alias sed='sed -r'
