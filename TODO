@@ -1,0 +1,14 @@
+* add README
+* add LICENSE
+* push to github
+
+== vim
+* revamp vim config (something like oh-my-vim?)
+* comment/uncomment command
+
+== zsh
+* try oh-my-zsh
+* add start-time of the command
+* add git status (similar to hg one)
+* made slow prompt commands (like hg prompt) async
+  http://unix.stackexchange.com/questions/91087/asynchronous-rprompt
