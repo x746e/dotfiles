@@ -6,7 +6,7 @@
 cd "$(dirname "$0")/.."
 DOTFILES_ROOT=$(pwd)
 
-set -e -u
+set -e -u -x
 
 echo ''
 
@@ -115,7 +115,10 @@ install_dotfiles () {
 }
 
 run_installers () {
-  find "$DOTFILES_ROOT" -maxdepth 2 -name install.sh | while read installer ; do sh "${installer}" ; done
+  for installer in $(find "$DOTFILES_ROOT" -maxdepth 2 -name install.sh)
+  do
+    sh -x "${installer}"
+  done
 }
 
 install_dotfiles
