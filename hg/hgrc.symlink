@@ -33,7 +33,8 @@ fetch =
 hgk =
 hgext.convert =
 mq =
-eol =
+# XXX: disabled for watchmen
+#eol =
 rebase =
 color =
 progress =
