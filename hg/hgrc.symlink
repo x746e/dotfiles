@@ -42,11 +42,7 @@ pager =
 #git =
 #hgsubversion =
 histedit =
-#~/code/__python__/__hg__/histedit/hg_histedit.py
-#collapse = ~/code/__python__/__hg__/hgcollapse/hgext/collapse.py
-#reviewboard = ~/code/__python__/__hg__/mercurial-reviewboard
-#review = ~/buildfarm/__python__/hg-review/review/
-prompt = ~/code/__python__/__hg__/hg-prompt/prompt.py
+prompt = ~/.hg.d/ext/hg-prompt/prompt.py
 hgext.convert =
 
 [ui]
