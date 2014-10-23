@@ -116,7 +116,7 @@ case `uname` in
         manpath=(/usr/X11R6/man /usr/man /usr/lang/man /usr/local/man /usr/share/man /opt/local/man)
         PATH="$PATH:/opt/local/bin:/opt/local/sbin" ;;
     CYGWIN*)
-        PATH=$PATH:/cygdrive/c/Program\ Files/Wireshark:/cygdrive/c/Program\ Files/nodejs
+        PATH=$PATH:/cygdrive/c/Program\ Files/Wireshark:/cygdrive/c/Program\ Files/nodejs ;;
     *)
         manpath=(/usr/X11R6/man /usr/man /usr/lang/man /usr/local/man /usr/share/man) ;;
 esac
