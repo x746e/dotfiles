@@ -11,6 +11,7 @@ Plugin 'davidhalter/jedi-vim'
 Plugin 'tpope/vim-dispatch'
 Plugin 'nvie/vim-flake8'
 Plugin 'derekwyatt/vim-scala'
+Plugin 'scrooloose/syntastic'
 
 call vundle#end()
 
@@ -197,6 +198,13 @@ let g:flake8_ignore="E126,E128,E121,E124"
 nmap <F8> :NERDTree<CR>
 let g:NERDTreeQuitOnOpen = 1
 let g:NERDTreeShowBookmarks = 1
+
+" syntastic
+let g:syntastic_python_checkers = ['pyflakes']
+augroup syntastic
+    autocmd CursorHoldI,CompleteDone,CursorHold,InsertLeave * nested update
+augroup END
+set updatetime=200
 
 " Convenient command to see the difference between the current buffer and the
 " file it was loaded from, thus the changes you made.
