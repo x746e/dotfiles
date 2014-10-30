@@ -5,6 +5,19 @@
 == vim
 * revamp vim config (something like oh-my-vim?)
 * comment/uncomment command
+* highlight occurrences
+* scrollbar with error/search/modified marks like in pycharm
+* version control plugin
+
+* remove auto-save plugin, add just autogroup
+** check if vim is too slow now with all these autocommands
+
+* for syntastic
+** add to status line smth like "14 errors, 2 warnings"
+** binding for moving to next/previous warnings
+** does it check on file open?
+
+* store undo history between vim launches
 
 == zsh
 * try oh-my-zsh
@@ -12,3 +25,4 @@
 * add git status (similar to hg one)
 * made slow prompt commands (like hg prompt) async
   http://unix.stackexchange.com/questions/91087/asynchronous-rprompt
+* when there are suspended jobs, show it somehow in the prompt
