@@ -127,9 +127,7 @@ set pastetoggle=<F12>
 map Y y$
 
 " tagbar
-nnoremap <silent> <F9> :TagbarToggle<CR>
-" buffexplorer
-nnoremap <silent> <F10> :BufExplorer<CR>
+nnoremap <silent> <Leader>t :TagbarToggle<CR>
 
 " Mappings End }}}
 
