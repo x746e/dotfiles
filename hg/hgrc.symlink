@@ -16,9 +16,10 @@ postreview = postreview -g
 bb = log -r 'bookmark()' --template '\033[1;31m[{bookmarks}]\033[0m \033[33m{node|short}\033[0m {desc|firstline|strip}\n'
 inc = incoming -G
 out = outgoing -G
+cia = commit --amend
 
 [trusted]
-users = tn
+users = tn, kyrylo
 
 [diff]
 git = 1

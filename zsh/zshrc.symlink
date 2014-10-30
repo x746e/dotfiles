@@ -175,8 +175,8 @@ export HELPDIR=/usr/local/lib/zsh/help  # directory for run-help function to fin
 export PAGER=less
 #export LC_CTYPE=ru_RU.UTF-8
 #export LC_COLLATE=C
-export EMAIL=tn@0x746e.org.ua
-export HGUSER=$EMAIL
+#export EMAIL=tn@0x746e.org.ua
+#export HGUSER=$EMAIL
 #if [ -n "$TMUX" ]; then
 #    export TERM="screen.xterm-new"
 #fi
