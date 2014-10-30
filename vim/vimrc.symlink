@@ -97,8 +97,24 @@ colorscheme sg
 " Display a status-bar.
 set laststatus=2
 if has("statusline")
-    " TODO: show not only $line, but $line/$total_lines
-    set statusline=%5*%{GetID()}%0*%<%f\ %3*%m%1*%r%0*\ %2*%y%4*%w%0*%=[%b\ 0x%B]\ \ %8l,%10([%v/%{strlen(getline(line('.')))}]%)\ %P
+    " display "# " when run as root
+    set statusline=%5*%{GetID()}%0*
+    " filename
+    set statusline+=%<%f
+    " modified & readonly flags
+    set statusline+=\ %3*%m%1*%r%0*
+    " filetype & preview flags
+    set statusline+=\ %2*%y%4*%w%0*
+    " from here on align to the right
+    set statusline+=%=
+    " value of the character under cursor (printable and in hex)
+    set statusline+=[%b\ 0x%B]
+    " line number # number of lines in buffer
+    set statusline+=\ \ %8l#%L,
+    " column number / line length
+    set statusline+=%10([%v/%{strlen(getline(line('.')))}]%)
+    " percentage through the file
+    set statusline+=\ %P
 endif
 " }}}
 
