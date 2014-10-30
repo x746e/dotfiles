@@ -12,6 +12,7 @@ Plugin 'tpope/vim-dispatch'
 Plugin 'nvie/vim-flake8'
 Plugin 'derekwyatt/vim-scala'
 Plugin 'scrooloose/syntastic'
+Plugin 'tpope/vim-unimpaired'
 
 call vundle#end()
 
@@ -125,6 +126,7 @@ endif
 " Setting end }}}
 
 " Mappings {{{
+let mapleader = ","
 nmap <S-F7> :!python %<CR>
 " mapping for quickfix   " TODO center (zz) after :cp or :cn
 nmap <F5> :cp<CR>
@@ -143,11 +145,8 @@ nmap <LocalLeader>* :execute "vimgrep /\\<" . expand("<cword>") . "\\>\\C/ **/*.
 
 set pastetoggle=<F12>
 
-" make Y work like D and C.  Not vi-compatable
+" Make Y work like D and C.  Not vi-compatable.
 map Y y$
-
-" tagbar
-nnoremap <silent> <Leader>t :TagbarToggle<CR>
 
 " Mappings End }}}
 
@@ -203,11 +202,12 @@ let g:tagbar_autofocus = 1
 let g:tagbar_width = 60
 let g:tagbar_compact = 1
 let g:tagbar_foldlevel = 0
+nnoremap <silent> <Leader>t :TagbarToggle<CR>
 
 " buffexplorer
 let g:bufExplorerShowRelativePath=1
 let g:bufExplorerSplitOutPathName=0
-
+nnoremap <silent> <Leader>bb :BufExplorer<CR>
 
 " Flake8
 let g:flake8_ignore="E126,E128,E121,E124"

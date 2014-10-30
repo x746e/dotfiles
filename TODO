@@ -8,6 +8,7 @@
 * highlight occurrences
 * scrollbar with error/search/modified marks like in pycharm
 * version control plugin
+* do something with search highlights - they are annoying
 
 * remove auto-save plugin, add just autogroup
 ** check if vim is too slow now with all these autocommands
