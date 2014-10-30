@@ -15,7 +15,6 @@
 * for syntastic
 ** add to status line smth like "14 errors, 2 warnings"
 ** binding for moving to next/previous warnings
-** does it check on file open?
 
 * store undo history between vim launches
 

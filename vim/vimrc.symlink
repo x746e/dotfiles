@@ -107,8 +107,12 @@ if has("statusline")
     set statusline+=\ %2*%y%4*%w%0*
     " from here on align to the right
     set statusline+=%=
+    " syntastic status
+    set statusline+=%#warningmsg#
+    set statusline+=%{SyntasticStatuslineFlag()}
+    set statusline+=%*
     " value of the character under cursor (printable and in hex)
-    set statusline+=[%b\ 0x%B]
+    set statusline+=%12([%b\ 0x%B]%)
     " line number # number of lines in buffer
     set statusline+=\ \ %8l#%L,
     " column number / line length
@@ -215,6 +219,9 @@ let g:NERDTreeShowBookmarks = 1
 
 " syntastic
 let g:syntastic_python_checkers = ['pyflakes']
+let g:syntastic_stl_format = '[%E{Err: %fe #%e}%B{, }%W{Warn: %fw #%w}]'
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_check_on_open = 1
 augroup syntastic
     autocmd CursorHoldI,CompleteDone,CursorHold,InsertLeave * nested update
 augroup END
