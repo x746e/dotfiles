@@ -15,9 +15,6 @@
 
 * store undo history between vim launches
 
-* Add ]t [t commands to move between XXX/TODO comments
-* Put number of XXX/TODO comments into statusline.
-
 == zsh
 * try oh-my-zsh
 * add start-time of the command

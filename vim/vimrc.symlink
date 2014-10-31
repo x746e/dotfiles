@@ -114,6 +114,10 @@ if has("statusline")
     set statusline+=%#warningmsg#
     set statusline+=%{SyntasticStatuslineFlag()}
     set statusline+=%*
+    " todo status
+    set statusline+=%2*
+    set statusline+=%{GetTODOStatus()}
+    set statusline+=%0*
     " value of the character under cursor (printable and in hex)
     set statusline+=%12([%b\ 0x%B]%)
     " line number # number of lines in buffer
@@ -174,6 +178,37 @@ fun! GetID()
     return g:get_id
 endfun
 " GetID() }}}
+
+fun! CountMatchesInComments(pattern)
+    fun! IsComment(line, col)
+        return synIDattr(synIDtrans(synID(a:line, a:col, 1)), 'name') == 'Comment'
+    endfun
+
+    let cnt = 0
+    let linenum = 1
+    for mline in getline(1, '$')
+        let mcol = match(mline, a:pattern)
+        if mcol != -1 && IsComment(linenum, mcol) == 1
+            let cnt = cnt + 1
+        endif
+        let linenum = linenum + 1
+    endfor
+    return cnt
+endfun
+
+let g:todo_pattern = 'TODO\|XXX\|FIXME\|WTF\C'
+
+fun! GetTODOStatus()
+    let todo_num = CountMatchesInComments(g:todo_pattern)
+    if todo_num > 0
+        return '|' . todo_num . ' TODO items.|'
+    else
+        return ''
+    endif
+endfun
+
+noremap <silent> [z :call search(g:todo_pattern, 'b')<CR>
+noremap <silent> ]z :call search(g:todo_pattern)<CR>
 
 "" EndFunctions }}}
 
