@@ -121,7 +121,7 @@ if has("statusline")
     " value of the character under cursor (printable and in hex)
     set statusline+=%12([%b\ 0x%B]%)
     " line number # number of lines in buffer
-    set statusline+=\ \ %8l#%L,
+    set statusline+=\ \ %8l/%L,
     " column number / line length
     set statusline+=%10([%v/%{strlen(getline(line('.')))}]%)
     " percentage through the file
@@ -220,7 +220,7 @@ let g:pylint_onwrite = 0
 set tags+=$HOME/.vim/tags/python.ctags
 
 let g:no_pep8_maps = 1
-command Pep8 call Pep8()
+command! Pep8 call Pep8()
 
 " }}}
 
@@ -250,7 +250,7 @@ nnoremap <silent> <Leader>bb :BufExplorer<CR>
 let g:flake8_ignore="E126,E128,E121,E124"
 
 " NERDTree
-nmap <F8> :NERDTree<CR>
+noremap <silent> <Leader>dd :NERDTreeFind<CR>
 let g:NERDTreeQuitOnOpen = 1
 let g:NERDTreeShowBookmarks = 1
 
@@ -262,7 +262,7 @@ let g:syntastic_check_on_open = 1
 augroup syntastic
     autocmd CursorHoldI,CompleteDone,CursorHold,InsertLeave * nested update
 augroup END
-set updatetime=1000
+set updatetime=700
 
 " Convenient command to see the difference between the current buffer and the
 " file it was loaded from, thus the changes you made.
