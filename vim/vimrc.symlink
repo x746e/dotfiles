@@ -13,6 +13,8 @@ Plugin 'nvie/vim-flake8'
 Plugin 'derekwyatt/vim-scala'
 Plugin 'scrooloose/syntastic'
 Plugin 'tpope/vim-unimpaired'
+"Plugin 'scrooloose/nerdcommenter'
+Plugin 'tomtom/tcomment_vim'
 
 call vundle#end()
 
@@ -225,7 +227,7 @@ let g:syntastic_check_on_open = 1
 augroup syntastic
     autocmd CursorHoldI,CompleteDone,CursorHold,InsertLeave * nested update
 augroup END
-set updatetime=200
+set updatetime=1000
 
 " Convenient command to see the difference between the current buffer and the
 " file it was loaded from, thus the changes you made.

@@ -10,14 +10,13 @@
 * version control plugin
 * do something with search highlights - they are annoying
 
-* remove auto-save plugin, add just autogroup
+✓ remove auto-save plugin, add just autogroup
 ** check if vim is too slow now with all these autocommands
 
-* for syntastic
-** add to status line smth like "14 errors, 2 warnings"
-** binding for moving to next/previous warnings
-
 * store undo history between vim launches
+
+* Add ]t [t commands to move between XXX/TODO comments
+* Put number of XXX/TODO comments into statusline.
 
 == zsh
 * try oh-my-zsh
