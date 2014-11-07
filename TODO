@@ -22,3 +22,11 @@
 * made slow prompt commands (like hg prompt) async
   http://unix.stackexchange.com/questions/91087/asynchronous-rprompt
 * when there are suspended jobs, show it somehow in the prompt
+
+
+* display colored/signal-aware exit status in prompt; see the my_prompt
+  function in ~meyering/.zshrc
+* display version-control-agnostic state in prompt:
+  /mnt/vol/engshare/admin/scripts/scm-prompt
+
+* don't export proxies by default, add proxy-env script/command instead

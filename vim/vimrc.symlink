@@ -13,7 +13,6 @@ Plugin 'nvie/vim-flake8'
 Plugin 'derekwyatt/vim-scala'
 Plugin 'scrooloose/syntastic'
 Plugin 'tpope/vim-unimpaired'
-"Plugin 'scrooloose/nerdcommenter'
 Plugin 'tomtom/tcomment_vim'
 
 call vundle#end()
@@ -115,9 +114,9 @@ if has("statusline")
     set statusline+=%{SyntasticStatuslineFlag()}
     set statusline+=%*
     " todo status
-    set statusline+=%2*
-    set statusline+=%{GetTODOStatus()}
-    set statusline+=%0*
+    " set statusline+=%2*
+    " set statusline+=%{GetTODOStatus()}
+    " set statusline+=%0*
     " value of the character under cursor (printable and in hex)
     set statusline+=%12([%b\ 0x%B]%)
     " line number # number of lines in buffer
@@ -153,6 +152,9 @@ set pastetoggle=<F12>
 
 " Make Y work like D and C.  Not vi-compatable.
 map Y y$
+
+" Clear last used search pattern (and highlight for it)
+map <Leader>sc :let @/ = ""<CR>
 
 " Mappings End }}}
 
@@ -250,7 +252,7 @@ nnoremap <silent> <Leader>bb :BufExplorer<CR>
 let g:flake8_ignore="E126,E128,E121,E124"
 
 " NERDTree
-noremap <silent> <Leader>dd :NERDTreeFind<CR>
+noremap <silent> <Leader>f :NERDTreeFind<CR>
 let g:NERDTreeQuitOnOpen = 1
 let g:NERDTreeShowBookmarks = 1
 
