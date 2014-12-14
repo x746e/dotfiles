@@ -1,11 +1,3 @@
-#
-# Example .zshrc file for zsh 4.0
-#
-# .zshrc is sourced in interactive shells.  It
-# should contain commands to set up aliases, functions,
-# options, key bindings, etc.
-#
-
 . ~/.zshrc.local
 
 # Search path for the cd command
@@ -16,16 +8,9 @@ bindkey -s "^Xm" 'mutt\n' ## run mutt
 #!! bindkey -s "^Xc" 'mcdrom\n' ## mount or umount cdrom
 #!! bindkey -s "^Xf" 'mflash\n' ## mount or umount flash
 
-if false; then
-    mesg y
-fi
-
-# Use hard limits, except for a smaller stack and no core dumps
+# Use hard limits, except for a smaller stack
 unlimit
-if false; then
-    limit stack 8192
-    limit core 0
-fi
+limit stack 8192
 limit -s
 
 umask 022
@@ -180,6 +165,11 @@ export PAGER=less
 #if [ -n "$TMUX" ]; then
 #    export TERM="screen.xterm-new"
 #fi
+if [ -e /usr/share/terminfo/x/xterm-256color ]; then
+    export TERM='xterm-256color'
+else
+    export TERM='xterm-color'
+fi
 
 MAILCHECK=300
 HISTSIZE=500000
@@ -224,7 +214,7 @@ bindkey '^I' complete-word # complete on tab, leave expansion to _expand
 # based) programmable completion, check Misc/compctl-examples in the zsh
 # distribution.
 autoload -U compinit
-compinit
+compinit -i
 
 
 

@@ -92,7 +92,8 @@ set linebreak
 set showbreak=->
 set display=lastline
 
-colorscheme sg
+set background=dark
+colorscheme koehler
 
 " Status line settings {{{
 ":set ruler
@@ -261,9 +262,9 @@ let g:syntastic_python_checkers = ['pyflakes']
 let g:syntastic_stl_format = '[%E{Err: %fe #%e}%B{, }%W{Warn: %fw #%w}]'
 let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_check_on_open = 1
-augroup syntastic
-    autocmd CursorHoldI,CompleteDone,CursorHold,InsertLeave * nested update
-augroup END
+" augroup syntastic
+"     autocmd CursorHoldI,CompleteDone,CursorHold,InsertLeave * nested update
+" augroup END
 set updatetime=700
 
 " Convenient command to see the difference between the current buffer and the
