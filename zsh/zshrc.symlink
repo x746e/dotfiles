@@ -8,11 +8,6 @@ bindkey -s "^Xm" 'mutt\n' ## run mutt
 #!! bindkey -s "^Xc" 'mcdrom\n' ## mount or umount cdrom
 #!! bindkey -s "^Xf" 'mflash\n' ## mount or umount flash
 
-# Use hard limits, except for a smaller stack
-unlimit
-limit stack 8192
-limit -s
-
 umask 022
 
 # Set up aliases
