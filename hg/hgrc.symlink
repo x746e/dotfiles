@@ -46,6 +46,7 @@ pager =
 histedit =
 prompt = ~/.hg.d/ext/hg-prompt/prompt.py
 hgext.convert =
+shelve =
 
 [ui]
 ignore = ~/.hgignore
