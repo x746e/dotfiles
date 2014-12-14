@@ -1,6 +1,9 @@
-* add README
-* add LICENSE
-* push to github
+* Add README.
+* Add LICENSE.
+* Push to github.
+* Rename bootstrap.sh to just install.sh?
+* Is bootstrap.sh idempotent?
+* Put debug output from bootstrap.sh in some log file (in /tmp)
 
 == vim
 * revamp vim config (something like oh-my-vim?)
