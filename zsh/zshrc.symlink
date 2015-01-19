@@ -48,6 +48,8 @@ case `uname` in
         ;;
 esac
 alias mq='hg -R $(hg root)/.hg/patches'
+alias hdfs='hadoop dfs'
+alias nhive='/usr/local/bin/hive --namespace'
 #alias -g sd='export DISPLAY='
 
 # List only directories and symbolic
