@@ -1,0 +1,3 @@
+set hive.cli.print.header=true;
+set hive.cli.print.current.db=true;
+set hive.exec.mode.local.auto.inputbytes.max=200630738;

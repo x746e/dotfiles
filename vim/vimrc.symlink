@@ -37,6 +37,7 @@ filetype indent on
 
 " Automatically setting options in various files
 set modeline
+set modelines=5
 
 " Available TAGS files
 set tags=./TAGS,./tags,tags
