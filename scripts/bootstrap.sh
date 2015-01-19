@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/sh
 # Taken from: https://github.com/holman/dotfiles
 #
 # bootstrap installs things.

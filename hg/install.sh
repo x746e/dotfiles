@@ -1,5 +1,9 @@
 #!/bin/sh
 
+if ! which hg > /dev/null; then
+  exit
+fi
+
 EXT_DIR="$HOME/.hg.d/ext"
 
 mkdir -p "$EXT_DIR"
