@@ -6,7 +6,7 @@ if [ ! -d "$BUNDLE_DIR/Vundle.vim" ]; then
 fi
 vim +PluginInstall +qall 2>&1 >/dev/null
 
-# fb staff
+# fb stuff
 if [ -e "/mnt/vol/engshare/admin/scripts/vim" ]; then
     mkdir -p ~/.vim/after/indent ~/.vim/after/syntax
     if [ ! -e ~/.vim/after/indent/php.vim ]; then
