@@ -1,7 +1,11 @@
 * Add README.
 * Rewrite install script into python (e.g. see
   https://github.com/koalaman/shellcheck/wiki/SC2044 for why it's not that a
-  great idea to write shell scripts.)
+  great idea to write shell scripts.).  In case if I will ever need to install
+  dotfiles on a box without python, I can add a minimal shell script.
+  BTW, the script is already not very portable, as it uses zsh specific read -k
+  (which is the same as bash's read -n 1).
+* highlight broken links in ls
 
 == vim
 * Syntax highlighting of SQL inside python files.  See how it was done for
