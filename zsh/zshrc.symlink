@@ -87,6 +87,15 @@ alias -g W='|wc -lwm'
 alias -g Wl='|wc -l'
 alias -g Bg=' >/dev/null 2>&1 &!'
 alias -g D='; notify-send "$history[$HISTCMD]ONE" "exit-code: $?"'
+alias -g C1='| awk ''{print $1}'''
+alias -g C2='| awk ''{print $2}'''
+alias -g C3='| awk ''{print $3}'''
+alias -g C4='| awk ''{print $4}'''
+alias -g C5='| awk ''{print $5}'''
+alias -g C6='| awk ''{print $6}'''
+alias -g C7='| awk ''{print $7}'''
+alias -g S='|sort'
+alias -g Su='|sort -u'
 alias -g ...='../..'
 alias -g ....='../../..'
 alias -g .....='../../../..'
@@ -113,11 +122,24 @@ hosts=(0x746e.org.ua test-3.blikbook.com moodlebox jenkins)
 
 
 # Set prompts
-# set screen screen's window name ( user@host )
-## TODO user@host:cmd
-if [[ "$TERM" = screen* ]]; then
-    echo -n "\033k$USER@${HOST%%.*}\033\\"
-fi
+
+_DEFAULT_TMUX_WINDOW_TITLE="zsh"
+_set-tmux-window-title () {
+    printf "\033k$1\033\\"
+}
+_get-tmux-window-title () {
+    tmux display-message -p '#W'
+}
+preexec () {
+    if [ "$(_get-tmux-window-title)" = "$_DEFAULT_TMUX_WINDOW_TITLE" ]; then
+        _set-tmux-window-title "%% $1"
+    fi
+}
+precmd () {
+    if [[ "$(_get-tmux-window-title)" =~ '^% .*$' ]]; then
+        _set-tmux-window-title "$_DEFAULT_TMUX_WINDOW_TITLE"
+    fi
+}
 
 if false; then
     xset b off
@@ -128,7 +150,7 @@ promptinit
 ## Currently available prompt themes:
 ## adam1 adam2 bart bigfade clint elite2 elite
 ## fade fire off oliver redhat suse walters zefram
-#prompt adam1
+# prompt adam1
 ##TODO
 prompt mine black cyan cyan $HOST_PROMPT_COLOR
 
@@ -321,6 +343,35 @@ vman () {
 cm () {
     mkdir "$1"
     cd "$1"
+}
+hr () {
+     echo $1 | awk '
+        BEGIN {
+            hum[1024**5] = "Pb";
+            hum[1024**4] = "Tb";
+            hum[1024**3] = "Gb";
+            hum[1024**2] = "Mb";
+            hum[1024] = "Kb";
+        }
+        {
+            num = $1;
+            for (x = 1024**5; x >= 1024; x /= 1024) {
+                if (num >= x) {
+                    printf "%.2f %s\n", num/x, hum[x];
+                    break;
+                }
+            }
+        }'
+}
+days-ago() {
+    if [ $# -eq 1 ]; then
+        python -c "from datetime import date, timedelta; print date.today() - timedelta(days=$1)"
+    elif [ $# -eq 2 ]; then
+        python -c "from datetime import datetime, timedelta; print datetime.strptime('$1', '%Y-%m-%d').date() - timedelta(days=$2)"
+    else
+        echo "Usage: $0 [date-count-from] num-of-days" 1>&2
+        return 1
+    fi
 }
 #
 #vv () {
