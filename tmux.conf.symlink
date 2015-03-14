@@ -1,11 +1,9 @@
 ##
 # Options
 ##
-#set -g status off
-setw -g automatic-rename off
 set -g history-limit 1500000
-# XXX: uncomment
-#set -g visual-silence on
+set -g visual-silence on
+set -g default-terminal "screen-256color"
 
 ##
 # Keybindings

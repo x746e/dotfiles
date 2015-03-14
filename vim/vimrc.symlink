@@ -259,7 +259,7 @@ let g:NERDTreeQuitOnOpen = 1
 let g:NERDTreeShowBookmarks = 1
 
 " syntastic
-let g:syntastic_python_checkers = ['pyflakes']
+let g:syntastic_python_checkers = ['pyflakes', 'flake8', 'pep8']
 let g:syntastic_stl_format = '[%E{Err: %fe #%e}%B{, }%W{Warn: %fw #%w}]'
 let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_check_on_open = 1
@@ -281,7 +281,7 @@ endif
 runtime! ftplugin/man.vim
 
 " jedi
-let $PYTHONPATH .= ":/home/tn/hz/jedi/venv/lib/python2.7/site-packages"
+" let $PYTHONPATH .= ":/home/tn/hz/jedi/venv/lib/python2.7/site-packages"
 let g:jedi#use_tabs_not_buffers = 0
 let g:jedi#auto_vim_configuration = 0
 let g:jedi#popup_on_dot = 0
