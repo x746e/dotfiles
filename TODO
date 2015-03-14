@@ -6,6 +6,11 @@
 * Put debug output from bootstrap.sh in some log file (in /tmp)
 
 == vim
+* Syntax highlighting of SQL inside python files.  See how it was done for
+  python inside vimscript.  Or for js inside html.
+* In python don't highlight all code after " till the end as string.  See how
+  it was done for vimscript.
+
 * revamp vim config (something like oh-my-vim?)
 * comment/uncomment command
 * highlight occurrences
@@ -19,6 +24,8 @@
 * store undo history between vim launches
 
 == zsh
+* don't overwrite files with mv!!! (without a confirmation).
+
 * try oh-my-zsh
 * add start-time of the command
 * add git status (similar to hg one)
