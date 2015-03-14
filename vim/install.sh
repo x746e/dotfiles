@@ -1,4 +1,11 @@
 #!/bin/sh
+if ! which git > /dev/null; then
+  exit
+fi
+if ! which vim > /dev/null; then
+  exit
+fi
+
 BUNDLE_DIR="$HOME/.vim/bundle"
 if [ ! -d "$BUNDLE_DIR/Vundle.vim" ]; then
     mkdir "$BUNDLE_DIR"

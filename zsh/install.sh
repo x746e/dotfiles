@@ -4,6 +4,6 @@ HERE="$(pwd)"
 
 set -e -u -x
 
-if [ ! -e "$HERE/zshrc.local"]; then
+if [ ! -e "$HOME/zshrc.local" ]; then
     cp $HERE/zshrc.local $HOME/.zshrc.local
 fi
