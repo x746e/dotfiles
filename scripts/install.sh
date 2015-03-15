@@ -6,7 +6,13 @@
 cd "$(dirname "$0")/.."
 DOTFILES_ROOT=$(pwd)
 
-set -e -u -x
+verbose=""
+if [ "$1" = "-v" ]; then
+  set -o xtrace
+  verbose="-x"
+fi
+set -o errexit
+set -o nounset
 
 echo ''
 
@@ -115,14 +121,14 @@ install_dotfiles () {
 }
 
 run_installers () {
-  for installer in $(find "$DOTFILES_ROOT" -maxdepth 2 -name install.sh)
+  for installer in $(find "$DOTFILES_ROOT" -maxdepth 2 -name install.sh \! -path '*/scripts/install.sh')
   do
-    sh -x "${installer}"
+    sh $verbose "${installer}"
   done
 }
 
 install_dotfiles
 run_installers
 
-echo ''
-echo '  All installed!'
+success 'All installed!'
+# vim: ts=2:sts=2:sw=2

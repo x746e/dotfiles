@@ -1,5 +1,8 @@
 #!/bin/sh
 
+set -o errexit
+set -o nounset
+
 if ! which hg > /dev/null; then
   exit
 fi

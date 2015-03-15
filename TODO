@@ -1,9 +1,5 @@
 * Add README.
 * Add LICENSE.
-* Push to github.
-* Rename bootstrap.sh to just install.sh?
-* Is bootstrap.sh idempotent?
-* Put debug output from bootstrap.sh in some log file (in /tmp)
 
 == vim
 * Syntax highlighting of SQL inside python files.  See how it was done for
@@ -38,5 +34,3 @@
   function in ~meyering/.zshrc
 * display version-control-agnostic state in prompt:
   /mnt/vol/engshare/admin/scripts/scm-prompt
-
-* don't export proxies by default, add proxy-env script/command instead
