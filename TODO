@@ -1,5 +1,4 @@
 * Add README.
-* Add LICENSE.
 
 == vim
 * Syntax highlighting of SQL inside python files.  See how it was done for
