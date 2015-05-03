@@ -95,7 +95,7 @@ alias -g C5='| awk ''{print $5}'''
 alias -g C6='| awk ''{print $6}'''
 alias -g C7='| awk ''{print $7}'''
 alias -g S='|sort'
-alias -g Su='|sort -u'
+alias -g U='|sort -u'
 alias -g ...='../..'
 alias -g ....='../../..'
 alias -g .....='../../../..'
@@ -125,14 +125,14 @@ hosts=(0x746e.org.ua test-3.blikbook.com moodlebox jenkins)
 
 _DEFAULT_TMUX_WINDOW_TITLE="zsh"
 _set-tmux-window-title () {
-    printf "\033k$1\033\\"
+    echo -n "\033k$1\033\\"
 }
 _get-tmux-window-title () {
     tmux display-message -p '#W'
 }
 preexec () {
     if [ "$(_get-tmux-window-title)" = "$_DEFAULT_TMUX_WINDOW_TITLE" ]; then
-        _set-tmux-window-title "%% $1"
+        _set-tmux-window-title "% $1"
     fi
 }
 precmd () {
