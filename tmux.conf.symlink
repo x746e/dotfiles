@@ -20,7 +20,7 @@ bind Space next-window
 bind ^H previous-window
 bind M-Space last-window
 bind A command-prompt "rename-window '%%'"
-bind k confirm-before kill-window
+bind k confirm-before -p "kill-window #W? (y/n)" kill-window
 bind s setw monitor-silence 2
 bind a setw monitor-activity
 bind u setw monitor-silence 0 \; setw -u monitor-activity \; display-message "monitor-silences -> 0; unset monitor-activity"
@@ -32,7 +32,7 @@ bind W choose-tree
 bind -t vi-copy P copy-pipe "pastebin >| /tmp/paste-url && tmux display-message $(cat /tmp/paste-url)"
 bind R source-file ~/.tmux.conf \; display-message "~/.tmux.conf reloaded"
 
-#### COLOUR (Solarized 256)
+#### COLOUR (Solarized 256) {{{
 
 # default statusbar colors
 set-option -g status-bg colour235 #base02
@@ -63,3 +63,4 @@ set-option -g display-panes-colour colour166 #orange
 
 # clock
 set-window-option -g clock-mode-colour colour64 #green
+# }}}
