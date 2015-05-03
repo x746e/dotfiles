@@ -1,14 +1,14 @@
 . ~/.zshrc.local
 
-# Search path for the cd command
-#cdpath=(.. ~ ~/src ~/zsh)
+# Search path for the cd command.
+cdpath=(.. ~)
 
 # Bindkey macros.
 bindkey -s "^Xr" 'source ~/.zshrc\n'
 
 umask 022
 
-# Set up aliases
+# Set up aliases.
 alias v='less'
 alias mv='nocorrect mv -i'
 alias cp='nocorrect cp -i'
@@ -49,7 +49,7 @@ alias nhive='/usr/local/bin/hive --namespace'
 # line.
 alias -g L='|less'
 alias -g L2=' 2>&1 |less'
-alias -g Lj='| python -mjson.tool'
+alias -g Lj='| python -mjson.tool | less'
 alias -g H='|head'
 alias -g T='|tail'
 alias -g G='|egrep --colour'
@@ -59,22 +59,28 @@ alias -g W='|wc -lwm'
 alias -g Wl='|wc -l'
 alias -g Bg=' >/dev/null 2>&1 &!'
 alias -g D='; notify-send "$history[$HISTCMD]ONE" "exit-code: $?"'
-alias -g C1='| awk ''{print $1}'''
-alias -g C2='| awk ''{print $2}'''
-alias -g C3='| awk ''{print $3}'''
-alias -g C4='| awk ''{print $4}'''
-alias -g C5='| awk ''{print $5}'''
-alias -g C6='| awk ''{print $6}'''
-alias -g C7='| awk ''{print $7}'''
+alias -g C1="| awk '{print \$1}'"
+alias -g C2="| awk '{print \$2}'"
+alias -g C3="| awk '{print \$3}'"
+alias -g C4="| awk '{print \$4}'"
+alias -g C5="| awk '{print \$5}'"
+alias -g C6="| awk '{print \$6}'"
+alias -g C7="| awk '{print \$7}'"
+alias -g C8="| awk '{print \$8}'"
+alias -g C9="| awk '{print \$9}'"
+alias -g C10="| awk '{print \$10}'"
+alias -g C11="| awk '{print \$11}'"
 alias -g S='|sort'
 alias -g U='|sort -u'
+alias -g NE="2> /dev/null"
+alias -g NUL="> /dev/null 2>&1"
 alias -g ...='../..'
 alias -g ....='../../..'
 alias -g .....='../../../..'
 
 # Shell functions
 setenv() { typeset -x "${1}${1:+=}${(@)argv[2,$#]}" }  # csh compatibility
-freload() { while (( $# )); do; unfunction $1; autoload -U $1; shift; done }
+freload() { while (( $# )); do unfunction $1; autoload -U $1; shift; done }
 
 # Where to look for autoloaded function definitions
 fpath=($fpath ~/.zfunc)
