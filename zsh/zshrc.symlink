@@ -21,7 +21,6 @@ alias j=jobs
 alias pu=pushd
 alias po=popd
 alias d='dirs -v'
-alias h=history
 alias grep=egrep --colour
 alias vlm='less /var/log/messages'
 alias bc='bc -l'
@@ -148,6 +147,7 @@ precmd() {
         fi
     }
     async &!
+    RPROMPT=""
 
     function async_prompt() {
         hg prompt --angle-brackets '%F{red}<branch> <%B[<bookmark>]%b >%f%F{yellow}%B<<tags> >%b%f%F{green}<status|modified|unknown><update>%f ' 2>/dev/null >| "$HOME/.zsh_tmp_prompt"
@@ -198,13 +198,26 @@ else
 fi
 
 MAILCHECK=300
+DIRSTACKSIZE=20
 
-# History settings
+##
+# History
 HISTSIZE=50000
 SAVEHIST=50000
 HISTFILE="$HOME/.zsh_history"
-DIRSTACKSIZE=20
-setopt histignoredups extended_history
+setopt extended_history hist_expire_dups_first
+
+_ISO_DATETIME_FORMAT='%Y-%m-%d %H:%M:%S'
+_zsh_startup_time=$(date +"$_ISO_DATETIME_FORMAT")
+alias hall="fc -t '$_ISO_DATETIME_FORMAT' -l 1 | less +G"
+function h() { # Show history from this shell session only.
+    fc -t "$_ISO_DATETIME_FORMAT" -l 1 | awk "{
+        entry_time = \$2 \" \" \$3;
+        if (entry_time >= \"$_zsh_startup_time\") {
+            print
+        }
+    }"
+}
 
 # Set/unset shell options
 setopt   nobeep
