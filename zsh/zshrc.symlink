@@ -367,27 +367,41 @@ vman () {
     fi
 }
 cm () {
-    mkdir "$1"
+    mkdir -p "$1"
     cd "$1"
 }
 hr () {
-     echo $1 | awk '
-        BEGIN {
-            hum[1024**5] = "Pb";
-            hum[1024**4] = "Tb";
-            hum[1024**3] = "Gb";
-            hum[1024**2] = "Mb";
-            hum[1024] = "Kb";
-        }
-        {
-            num = $1;
-            for (x = 1024**5; x >= 1024; x /= 1024) {
-                if (num >= x) {
-                    printf "%.2f %s\n", num/x, hum[x];
-                    break;
-                }
-            }
-        }'
+    python -c '
+from __future__ import division
+import sys
+def usage():
+    print "Usage: hr <number-in-bytes>"
+    exit(1)
+if len(sys.argv) != 2:
+    print sys.argv
+    usage()
+try:
+    num = int(sys.argv[1])
+except ValuError:
+    usage()
+
+symbols = [
+    (1024, "B"),
+    (1024**2, "kB"),
+    (1024**3, "MB"),
+    (1024**4, "GB"),
+    (1024**5, "TB"),
+    (1024**6, "PB"),
+    (1024**7, "EB"),
+]
+for ceil, symbol in symbols:
+    if num < ceil:
+        print "%.2f %s" % ((num / (ceil / 1024)), symbol)
+        break
+else:
+    max_ceil, max_symbol = symbols[-1]
+    print "%.2f %s" % ((num / (max_ceil / 1024)), max_symbol)
+' "$1"
 }
 days-ago() {
     if [ $# -eq 1 ]; then
