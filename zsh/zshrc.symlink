@@ -3,10 +3,8 @@
 # Search path for the cd command
 #cdpath=(.. ~ ~/src ~/zsh)
 
-## useful bindkey macros
-bindkey -s "^Xm" 'mutt\n' ## run mutt
-#!! bindkey -s "^Xc" 'mcdrom\n' ## mount or umount cdrom
-#!! bindkey -s "^Xf" 'mflash\n' ## mount or umount flash
+# Bindkey macros.
+bindkey -s "^Xr" 'source ~/.zshrc\n'
 
 umask 022
 
@@ -24,18 +22,21 @@ alias grep=egrep --colour
 alias vlm='less /var/log/messages'
 alias bc='bc -l'
 alias tt='tail -F'
-alias pL='ps auxww|less'
 alias la='l -a'
 alias lla='ll -a'
+# List only directories and symbolic links that point to directories.
+alias lsd='ls -ldh *(-/DN)'
+# List only file beginning with ".".
+alias lsa='ls -ldh .*'
 alias bkd='date +%FT%H%M'
 case `uname` in
     "Linux"|CYGWIN*)
-        alias ll='ls -lF --color=auto'
+        alias ll='ls -lhF --color=auto'
         alias l='ls -FG --color=auto'
         alias sed='sed -r'
         ;;
     *)
-        alias ll='ls -lFG'
+        alias ll='ls -lhFG'
         alias l='ls -FG'
         alias sed='sed -E'
         ;;
@@ -43,36 +44,9 @@ esac
 alias mq='hg -R $(hg root)/.hg/patches'
 alias hdfs='hadoop dfs'
 alias nhive='/usr/local/bin/hive --namespace'
-#alias -g sd='export DISPLAY='
 
-# List only directories and symbolic
-# links that point to directories
-alias lsd='ls -ld *(-/DN)'
-
-# List only file beginning with "."
-alias lsa='ls -ld .*'
-
-alias tpp='cd ~/mfiles/transproject/transproject && source ../venv/bin/activate'
-
-# Shell functions
-setenv() { typeset -x "${1}${1:+=}${(@)argv[2,$#]}" }  # csh compatibility
-freload() { while (( $# )); do; unfunction $1; autoload -U $1; shift; done }
-
-# Where to look for autoloaded function definitions
-fpath=($fpath ~/.zfunc)
-autoload -U zfinit
-
-# Autoload all shell functions from all directories in $fpath (following
-# symlinks) that have the executable bit on (the executable bit is not
-# necessary, but gives you an easy way to stop the autoloading of a
-# particular shell function). $fpath should not be empty for this to work.
-for func in $^fpath/*(N-.x:t); autoload $func
-
-# automatically remove duplicates from these arrays
-typeset -U path cdpath fpath manpath
-
-# Global aliases -- These do not have to be
-# at the beginning of the command line.
+# Global aliases -- These do not have to be at the beginning of the command
+# line.
 alias -g L='|less'
 alias -g L2=' 2>&1 |less'
 alias -g Lj='| python -mjson.tool'
@@ -98,6 +72,20 @@ alias -g ...='../..'
 alias -g ....='../../..'
 alias -g .....='../../../..'
 
+# Shell functions
+setenv() { typeset -x "${1}${1:+=}${(@)argv[2,$#]}" }  # csh compatibility
+freload() { while (( $# )); do; unfunction $1; autoload -U $1; shift; done }
+
+# Where to look for autoloaded function definitions
+fpath=($fpath ~/.zfunc)
+autoload -U zfinit
+
+# Autoload all shell functions from all directories in $fpath (following
+# symlinks) that have the executable bit on (the executable bit is not
+# necessary, but gives you an easy way to stop the autoloading of a
+# particular shell function). $fpath should not be empty for this to work.
+for func in $^fpath/*(N-.x:t); autoload $func
+
 case `uname` in
     "DragonFly")
         manpath=(/usr/X11R6/man /usr/man /usr/lang/man /usr/pkg/man /usr/share/man) ;;
@@ -112,6 +100,10 @@ esac
 export MANPATH
 
 export PATH="$PATH:$HOME/bin"
+
+# automatically remove duplicates from these arrays
+typeset -U path cdpath fpath manpath
+
 
 # Hosts to use for completion (see later zstyle)
 local hosts
