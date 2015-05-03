@@ -180,36 +180,17 @@ promptinit
 ##TODO
 prompt mine black cyan cyan $HOST_PROMPT_COLOR
 
-
-#PROMPT='%# '    # default prompt
-#RPROMPT=' %~'     # prompt for right side of screen
-#if [ $TERM = "screen" ];
-#then
-#    export TERM='xterm'
-#    PROMPT="s$WINDOW%# "
-#fi
-
-
 # Some environment variables
 export SHELL='zsh'
 export EDITOR='vim'
 export MAIL=/var/mail/$USERNAME
-#export LESS=-cx3MR
 # less settings:
-# -F or --quit-if-one-screen
-# -M or --LONG-PROMPT
-# -R or --RAW-CONTROL-CHARS  : for colors
-# -X or --no-init  : hell knows what it is for
-#export LESS="FMR"
+# --RAW-CONTROL-CHARS is for show ANSI control sequences as colors.
+export LESS="--ignore-case --quit-if-one-screen --LONG-PROMPT --RAW-CONTROL-CHARS"
 export HELPDIR=/usr/local/lib/zsh/help  # directory for run-help function to find docs
 export PAGER=less
-#export LC_CTYPE=ru_RU.UTF-8
-#export LC_COLLATE=C
 #export EMAIL=tn@0x746e.org.ua
 #export HGUSER=$EMAIL
-#if [ -n "$TMUX" ]; then
-#    export TERM="screen.xterm-new"
-#fi
 if [ -e /usr/share/terminfo/x/xterm-256color ]; then
     export TERM='xterm-256color'
 else
@@ -217,20 +198,19 @@ else
 fi
 
 MAILCHECK=300
-HISTSIZE=500000
+
+# History settings
+HISTSIZE=50000
+SAVEHIST=50000
+HISTFILE="$HOME/.zsh_history"
 DIRSTACKSIZE=20
+setopt histignoredups extended_history
 
-# Watch for my friends
-#watch=( $(<~/.friends) )       # watch for people in .friends file
-#watch=(notme)                   # watch for everybody but me
-#LOGCHECK=300                    # check every 5 min for login/logout activity
-#WATCHFMT='%n %a %l from %m at %t.'
-
-# Set/unset  shell options
-setopt     nobeep
+# Set/unset shell options
+setopt   nobeep
 setopt   notify globdots correct pushdtohome cdablevars autolist
 setopt   correctall autocd recexact longlistjobs
-setopt   autoresume histignoredups pushdsilent noclobber
+setopt   autoresume pushdsilent noclobber
 setopt   autopushd pushdminus extendedglob rcquotes mailwarning
 unsetopt bgnice autoparamslash
 
