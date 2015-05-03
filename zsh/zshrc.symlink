@@ -11,8 +11,7 @@ bindkey -s "^Xm" 'mutt\n' ## run mutt
 umask 022
 
 # Set up aliases
-alias v='less'                ##TODO: script for viewing different file types
-alias vv='vim -R'
+alias v='less'
 alias mv='nocorrect mv'       # no spelling correction on mv
 alias cp='nocorrect cp'       # no spelling correction on cp
 alias mkdir='nocorrect mkdir' # no spelling correction on mkdir
@@ -303,6 +302,10 @@ zstyle ':completion:*:*:(^rm):*:*files' ignored-patterns '*?.o' '*?.c~' \
 #'
 # ignore completion functions (until the _ignored completer)
 zstyle ':completion:*:functions' ignored-patterns '_*'
+
+# Disable completing `cd username`.
+zstyle ':completion:*:complete:(cd|pushd):*' tag-order \
+  'local-directories path-directories directory-stack' '*'
 
 #
 # Misc Functions
