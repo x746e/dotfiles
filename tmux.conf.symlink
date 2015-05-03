@@ -21,12 +21,14 @@ bind ^H previous-window
 bind M-Space last-window
 bind A command-prompt "rename-window '%%'"
 bind k confirm-before -p "kill-window #W? (y/n)" kill-window
+
+# misc bindings
 bind s setw monitor-silence 2
 bind a setw monitor-activity
 bind u setw monitor-silence 0 \; setw -u monitor-activity \; display-message "monitor-silences -> 0; unset monitor-activity"
-
-# misc bindings
-bind r command-prompt "neww '%%'"
+bind M choose-session "move-window -t %%:"
+bind S command-prompt "new-session -s '%%'"
+bind r command-prompt "new-window '%%'"
 bind / neww top
 bind W choose-tree
 bind -t vi-copy P copy-pipe "pastebin >| /tmp/paste-url && tmux display-message $(cat /tmp/paste-url)"
