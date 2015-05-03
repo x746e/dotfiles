@@ -130,16 +130,42 @@ _set-tmux-window-title () {
 _get-tmux-window-title () {
     tmux display-message -p '#W'
 }
-preexec () {
-    if [ "$(_get-tmux-window-title)" = "$_DEFAULT_TMUX_WINDOW_TITLE" ]; then
-        _set-tmux-window-title "% $1"
-    fi
+# A hook executed just after a command has been read and is about to be executed.
+function preexec() {
+    cmd_to_be_executed="$1"
+    function async() {
+        if [ "$(_get-tmux-window-title)" = "$_DEFAULT_TMUX_WINDOW_TITLE" ]; then
+            _set-tmux-window-title "% $cmd_to_be_executed"
+        fi
+    }
+    async &!
 }
-precmd () {
-    if [[ "$(_get-tmux-window-title)" =~ '^% .*$' ]]; then
-        _set-tmux-window-title "$_DEFAULT_TMUX_WINDOW_TITLE"
-    fi
+# A hook executed before each prompt.
+precmd() {
+    function async() {
+        if [[ "$(_get-tmux-window-title)" =~ '^% .*$' ]]; then
+            _set-tmux-window-title "$_DEFAULT_TMUX_WINDOW_TITLE"
+        fi
+    }
+    async &!
+
+    function async_prompt() {
+        hg prompt --angle-brackets '%F{red}<branch> <%B[<bookmark>]%b >%f%F{yellow}%B<<tags> >%b%f%F{green}<status|modified|unknown><update>%f ' 2>/dev/null >| "$HOME/.zsh_tmp_prompt"
+        kill -s USR1 $$
+    }
+    async_prompt &!
 }
+function TRAPUSR1() {
+    # read from temp file
+    RPROMPT="$(cat ${HOME}/.zsh_tmp_prompt)"
+
+    # reset proc number
+    # ASYNC_PROC=0
+
+    # redisplay
+    zle && zle reset-prompt
+}
+
 
 if false; then
     xset b off

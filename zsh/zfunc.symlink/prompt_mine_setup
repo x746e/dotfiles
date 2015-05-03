@@ -18,7 +18,7 @@ replacements for the 8-bit characters.
 EOF
 }
 
-prompt_mine_setup () {
+function prompt_mine_setup() {
   prompt_adam1_color1=${1:-'blue'}
   prompt_adam1_color2=${2:-'cyan'}
   prompt_adam1_color3=${3:-'green'}
@@ -33,17 +33,16 @@ prompt_mine_setup () {
   add-zsh-hook precmd prompt_mine_precmd
 }
 
-prompt_mine_precmd () {
+function prompt_mine_precmd() {
   setopt noxtrace localoptions
   local base_prompt_expanded_no_color base_prompt_etc
   local prompt_length space_left
   local venv_prompt hg_prompt
 
-  if [ -n "$VIRTUAL_ENV" ]; then
-    venv_prompt="(`basename \"$VIRTUAL_ENV\"`) "
-  fi
 
-  hg_prompt=$(hg prompt --angle-brackets '%F{red}<branch> <%B[<bookmark>]%b >%f%F{yellow}%B<<tags> >%b%f%F{green}<status|modified|unknown><update>%f ' 2>/dev/null)
+  if [ -n "$VIRTUAL_ENV" ]; then
+    venv_prompt="($(basename \"$VIRTUAL_ENV\")) "
+  fi
 
   base_prompt_expanded_no_color=$(print -P "$base_prompt_no_color")
   base_prompt_etc=$(print -P "$base_prompt%(4~|...|)%3~")
@@ -54,7 +53,7 @@ prompt_mine_precmd () {
     space_left=$(( $COLUMNS - $#base_prompt_expanded_no_color - 2 ))
     path_prompt="%B%F{$prompt_adam1_color3}%${space_left}<...<%~$prompt_newline%F{$white}"
   fi
-  PS1="$base_prompt$venv_prompt$hg_prompt$path_prompt %# $post_prompt"
+  PS1="$base_prompt$venv_prompt$path_prompt %# $post_prompt"
   PS2="$base_prompt$path_prompt %_> $post_prompt"
   PS3="$base_prompt$path_prompt ?# $post_prompt"
 }
