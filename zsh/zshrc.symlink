@@ -184,11 +184,18 @@ prompt mine black cyan cyan $HOST_PROMPT_COLOR
 export SHELL='zsh'
 export EDITOR='vim'
 export MAIL=/var/mail/$USERNAME
-# less settings:
-# --RAW-CONTROL-CHARS is for show ANSI control sequences as colors.
+# `less` setting --RAW-CONTROL-CHARS is for show ANSI control sequences as
+# colors.
 export LESS="--ignore-case --quit-if-one-screen --LONG-PROMPT --RAW-CONTROL-CHARS"
-export HELPDIR=/usr/local/lib/zsh/help  # directory for run-help function to find docs
 export PAGER=less
+# When opening manpages (`man whatever`) the actual manpage source is
+# un-gzipped, piped through `[gn*]roff`, and then the result is piped into
+# `less`.  By default `less` doesn't show percentage of input piped into it.
+# Thus to force `less` to read all the input to be able to say progress in
+# percent we command to go to the end of the file, and then back to the
+# beginning.
+export MANPAGER="less +Gg"
+export HELPDIR=/usr/local/lib/zsh/help  # directory for run-help function to find docs
 #export EMAIL=tn@0x746e.org.ua
 #export HGUSER=$EMAIL
 if [ -e /usr/share/terminfo/x/xterm-256color ]; then
