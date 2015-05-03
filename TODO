@@ -18,8 +18,6 @@
 * store undo history between vim launches
 
 == zsh
-* don't overwrite files with mv!!! (without a confirmation).
-
 * try oh-my-zsh
 * add start-time of the command
 * add git status (similar to hg one)

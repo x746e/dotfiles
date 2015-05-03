@@ -12,10 +12,10 @@ umask 022
 
 # Set up aliases
 alias v='less'
-alias mv='nocorrect mv'       # no spelling correction on mv
-alias cp='nocorrect cp'       # no spelling correction on cp
-alias mkdir='nocorrect mkdir' # no spelling correction on mkdir
-alias rm='rm -I'
+alias mv='nocorrect mv -i'
+alias cp='nocorrect cp -i'
+alias mkdir='nocorrect mkdir'
+alias rm='nocorrect rm -I'
 alias j=jobs
 alias pu=pushd
 alias po=popd
