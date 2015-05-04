@@ -1,7 +1,7 @@
 ##
 # Options
 ##
-set -g history-limit 1500000
+set -g history-limit 10000000
 set -g visual-silence on
 set -g default-terminal "screen-256color"
 set -g display-time 4000
