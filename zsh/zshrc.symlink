@@ -58,7 +58,8 @@ alias -g Gi='|egrep -i --colour'
 alias -g W='|wc -lwm'
 alias -g Wl='|wc -l'
 alias -g Bg=' >/dev/null 2>&1 &!'
-alias -g D='; notify-send "$history[$HISTCMD]ONE" "exit-code: $?"'
+# alias -g D='; notify-send "$history[$HISTCMD]ONE" "exit-code: $?"'
+alias -g D='; tmux display-message "$history[$HISTCMD]ONE: exit-code: $?"'
 alias -g C1="| awk '{print \$1}'"
 alias -g C2="| awk '{print \$2}'"
 alias -g C3="| awk '{print \$3}'"
@@ -240,7 +241,6 @@ zmodload -ap zsh/mapfile mapfile
 # Some nice key bindings
 #bindkey '^X^Z' universal-argument ' ' magic-space
 #bindkey '^X^A' vi-find-prev-char-skip
-#bindkey '^Xa' _expand_alias
 #bindkey '^Z' accept-and-hold
 #bindkey -s '\M-/' \\\\
 #bindkey -s '\M-=' \|
@@ -257,8 +257,6 @@ bindkey '^I' complete-word # complete on tab, leave expansion to _expand
 # distribution.
 autoload -U compinit
 compinit -i
-
-
 
 # Completion Styles
 
