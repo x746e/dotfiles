@@ -136,13 +136,6 @@ endif
 " Mappings {{{
 let mapleader = ","
 nmap <S-F7> :!python %<CR>
-" mapping for quickfix   " TODO center (zz) after :cp or :cn
-nmap <F5> :cp<CR>
-nmap <F6> :cn<CR>
-" <S-F5>  " TODO this doesn't work!
-nmap [15;2~ :cpf<CR>
-" <S-F6>  " TODO this doesn't work!
-nmap [17;2~ :cnf<CR>
 " TODO:
 "  * make file pattern according to filtype:
 "    * **/*.(py\|html\|txt\|rst) for python
@@ -251,7 +244,7 @@ nnoremap <silent> <Leader>t :TagbarToggle<CR>
 " buffexplorer
 let g:bufExplorerShowRelativePath=1
 let g:bufExplorerSplitOutPathName=0
-nnoremap <silent> <Leader>bb :BufExplorer<CR>
+nnoremap <silent> <Leader>l :BufExplorer<CR>
 
 " Flake8
 let g:flake8_ignore="E126,E128,E121,E124"
