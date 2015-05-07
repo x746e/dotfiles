@@ -121,30 +121,33 @@ hosts=(0x746e.org.ua test-3.blikbook.com moodlebox jenkins)
 # Set prompts
 
 _DEFAULT_TMUX_WINDOW_TITLE="zsh"
-_set-tmux-window-title () {
-    echo -n "\033k$1\033\\"
+function _in_tmux() {
+    test -n "$TMUX"
 }
-_get-tmux-window-title () {
-    tmux display-message -p '#W' 2>/dev/null
+function _set-tmux-window-title() {
+    _in_tmux && echo -n "\033k$1\033\\"
+}
+function _get-tmux-window-title() {
+    _in_tmux && tmux display-message -p '#W'
 }
 # A hook executed just after a command has been read and is about to be executed.
 function preexec() {
     cmd_to_be_executed="$1"
-    function async() {
+    function async_set_tmux_window_title() {
         if [ "$(_get-tmux-window-title)" = "$_DEFAULT_TMUX_WINDOW_TITLE" ]; then
             _set-tmux-window-title "% $cmd_to_be_executed"
         fi
     }
-    async &!
+    _in_tmux && async_set_tmux_window_title &!
 }
 # A hook executed before each prompt.
-precmd() {
-    function async() {
+function precmd() {
+    function async_reset_tmux_window_title() {
         if [[ "$(_get-tmux-window-title)" =~ '^% .*$' ]]; then
             _set-tmux-window-title "$_DEFAULT_TMUX_WINDOW_TITLE"
         fi
     }
-    async &!
+    _in_tmux && async_reset_tmux_window_title &!
     RPROMPT=""
 
     function async_prompt() {
