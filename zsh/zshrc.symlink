@@ -182,10 +182,16 @@ prompt mine black cyan cyan $HOST_PROMPT_COLOR
 export SHELL='zsh'
 export EDITOR='vim'
 export MAIL=/var/mail/$USERNAME
-# `less` setting --RAW-CONTROL-CHARS is for show ANSI control sequences as
-# colors.
-export LESS="--ignore-case --quit-if-one-screen --LONG-PROMPT --RAW-CONTROL-CHARS"
+
+# `less` settings:
+# * --RAW-CONTROL-CHARS is for showing ANSI control sequences as colors.
+# * `--no-init` is to prevent it to clear output on exit. This is important
+#   when the file viewed by less is shorter than one screen and `--quit-if-one-screen`
+#   is set.  In such case less exists right away, so if it also cleans the
+#   screen nothing at all is shown.
+export LESS="--ignore-case --no-init --quit-if-one-screen --LONG-PROMPT --RAW-CONTROL-CHARS"
 export PAGER=less
+
 # When opening manpages (`man whatever`) the actual manpage source is
 # un-gzipped, piped through `[gn*]roff`, and then the result is piped into
 # `less`.  By default `less` doesn't show percentage of input piped into it.
@@ -193,6 +199,7 @@ export PAGER=less
 # percent we command to go to the end of the file, and then back to the
 # beginning.
 export MANPAGER="less +Gg"
+
 export HELPDIR=/usr/local/lib/zsh/help  # directory for run-help function to find docs
 #export EMAIL=tn@0x746e.org.ua
 #export HGUSER=$EMAIL
