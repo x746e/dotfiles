@@ -125,7 +125,7 @@ _set-tmux-window-title () {
     echo -n "\033k$1\033\\"
 }
 _get-tmux-window-title () {
-    tmux display-message -p '#W'
+    tmux display-message -p '#W' 2>/dev/null
 }
 # A hook executed just after a command has been read and is about to be executed.
 function preexec() {
