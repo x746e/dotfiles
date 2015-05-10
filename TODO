@@ -11,23 +11,39 @@
 * version control plugin
 * do something with search highlights - they are annoying
 
-✓ remove auto-save plugin, add just autogroup
-** check if vim is too slow now with all these autocommands
+* auto-saving, as in pycharm?
 
 * store undo history between vim launches
 
+
 == zsh
 * try oh-my-zsh
-* add start-time of the command
-* add git status (similar to hg one)
-* when there are suspended jobs, show it somehow in the prompt
-* for version control status information in the prompt -- update it when
-  something changes in the repo.
 
+=== prompt
+* add start-time of the command
+* when there are suspended jobs, show it somehow in the prompt
 * display colored/signal-aware exit status in prompt; see the my_prompt
   function in ~meyering/.zshrc
-* display version-control-agnostic state in prompt:
+
+=== zsh version-control-status in prompt
+* add git status (similar to hg one)
+* for version control status information in the prompt -- update it when
+  something changes in the repo.
+* take a look at for display version-control-agnostic state in prompt:
   /mnt/vol/engshare/admin/scripts/scm-prompt
+* things to display:
+** branch/bookmark name
+** any files changed?
+** any untracked files?
+** is there some strange state, like in the middle of merge, rebase; any unmerged conflicts?
+** is there stashed/shelved changes?
+** some phabricator specific info?
+
+=== editor
+* regex replace in zle?
+* `f` as in vim.
+* edit current line in vim
+
 
 == tmux
 * command to `pack` windows in session. (windows: 2, 5, 6 -> 0, 1, 2)
