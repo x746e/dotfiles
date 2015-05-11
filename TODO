@@ -1,4 +1,7 @@
 * Add README.
+* Rewrite install script into python (e.g. see
+  https://github.com/koalaman/shellcheck/wiki/SC2044 for why it's not that a
+  great idea to write shell scripts.)
 
 == vim
 * Syntax highlighting of SQL inside python files.  See how it was done for
@@ -20,6 +23,8 @@
 
 == zsh
 * try oh-my-zsh
+
+* zsh/tmux titles: use name of resumed job instead of `fg`.
 
 === prompt
 * add start-time of the command

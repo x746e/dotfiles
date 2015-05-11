@@ -17,19 +17,19 @@ set -o nounset
 echo ''
 
 info () {
-  printf "  [ \033[00;34m..\033[0m ] $1"
+  printf "  [ \033[00;34m..\033[0m ] %s" "$1"
 }
 
 user () {
-  printf "\r  [ \033[0;33m?\033[0m ] $1 "
+  printf "\r  [ \033[0;33m?\033[0m ] %s " "$1"
 }
 
 success () {
-  printf "\r\033[2K  [ \033[00;32mOK\033[0m ] $1\n"
+  printf "\r\033[2K  [ \033[00;32mOK\033[0m ] %s\n" "$1"
 }
 
 fail () {
-  printf "\r\033[2K  [\033[0;31mFAIL\033[0m] $1\n"
+  printf "\r\033[2K  [\033[0;31mFAIL\033[0m] %s\n" "$1"
   echo ''
   exit
 }
@@ -37,18 +37,19 @@ fail () {
 link_file () {
   local src=$1 dst=$2
 
-  local overwrite= backup= skip=
-  local action=
+  local overwrite='' backup='' skip=''
+  local action=''
 
   if [ -f "$dst" -o -d "$dst" -o -L "$dst" ]
   then
 
-    if [ "$overwrite_all" == "false" ] && [ "$backup_all" == "false" ] && [ "$skip_all" == "false" ]
+    if [ "$overwrite_all" = "false" ] && [ "$backup_all" = "false" ] && [ "$skip_all" = "false" ]
     then
 
-      local currentSrc="$(readlink $dst)"
+      local currentSrc
+      currentSrc="$(readlink "$dst")"
 
-      if [ "$currentSrc" == "$src" ]
+      if [ "$currentSrc" = "$src" ]
       then
 
         skip=true;
@@ -79,23 +80,23 @@ link_file () {
 
     fi
 
-    overwrite=${overwrite:-$overwrite_all}
-    backup=${backup:-$backup_all}
-    skip=${skip:-$skip_all}
+    overwrite="${overwrite:-$overwrite_all}"
+    backup="${backup:-$backup_all}"
+    skip="${skip:-$skip_all}"
 
-    if [ "$overwrite" == "true" ]
+    if [ "$overwrite" = "true" ]
     then
       rm -rf "$dst"
       success "removed $dst"
     fi
 
-    if [ "$backup" == "true" ]
+    if [ "$backup" = "true" ]
     then
       mv "$dst" "${dst}.backup"
       success "moved $dst to ${dst}.backup"
     fi
 
-    if [ "$skip" == "true" ]
+    if [ "$skip" = "true" ]
     then
       success "skipped $src"
     fi
