@@ -3,9 +3,6 @@
 # Search path for the cd command.
 cdpath=(.. ~)
 
-# Bindkey macros.
-bindkey -s "^Xr" 'source ~/.zshrc\n'
-
 umask 022
 
 #** Aliases **# {{{
@@ -81,7 +78,6 @@ alias -g .....='../../../..'
 # }}}
 
 # Shell functions
-setenv() { typeset -x "${1}${1:+=}${(@)argv[2,$#]}" }  # csh compatibility
 freload() { while (( $# )); do unfunction $1; autoload -U $1; shift; done }
 
 # Where to look for autoloaded function definitions
@@ -92,7 +88,7 @@ autoload -U zfinit
 # symlinks) that have the executable bit on (the executable bit is not
 # necessary, but gives you an easy way to stop the autoloading of a
 # particular shell function). $fpath should not be empty for this to work.
-for func in $^fpath/*(N-.x:t); autoload $func
+for func in $^fpath/*(N-.x:t); do autoload $func; done
 
 
 # To manipulate precmd and preexec hooks...
@@ -124,7 +120,7 @@ hosts=(0x746e.org.ua test-3.blikbook.com moodlebox jenkins)
 
 
 
-#** TMUX window title **# {{{
+#** Tmux window title **# {{{
 _DEFAULT_TMUX_WINDOW_TITLE="zsh"
 function _in_tmux() {
     test -n "$TMUX"
@@ -197,10 +193,6 @@ promptinit
 prompt mine black cyan cyan $HOST_PROMPT_COLOR
 # }}}
 
-if false; then
-    xset b off
-fi
-
 # Some environment variables
 export SHELL='zsh'
 export EDITOR='vim'
@@ -272,20 +264,22 @@ zmodload -a zsh/zpty zpty
 zmodload -a zsh/zprof zprof
 zmodload -ap zsh/mapfile mapfile
 
-# Some nice key bindings
+#** Key bindings **# {{{
 #bindkey '^X^Z' universal-argument ' ' magic-space
 #bindkey '^X^A' vi-find-prev-char-skip
 #bindkey '^Z' accept-and-hold
 #bindkey -s '\M-/' \\\\
 #bindkey -s '\M-=' \|
-
 # bindkey -v               # vi key bindings
-
 bindkey -e                 # emacs key bindings
 bindkey ' ' magic-space    # also do history expansion on space
 bindkey '^I' complete-word # complete on tab, leave expansion to _expand
+# Bindkey macros.
+bindkey -s "^Xr" 'source ~/.zshrc\n'
+# }}}
 
 
+#** Completion **# {{{
 # Setup new style completion system. To see examples of the old style (compctl
 # based) programmable completion, check Misc/compctl-examples in the zsh
 # distribution.
@@ -336,6 +330,7 @@ zstyle ':completion:*:functions' ignored-patterns '_*'
 # Disable completing `cd username`.
 zstyle ':completion:*:complete:(cd|pushd):*' tag-order \
   'local-directories path-directories directory-stack' '*'
+# }}}
 
 
 #** Misc Functions **# {{{
@@ -386,14 +381,14 @@ pG9 () {
 #
 cman () {
     if [ ! -z "$1" ]; then
-        groff -man -Tascii $1
+        groff -man -Tascii "$1"
     else
         echo "Usage: $0 manual_file"
     fi
 }
 vman () {
     if [ ! -z "$1" ]; then
-        groff -man -Tascii $1 | less
+        groff -man -Tascii "$1" | less
     else
         echo "Usage: $0 manual_file"
     fi

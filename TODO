@@ -24,7 +24,7 @@
 == zsh
 * try oh-my-zsh
 * look for a scheme: http://zshthem.es/
-
+* fix shell linter for .zshrc
 
 === prompt
 * add start-time of the command
