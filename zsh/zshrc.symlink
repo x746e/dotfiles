@@ -8,7 +8,7 @@ bindkey -s "^Xr" 'source ~/.zshrc\n'
 
 umask 022
 
-# Set up aliases.
+#** Aliases **# {{{
 alias v='less'
 alias mv='nocorrect mv -i'
 alias cp='nocorrect cp -i'
@@ -78,6 +78,7 @@ alias -g NUL="> /dev/null 2>&1"
 alias -g ...='../..'
 alias -g ....='../../..'
 alias -g .....='../../../..'
+# }}}
 
 # Shell functions
 setenv() { typeset -x "${1}${1:+=}${(@)argv[2,$#]}" }  # csh compatibility
@@ -215,8 +216,7 @@ fi
 MAILCHECK=300
 DIRSTACKSIZE=20
 
-##
-# History
+#** History **# {{{
 HISTSIZE=50000
 SAVEHIST=50000
 HISTFILE="$HOME/.zsh_history"
@@ -237,6 +237,7 @@ function h() { # Show history from this shell session only.
         }
     }"
 }
+# }}}
 
 # Set/unset shell options
 setopt   nobeep
@@ -317,9 +318,8 @@ zstyle ':completion:*:functions' ignored-patterns '_*'
 zstyle ':completion:*:complete:(cd|pushd):*' tag-order \
   'local-directories path-directories directory-stack' '*'
 
-#
-# Misc Functions
-#
+
+#** Misc Functions **# {{{
 
 ud () {
     if [ ! -z "$1" ]
@@ -433,3 +433,4 @@ days-ago() {
 #    type_group=${mime_type%%/*}  # 'image/jpeg' → 'image' and so on
 #    echo $file": "$type_group
 #}
+# }}}

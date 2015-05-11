@@ -57,3 +57,4 @@
 * use name of resumed job instead of `fg`.
 * shorten names more then X symbols.
 * remove 'nocorrect' from the beginning.
+* man zshmisc -> zshmisc(1)
