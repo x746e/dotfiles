@@ -23,8 +23,8 @@
 
 == zsh
 * try oh-my-zsh
+* look for a scheme: http://zshthem.es/
 
-* zsh/tmux titles: use name of resumed job instead of `fg`.
 
 === prompt
 * add start-time of the command
@@ -53,3 +53,7 @@
 
 
 == tmux
+=== window titles
+* use name of resumed job instead of `fg`.
+* shorten names more then X symbols.
+* remove 'nocorrect' from the beginning.
