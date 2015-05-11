@@ -94,6 +94,10 @@ autoload -U zfinit
 # particular shell function). $fpath should not be empty for this to work.
 for func in $^fpath/*(N-.x:t); autoload $func
 
+
+# To manipulate precmd and preexec hooks...
+autoload -Uz add-zsh-hook
+
 case `uname` in
     "DragonFly")
         manpath=(/usr/X11R6/man /usr/man /usr/lang/man /usr/pkg/man /usr/share/man) ;;
@@ -119,20 +123,23 @@ local hosts
 hosts=(0x746e.org.ua test-3.blikbook.com moodlebox jenkins)
 
 
-# Set prompts
 
+#** TMUX window title **# {{{
 _DEFAULT_TMUX_WINDOW_TITLE="zsh"
 function _in_tmux() {
     test -n "$TMUX"
 }
+
 function _set-tmux-window-title() {
     _in_tmux && echo -n "\033k$1\033\\"
 }
+
 function _get-tmux-window-title() {
     _in_tmux && tmux display-message -p '#W'
 }
+
 # A hook executed just after a command has been read and is about to be executed.
-function preexec() {
+function tmux-window-title-preexec {
     cmd_to_be_executed="$1"
     function async_set_tmux_window_title() {
         if [ "$(_get-tmux-window-title)" = "$_DEFAULT_TMUX_WINDOW_TITLE" ]; then
@@ -141,14 +148,24 @@ function preexec() {
     }
     _in_tmux && async_set_tmux_window_title &!
 }
+add-zsh-hook preexec tmux-window-title-preexec
+
 # A hook executed before each prompt.
-function precmd() {
+function tmux-window-title-precmd {
     function async_reset_tmux_window_title() {
         if [[ "$(_get-tmux-window-title)" =~ '^% .*$' ]]; then
             _set-tmux-window-title "$_DEFAULT_TMUX_WINDOW_TITLE"
         fi
     }
     _in_tmux && async_reset_tmux_window_title &!
+}
+add-zsh-hook precmd tmux-window-title-precmd
+# }}}
+
+
+#** Prompts **# {{{
+# A hook executed before each prompt.
+function async-prompt-precmd {
     RPROMPT=""
 
     function async_prompt() {
@@ -157,6 +174,8 @@ function precmd() {
     }
     async_prompt &!
 }
+add-zsh-hook precmd async-prompt-precmd
+
 function TRAPUSR1() {
     # read from temp file
     RPROMPT="$(cat ${HOME}/.zsh_tmp_prompt)"
@@ -168,11 +187,6 @@ function TRAPUSR1() {
     zle && zle reset-prompt
 }
 
-
-if false; then
-    xset b off
-fi
-
 autoload -U promptinit
 promptinit
 ## Currently available prompt themes:
@@ -181,6 +195,11 @@ promptinit
 # prompt adam1
 ##TODO
 prompt mine black cyan cyan $HOST_PROMPT_COLOR
+# }}}
+
+if false; then
+    xset b off
+fi
 
 # Some environment variables
 export SHELL='zsh'
