@@ -34,6 +34,8 @@ bind W choose-tree
 bind -t vi-copy P copy-pipe "pastebin >| /tmp/paste-url && tmux display-message $(cat /tmp/paste-url)"
 bind R source-file ~/.tmux.conf \; display-message "~/.tmux.conf reloaded"
 bind P move-window -r
+bind < swap-window -t :-1
+bind > swap-window -t :+1
 
 #### COLOUR (Solarized 256) {{{
 
