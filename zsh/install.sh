@@ -5,6 +5,7 @@ HERE="$(pwd)"
 set -o errexit
 set -o nounset
 
-if [ ! -e "$HOME/zshrc.local" ]; then
-    cp $HERE/zshrc.local $HOME/.zshrc.local
+dest="$HOME/.zshrc.local"
+if [ ! -e "$dest" ]; then
+    cp "$HERE/zshrc.local" "$dest"
 fi
