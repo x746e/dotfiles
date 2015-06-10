@@ -26,6 +26,10 @@
 * look for a scheme: http://zshthem.es/
 * fix shell linter for .zshrc
 
+* save output of each command
+** allow referencing outputs somehow, e.g. get_out -4 | grep XXX
+** ncurses interface that allows folding outputs, filtering, whatever
+
 === prompt
 * add start-time of the command
 * when there are suspended jobs, show it somehow in the prompt
