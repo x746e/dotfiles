@@ -259,6 +259,7 @@ let g:syntastic_python_checkers = ['pyflakes', 'flake8', 'pep8']
 let g:syntastic_stl_format = '[%E{Err: %fe #%e}%B{, }%W{Warn: %fw #%w}]'
 let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_check_on_open = 1
+let g:syntastic_c_include_dirs = ['../..']
 " augroup syntastic
 "     autocmd CursorHoldI,CompleteDone,CursorHold,InsertLeave * nested update
 " augroup END
