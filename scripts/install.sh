@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env zsh
 # Taken from: https://github.com/holman/dotfiles
 #
 # bootstrap installs things.
@@ -14,19 +14,25 @@ fi
 set -o errexit
 set -o nounset
 
-echo ''
 
 info () {
   printf "  [ \033[00;34m..\033[0m ] %s" "$1"
 }
 
+
 user () {
   printf "\r  [ \033[0;33m?\033[0m ] %s " "$1"
 }
 
+
 success () {
   printf "\r\033[2K  [ \033[00;32mOK\033[0m ] %s\n" "$1"
 }
+
+warn () {
+  printf "\r\033[2K  [\033[0;31mWARN\033[0m] %s\n" "$1"
+}
+
 
 fail () {
   printf "\r\033[2K  [\033[0;31mFAIL\033[0m] %s\n" "$1"
@@ -34,30 +40,37 @@ fail () {
   exit
 }
 
+# link_file link_target link_file
+#   Create a symboilic link ``link_file -> link_target``.
+#   Check if there is already link at `link_file` path then
+#     * if it points to the same `link_target`, ignore;
+#     * otherwise ask user what to do (skip, overwrite, backup and then
+#       overwrite).
 link_file () {
-  local src=$1 dst=$2
+  # "$filepath:A" normalizes/resolves path in zsh.
+  local link_target="$1:A" link_file="$2"
 
   local overwrite='' backup='' skip=''
   local action=''
 
-  if [ -f "$dst" -o -d "$dst" -o -L "$dst" ]
+  if [ -f "$link_file" -o -d "$link_file" -o -L "$link_file" ]
   then
 
     if [ "$overwrite_all" = "false" ] && [ "$backup_all" = "false" ] && [ "$skip_all" = "false" ]
     then
 
-      local currentSrc
-      currentSrc="$(readlink "$dst")"
+      local current_link_target
+      current_link_target="$link_file:A"
 
-      if [ "$currentSrc" = "$src" ]
+      if [ "$current_link_target" = "$link_target" ]
       then
 
         skip=true;
 
       else
 
-        user "File already exists: $(basename "$src"), what do you want to do? [s]kip, [S]kip all, [o]verwrite, [O]verwrite all, [b]ackup, [B]ackup all?"
-        read -n 1 action
+        user "File already exists: $(basename "$link_target"), what do you want to do? [s]kip, [S]kip all, [o]verwrite, [O]verwrite all, [b]ackup, [B]ackup all?"
+        read -k action
 
         case "$action" in
           o )
@@ -86,19 +99,19 @@ link_file () {
 
     if [ "$overwrite" = "true" ]
     then
-      rm -rf "$dst"
-      success "removed $dst"
+      rm -rf "$link_file"
+      success "removed $link_file"
     fi
 
     if [ "$backup" = "true" ]
     then
-      mv "$dst" "${dst}.backup"
-      success "moved $dst to ${dst}.backup"
+      mv "$link_file" "${link_file}.backup"
+      success "moved $link_file to ${link_file}.backup"
     fi
 
     if [ "$skip" = "true" ]
     then
-      success "skipped $src"
+      success "skipped $link_target"
     fi
   fi
 
@@ -109,27 +122,38 @@ link_file () {
   fi
 }
 
+
+# install_dotfiles
+#   For all files/directories with `.symlink` suffix in the name, link them into $HOME.
 install_dotfiles () {
   info 'installing dotfiles'
 
+  # Shell has dynamic scoping; these variables will be accessible in `link_file` function.
   local overwrite_all=false backup_all=false skip_all=false
 
-  for src in $(find "$DOTFILES_ROOT" -maxdepth 2 -name '*.symlink')
+  for link_target in $(find "$DOTFILES_ROOT" -maxdepth 2 -name '*.symlink')
   do
-    dst="$HOME/.$(basename "${src%.*}")"
-    link_file "$src" "$dst"
+    link_file="$HOME/.$(basename "${link_target%.*}")"
+    link_file "$link_target" "$link_file"
   done
 }
 
+
+# run_installers
+#   Run custom `install.sh` scripts.
 run_installers () {
   for installer in $(find "$DOTFILES_ROOT" -maxdepth 2 -name install.sh \! -path '*/scripts/install.sh')
   do
-    sh $verbose "${installer}"
+    info "running $installer"
+    sh $verbose "$installer"
+    success "$installer succeeded"
   done
 }
 
+
 install_dotfiles
 run_installers
+
 
 success 'All installed!'
 # vim: ts=2:sts=2:sw=2
