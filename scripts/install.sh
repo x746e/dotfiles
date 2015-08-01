@@ -40,14 +40,15 @@ fail () {
   exit
 }
 
-
 # link_file link_target link_file
 #   Create a symboilic link ``link_file -> link_target``.
 #   Check if there is already link at `link_file` path then
 #     * if it points to the same `link_target`, ignore;
-#     * otherwise ask user what to do (skip, overwrite, backup and then overwrite).
+#     * otherwise ask user what to do (skip, overwrite, backup and then
+#       overwrite).
 link_file () {
-  local link_target="$(readlink -f "$1")" link_file="$2"
+  # "$filepath:A" normalizes/resolves path in zsh.
+  local link_target="$1:A" link_file="$2"
 
   local overwrite='' backup='' skip=''
   local action=''
@@ -59,11 +60,7 @@ link_file () {
     then
 
       local current_link_target
-      # `readlink -f` may fail if the link is broken.
-      if ! current_link_target="$(readlink -f "$link_file")"; then
-        current_link_target="$(readlink "$link_file")"
-      fi
-
+      current_link_target="$link_file:A"
 
       if [ "$current_link_target" = "$link_target" ]
       then
