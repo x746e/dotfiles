@@ -30,9 +30,9 @@ alias lsd='ls -ldh *(-/DN)'
 alias lsa='ls -ldh .*'
 alias bkd='date +%FT%H%M'
 case `uname` in
-    "Linux"|CYGWIN*)
+    Linux|CYGWIN*|SunOS)
         alias ll='ls -lhF --color=auto'
-        alias l='ls -FG --color=auto'
+        alias l='ls -F --color=auto'
         alias sed='sed -r'
         ;;
     *)
