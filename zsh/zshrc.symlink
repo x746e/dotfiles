@@ -13,7 +13,14 @@ alias v='less'
 alias mv='nocorrect mv -i'
 alias cp='nocorrect cp -i'
 alias mkdir='nocorrect mkdir'
-alias rm='nocorrect rm -I'
+case `uname` in
+    SunOS)
+        alias rm='nocorrect rm -i'
+        ;;
+    *)
+        alias rm='nocorrect rm -I'
+        ;;
+esac
 alias j=jobs
 alias pu=pushd
 alias po=popd
