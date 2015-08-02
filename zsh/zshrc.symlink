@@ -51,12 +51,17 @@ esac
 alias mq='hg -R $(hg root)/.hg/patches'
 alias hdfs='hadoop dfs'
 alias nhive='/usr/local/bin/hive --namespace'
-alias ack=ack-grep
 case `uname` in
     Linux)
         alias gmake=make
         ;;
 esac
+# Debian specific aliases
+if [ which lsb_release >/dev/null 2>&1 ]; then
+    if [[ ${$(lsb_release -i)##*:} =~ Debian ]]; then
+        alias ack=ack-grep
+    fi
+fi
 
 # Global aliases -- These do not have to be at the beginning of the command
 # line.
