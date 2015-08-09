@@ -42,6 +42,10 @@ set modelines=5
 
 " Available TAGS files
 set tags=./TAGS,./tags,tags
+let more_tags = join(globpath('~/.vimtags', '*.tags', 0, 1), ',')
+if strlen(more_tags)
+    let &tags .= ','.more_tags
+endif
 
 " Don't add EOF at end of file
 set noendofline
@@ -53,6 +57,7 @@ set hidden
 set incsearch
 set ignorecase
 set smartcase
+set nohlsearch
 
 set showcmd
 set showmode
