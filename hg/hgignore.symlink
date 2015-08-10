@@ -16,3 +16,6 @@ syntax: glob
 *.so
 # vim swap files
 *.sw?
+
+# sphinx-doc build directory
+docs/_build
