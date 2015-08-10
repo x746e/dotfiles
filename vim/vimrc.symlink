@@ -212,7 +212,6 @@ noremap <silent> ]z :call search(g:todo_pattern)<CR>
 " TODO:
 "  * push :vim command to history (see :keepp)
 "  * use `:grep`?
-"  * disable syntastic while grepping.
 fun! VimGrepInSource(term)
     let ext = expand('%:e')
     if ext == 'py'
@@ -222,7 +221,11 @@ fun! VimGrepInSource(term)
     else
         let search_glob = "**/*.".ext
     endif
+
+    let saved_syntastic_check_on_open = g:syntastic_check_on_open
+    let g:syntastic_check_on_open = 0
     execute "vimgrep /\\<" . a:term . "\\>\\C/ " . search_glob . " | clist"
+    let g:syntastic_check_on_open = saved_syntastic_check_on_open
 endfun
 nmap <Leader>* :call VimGrepInSource(expand("<cword>"))<CR>
 
