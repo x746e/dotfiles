@@ -20,6 +20,7 @@ call vundle#end()
 
 " fb stuff
 if filereadable($ADMIN_SCRIPTS . '/master.vimrc')
+    let g:fb_kill_whitespace = 0
     source $ADMIN_SCRIPTS/master.vimrc
 endif
 
@@ -302,3 +303,14 @@ digraphs ^n 8319 " ⁿ
 " }}}
 
 vmap <Leader>h :<C-U>!hg blame -fu <C-R>=expand("%:p") <CR> \| sed -n <C-R>=line("'<") <CR>,<C-R>=line("'>") <CR>p <CR>
+
+fun! SelectionToTmuxBuffer()
+    " Save register " to file
+    redir! > /tmp/vim-tmux-buffer
+    silent echo @"
+    redir END
+    " Load file to tmux buffer
+    silent ! tmux load-buffer /tmp/vim-tmux-buffer 2>&1 >/dev/null
+    redraw!
+endfun
+vmap <Leader>B y:call SelectionToTmuxBuffer()<CR>
