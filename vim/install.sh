@@ -10,12 +10,17 @@ if ! which vim > /dev/null; then
   exit
 fi
 
+
+mkdir "$HOME/.vimtags"
+
+
 BUNDLE_DIR="$HOME/.vim/bundle"
 if [ ! -d "$BUNDLE_DIR/Vundle.vim" ]; then
     mkdir "$BUNDLE_DIR"
     git clone https://github.com/gmarik/Vundle.vim.git "$BUNDLE_DIR/Vundle.vim"
 fi
-vim +PluginInstall +qall 2>&1 >/dev/null
+vim +PluginInstall +qall >/dev/null 2>&1
+
 
 # fb stuff
 if [ -e "/mnt/vol/engshare/admin/scripts/vim" ]; then

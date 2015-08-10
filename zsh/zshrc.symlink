@@ -10,12 +10,26 @@ alias v='less'
 alias mv='nocorrect mv -i'
 alias cp='nocorrect cp -i'
 alias mkdir='nocorrect mkdir'
-alias rm='nocorrect rm -I'
+case `uname` in
+    SunOS)
+        alias rm='nocorrect rm -i'
+        ;;
+    *)
+        alias rm='nocorrect rm -I'
+        ;;
+esac
 alias j=jobs
 alias pu=pushd
 alias po=popd
 alias d='dirs -v'
-alias grep=egrep --colour
+case `uname` in
+    SunOS)
+        alias grep=egrep
+        ;;
+    *)
+        alias grep='egrep --colour'
+        ;;
+esac
 alias vlm='less /var/log/messages'
 alias bc='bc -l'
 alias tt='tail -F'
@@ -27,9 +41,9 @@ alias lsd='ls -ldh *(-/DN)'
 alias lsa='ls -ldh .*'
 alias bkd='date +%FT%H%M'
 case `uname` in
-    "Linux"|CYGWIN*)
+    Linux|CYGWIN*|SunOS)
         alias ll='ls -lhF --color=auto'
-        alias l='ls -FG --color=auto'
+        alias l='ls -F --color=auto'
         alias sed='sed -r'
         ;;
     *)
@@ -41,6 +55,17 @@ esac
 alias mq='hg -R $(hg root)/.hg/patches'
 alias hdfs='hadoop dfs'
 alias nhive='/usr/local/bin/hive --namespace'
+case `uname` in
+    Linux)
+        alias gmake=make
+        ;;
+esac
+# Debian specific aliases
+if [ which lsb_release >/dev/null 2>&1 ]; then
+    if [[ ${$(lsb_release -i)##*:} =~ Debian ]]; then
+        alias ack=ack-grep
+    fi
+fi
 
 # Global aliases -- These do not have to be at the beginning of the command
 # line.
@@ -49,9 +74,9 @@ alias -g L2=' 2>&1 |less'
 alias -g Lj='| python -mjson.tool | less'
 alias -g H='|head'
 alias -g T='|tail'
-alias -g G='|egrep --colour'
-alias -g Gv='|egrep -v --colour'
-alias -g Gi='|egrep -i --colour'
+alias -g G='|grep'
+alias -g Gv='|grep -v'
+alias -g Gi='|grep -i'
 alias -g W='|wc -lwm'
 alias -g Wl='|wc -l'
 alias -g Bg=' >/dev/null 2>&1 &!'
@@ -347,14 +372,14 @@ pG () {
     if [ -z "$1" ]; then
         ps auxww | less
     else
-        ps auxww | fgrep -v grep | egrep --colour "($1|^USER.*)"
+        ps auxww | fgrep -v grep | grep "($1|^USER.*)"
     fi
 }
 pGi () {
     if [ -z "$1" ]; then
         ps auxww | less
     else
-        ps auxww | fgrep -v grep | egrep --ignore-case --colour "($1|^USER.*)"
+        ps auxww | fgrep -v grep | grep -i "($1|^USER.*)"
     fi
 }
 pGp () {

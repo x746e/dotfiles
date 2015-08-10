@@ -43,6 +43,10 @@ set modelines=5
 
 " Available TAGS files
 set tags=./TAGS,./tags,tags
+let more_tags = join(globpath('~/.vimtags', '*.tags', 0, 1), ',')
+if strlen(more_tags)
+    let &tags .= ','.more_tags
+endif
 
 " Don't add EOF at end of file
 set noendofline
@@ -54,6 +58,7 @@ set hidden
 set incsearch
 set ignorecase
 set smartcase
+set nohlsearch
 
 set showcmd
 set showmode
@@ -137,13 +142,6 @@ endif
 " Mappings {{{
 let mapleader = ","
 nmap <S-F7> :!python %<CR>
-" TODO:
-"  * make file pattern according to filtype:
-"    * **/*.(py\|html\|txt\|rst) for python
-"    * **/*.(c\|h\|cpp\|txt) for c/cpp
-"  * push :vim command to history
-"nmap <LocalLeader>* :execute "vimgrep /" . expand("<cword>") . "/j **/*.py" <Bar> clist<CR>
-nmap <LocalLeader>* :execute "vimgrep /\\<" . expand("<cword>") . "\\>\\C/ **/*.py" <Bar> clist
 
 set pastetoggle=<F12>
 
@@ -211,6 +209,23 @@ endfun
 noremap <silent> [z :call search(g:todo_pattern, 'b')<CR>
 noremap <silent> ]z :call search(g:todo_pattern)<CR>
 
+" TODO:
+"  * push :vim command to history (see :keepp)
+"  * use `:grep`?
+"  * disable syntastic while grepping.
+fun! VimGrepInSource(term)
+    let ext = expand('%:e')
+    if ext == 'py'
+        let search_glob = "**/*.py **/*.rst"
+    elseif ext == 'c' || ext == 'h' || ext == 'cpp'
+        let search_glob = "**/*.c **/*.h **/*.cpp"
+    else
+        let search_glob = "**/*.".ext
+    endif
+    execute "vimgrep /\\<" . a:term . "\\>\\C/ " . search_glob . " | clist"
+endfun
+nmap <Leader>* :call VimGrepInSource(expand("<cword>"))<CR>
+
 "" EndFunctions }}}
 
 " Python {{{
@@ -260,6 +275,7 @@ let g:syntastic_python_checkers = ['pyflakes', 'flake8', 'pep8']
 let g:syntastic_stl_format = '[%E{Err: %fe #%e}%B{, }%W{Warn: %fw #%w}]'
 let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_check_on_open = 1
+let g:syntastic_c_include_dirs = ['../..']
 " augroup syntastic
 "     autocmd CursorHoldI,CompleteDone,CursorHold,InsertLeave * nested update
 " augroup END
