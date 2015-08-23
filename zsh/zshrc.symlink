@@ -1,8 +1,5 @@
 . ~/.zshrc.local
 
-# Search path for the cd command.
-cdpath=(.. ~)
-
 umask 022
 
 #** Aliases **# {{{
