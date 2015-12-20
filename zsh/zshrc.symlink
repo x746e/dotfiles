@@ -2,6 +2,9 @@
 
 umask 022
 
+# Disable tty flow control (C-S / C-Q).
+stty -ixon
+
 #** Aliases **# {{{
 alias v='less'
 alias mv='nocorrect mv -i'
