@@ -7,7 +7,7 @@ call vundle#begin()
 
 Plugin 'gmarik/Vundle.vim'
 Plugin 'scrooloose/nerdtree'
-Plugin 'davidhalter/jedi-vim'
+" Plugin 'davidhalter/jedi-vim'
 Plugin 'tpope/vim-dispatch'
 Plugin 'nvie/vim-flake8'
 Plugin 'derekwyatt/vim-scala'
@@ -298,28 +298,15 @@ runtime! ftplugin/man.vim
 
 " jedi
 " let $PYTHONPATH .= ":/home/tn/hz/jedi/venv/lib/python2.7/site-packages"
-let g:jedi#use_tabs_not_buffers = 0
-let g:jedi#auto_vim_configuration = 0
-let g:jedi#popup_on_dot = 0
-let g:jedi#popup_select_first = 0
-let g:jedi#show_call_signatures = 0
+" let g:jedi#use_tabs_not_buffers = 0
+" let g:jedi#auto_vim_configuration = 0
+" let g:jedi#popup_on_dot = 0
+" let g:jedi#popup_select_first = 0
+" let g:jedi#show_call_signatures = 0
 
 " digraphs
 " https://en.wikipedia.org/wiki/Unicode_subscripts_and_superscripts#Other_superscript_and_subscript_characters
 digraphs ^n 8319 " ⁿ
-
-" rope {{{
-"source /home/tn/mfiles/vimrope/rope.vim
-"let $PYTHONPATH .= ":/home/tn/mfiles/vimpy/rope:/home/tn/mfiles/vimpy/ropemode:/home/tn/mfiles/vimpy/ropevim"
-"source /home/tn/mfiles/vimpy/ropevim/ropevim.vim
-"let ropevim_enable_shortcuts = 1
-"let ropevim_vim_completion = 1
-"let ropevim_extended_complete = 1
-"let g:ropevim_autoimport_modules = ["os.*", "traceback", "django.*", "xml.etree", "networkx.*"]
-"imap <C-space> <C-R>=RopeCodeAssistInsertMode()<CR>
-"imap <F2> <C-R>=RopeCodeAssistInsertMode()<CR>
-"<C-R>=RopeCodeAssistInsertMode()<CR>
-" }}}
 
 vmap <Leader>h :<C-U>!hg blame -fu <C-R>=expand("%:p") <CR> \| sed -n <C-R>=line("'<") <CR>,<C-R>=line("'>") <CR>p <CR>
 
