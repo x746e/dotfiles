@@ -1,0 +1,5 @@
+#!/bin/sh
+branches=$(git for-each-ref --format='%(refname)' refs/heads | tr '\n' ' ')
+merge_base_parents=$(git rev-list --parents -n 1 $(git merge-base --all $branches) | cut -d ' ' -f 2-)
+format='%C(yellow)%h%Creset%C(red)%d%Creset %C(bold blue)<%aE>%Creset (%ar)%n  %s'
+git log --graph --abbrev-commit --decorate=short --pretty=format:"$format" $branches --not $merge_base_parents
