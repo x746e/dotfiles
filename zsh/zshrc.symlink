@@ -191,7 +191,44 @@ function async-prompt-precmd {
     RPROMPT=""
 
     function async_prompt() {
-        hg prompt --angle-brackets '%F{red}<branch> <%B[<bookmark>]%b >%f%F{yellow}%B<<tags> >%b%f%F{green}<status|modified|unknown><update>%f ' 2>/dev/null >| "$HOME/.zsh_tmp_prompt"
+        if [ -d .git ] || git rev-parse --git-dir 2>/dev/null 1>&2; then
+            dot_git="$(git rev-parse --git-dir)"
+            branch=$(git rev-parse --abbrev-ref HEAD)
+
+            if [ -d "$dot_git/rebase-merge" -o -d "$dot_git/rebase-apply" ]; then
+                is_rebase="yes"
+                branch=$(cat $dot_git/rebase-apply/head-name | sed -e 's#.*/##')
+                onto=$(git branch --points-at $(cat $dot_git/rebase-apply/onto) | grep -v '\(' | sed -e 's/ +//')
+            else
+                is_rebase="no"
+            fi
+
+            if [ -f "$dot_git_dir/MERGE_HEAD" ]; then
+                is_merge="yes"
+            else
+                is_merge="no"
+            fi
+
+            staged_status=$(git diff --staged --name-status | cut -c 1 | sort -u | tr -d '\n')
+            unstaged_status=$(git diff --name-status | cut -c 1 | sort -u | tr -d '\n')
+            untracked=$(git status --porcelain | grep '\?' | head -n 1 | cut -c 1)
+            repo_status="%F{green}$staged_status%f%F{red}$unstaged_status$untracked%f"
+            if [ "$is_merge" = "yes" ]; then
+                branch="%F{red}%B$branch%b|merge%f"
+            elif [ "$is_rebase" = "yes" ]; then
+                branch="%F{red}rebase|$branch→ $onto%f"
+            elif git branch | grep "preamend-" >/dev/null 2>&1; then
+                branch="%F{red}amend|$branch%f"
+            elif [ -z "$staged_status$unstaged_status$untracked" ]; then
+                branch="%F{green}%B$branch%b%f"
+            else
+                branch="%F{yellow}%B$branch%b%f"
+            fi
+
+            echo "$repo_status $branch" >| "$HOME/.zsh_tmp_prompt"
+        else
+            hg prompt --angle-brackets '%F{red}<branch> <%B[<bookmark>]%b >%f%F{yellow}%B<<tags> >%b%f%F{green}<status|modified|unknown><update>%f ' 2>/dev/null >| "$HOME/.zsh_tmp_prompt"
+        fi
         kill -s USR1 $$
     }
     async_prompt &!

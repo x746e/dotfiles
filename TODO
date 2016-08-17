@@ -39,7 +39,6 @@
 * display colored/signal-aware exit status in prompt
 
 === zsh version-control-status in prompt
-* add git status (similar to hg one)
 * for version control status information in the prompt -- update it when
   something changes in the repo.
 * make it version control agnostic
