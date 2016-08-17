@@ -320,3 +320,5 @@ fun! SelectionToTmuxBuffer()
     redraw!
 endfun
 vmap <Leader>B y:call SelectionToTmuxBuffer()<CR>
+
+source ~/.vimrc.local.after
