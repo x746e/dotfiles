@@ -358,7 +358,28 @@ zstyle ':completion:*:complete:(cd|pushd):*' tag-order \
 ud () {
     if [ ! -z "$1" ]
     then
-        python -c "import datetime; print datetime.datetime.fromtimestamp($1)"
+        python -c "
+from __future__ import print_function
+import time
+from datetime import datetime
+
+ts2dt = datetime.fromtimestamp
+dt2ts = lambda dt: time.mktime(dt.timetuple())
+
+def looks_like_time(num):
+    return 0 <= num <= dt2ts(datetime.max)
+
+ts = $1
+
+if looks_like_time(ts):
+    print(ts2dt(ts))
+elif looks_like_time(ts / 1000):  # milliseconds
+    print(ts2dt(ts / 1000.), '(milisecond-precision timestamp)')
+elif looks_like_time(ts / 1000000):  # microseconds
+    print(ts2dt(ts / 1000000.), '(microsecond-precision timestamp)')
+else:
+    print('Doesn''t look like timestamp')
+"
     fi
 }
 
