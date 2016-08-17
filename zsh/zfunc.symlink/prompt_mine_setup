@@ -37,8 +37,7 @@ function prompt_mine_precmd() {
   setopt noxtrace localoptions
   local base_prompt_expanded_no_color base_prompt_etc
   local prompt_length space_left
-  local venv_prompt hg_prompt
-
+  local venv_prompt
 
   if [ -n "$VIRTUAL_ENV" ]; then
     venv_prompt="($(basename \"$VIRTUAL_ENV\")) "

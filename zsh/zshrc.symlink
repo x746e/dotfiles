@@ -489,3 +489,5 @@ days-ago() {
 #    echo $file": "$type_group
 #}
 # }}}
+
+. ~/.zshrc.local.after

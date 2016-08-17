@@ -216,8 +216,8 @@ fun! VimGrepInSource(term)
     let ext = expand('%:e')
     if ext == 'py'
         let search_glob = "**/*.py **/*.rst"
-    elseif ext == 'c' || ext == 'h' || ext == 'cpp'
-        let search_glob = "**/*.c **/*.h **/*.cpp"
+    elseif ext == 'c' || ext == 'h' || ext == 'cpp' || ext == 'cxx' || ext == 'cc'
+        let search_glob = "**/*.c **/*.h **/*.cpp **/*.cxx **/*.cc"
     else
         let search_glob = "**/*.".ext
     endif

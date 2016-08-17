@@ -11,7 +11,7 @@ if ! which vim > /dev/null; then
 fi
 
 
-mkdir "$HOME/.vimtags"
+mkdir -p "$HOME/.vimtags"
 
 
 BUNDLE_DIR="$HOME/.vim/bundle"

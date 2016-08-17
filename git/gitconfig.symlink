@@ -1,10 +1,10 @@
 [user]
     name = Kirill Spitsyn
     #email = tn@0x746e.org.ua
-    email = kyrylo@fb.com
+    email = ksp@google.com
 
 [merge]
-    tool = vimdiff
+    tool = kdiff3
 
 [alias]
     cin = commit
