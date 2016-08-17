@@ -36,22 +36,20 @@
 === prompt
 * add start-time of the command
 * when there are suspended jobs, show it somehow in the prompt
-* display colored/signal-aware exit status in prompt; see the my_prompt
-  function in ~meyering/.zshrc
+* display colored/signal-aware exit status in prompt
 
 === zsh version-control-status in prompt
 * add git status (similar to hg one)
 * for version control status information in the prompt -- update it when
   something changes in the repo.
-* take a look at for display version-control-agnostic state in prompt:
-  /mnt/vol/engshare/admin/scripts/scm-prompt
+* make it version control agnostic
 * things to display:
 ** branch/bookmark name
 ** any files changed?
 ** any untracked files?
 ** is there some strange state, like in the middle of merge, rebase; any unmerged conflicts?
 ** is there stashed/shelved changes?
-** some phabricator specific info?
+** some review-related info?
 
 === editor
 * regex replace in zle?
