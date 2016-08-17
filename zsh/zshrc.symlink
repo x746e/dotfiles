@@ -142,8 +142,7 @@ typeset -U path cdpath fpath manpath
 # Hosts to use for completion (see later zstyle)
 local hosts
 #hosts=( ${${${${(f)"$(<$HOME/.ssh/known_hosts)"}:#[0-9]*}%%\ *}%%,*} )
-hosts=(0x746e.org.ua test-3.blikbook.com moodlebox jenkins)
-
+hosts=()
 
 
 #** Tmux window title **# {{{
