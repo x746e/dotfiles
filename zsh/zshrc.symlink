@@ -220,7 +220,6 @@ prompt mine black cyan cyan $HOST_PROMPT_COLOR
 # }}}
 
 # Some environment variables
-export SHELL='zsh'
 export EDITOR='vim'
 export MAIL=/var/mail/$USERNAME
 
