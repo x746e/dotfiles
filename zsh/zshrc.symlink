@@ -529,4 +529,7 @@ days-ago() {
 #}
 # }}}
 
-. ~/.zshrc.local.after
+zshrc_local_after="~/.zshrc.local.after"
+if [ -f "$zshrc_local_after" ]; then
+    . $zshrc_local_after
+fi
