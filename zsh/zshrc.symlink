@@ -392,6 +392,8 @@ zstyle ':completion:*:complete:(cd|pushd):*' tag-order \
 #** Misc Functions **# {{{
 
 ud () {
+    # Sometimes python's sitecustomize can do weird stuff in some specific directories.
+    pushd $HOME
     if [ ! -z "$1" ]
     then
         python -c "
@@ -417,6 +419,7 @@ else:
     print('Doesn''t look like timestamp')
 "
     fi
+    popd
 }
 
 # pG scripts

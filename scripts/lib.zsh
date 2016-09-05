@@ -1,4 +1,6 @@
-# vim: ft=zsh
+#!/usr/bin/env zsh
+
+
 info () {
   printf "  [ \033[00;34m..\033[0m ] %s" "$1"
 }
@@ -24,13 +26,20 @@ fail () {
   exit
 }
 
+
 # create_symlink link_target link_file
 #   Create a symboilic link ``link_file -> link_target``.
 #   Check if there is already link at `link_file` path then
 #     * if it points to the same `link_target`, ignore;
 #     * otherwise ask user what to do (skip, overwrite, backup and then
 #       overwrite).
+#   Takes `overwrite_all`, `backup_all` and `skip_all` variables
 create_symlink () {
+  # Those are global variables and are preserved between runs.
+  overwrite_all=${overwrite_all:-false}
+  backup_all=${backup_all:-false}
+  skip_all=${skip_all:-false}
+
   # "$filepath:A" normalizes/resolves path in zsh.
   local link_target="$1:A" link_file="$2"
 

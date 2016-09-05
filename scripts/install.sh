@@ -7,7 +7,7 @@ cd "$(dirname "$0")/.."
 DOTFILES_ROOT="$(pwd)"
 
 
-source "$DOTFILES_ROOT/scripts/lib.sh"
+source "$DOTFILES_ROOT/scripts/lib.zsh"
 
 
 verbose=""
@@ -23,9 +23,6 @@ set -o nounset
 #   For all files/directories with `.symlink` suffix in the name, link them into $HOME.
 install_dotfiles () {
   info 'installing dotfiles'
-
-  # Shell has dynamic scoping; these variables will be accessible in `create_symlink` function.
-  local overwrite_all=false backup_all=false skip_all=false
 
   for link_target in $(find "$DOTFILES_ROOT" -maxdepth 2 -name '*.symlink')
   do

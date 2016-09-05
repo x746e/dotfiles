@@ -40,7 +40,7 @@ function prompt_mine_precmd() {
   local venv_prompt
 
   if [ -n "$VIRTUAL_ENV" ]; then
-    venv_prompt="($(basename \"$VIRTUAL_ENV\")) "
+    venv_prompt="($(basename $VIRTUAL_ENV))"
   fi
 
   base_prompt_expanded_no_color=$(print -P "$base_prompt_no_color")
