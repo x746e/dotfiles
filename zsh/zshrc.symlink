@@ -191,7 +191,10 @@ function async-prompt-precmd {
 
     function async_prompt() {
         if [ -d .git ] || git rev-parse --git-dir 2>/dev/null 1>&2; then
-            dot_git="$(git rev-parse --git-dir)"
+            dot_git="$(readlink -f "$(git rev-parse --git-dir)")"
+            repo_root="$(dirname "$dot_git")"
+            pushd "$repo_root"
+
             branch=$(git rev-parse --abbrev-ref HEAD)
 
             if [ -d "$dot_git/rebase-merge" -o -d "$dot_git/rebase-apply" ]; then
@@ -225,6 +228,8 @@ function async-prompt-precmd {
             fi
 
             echo "$repo_status $branch" >| "$HOME/.zsh_tmp_prompt"
+
+            popd
         else
             hg prompt --angle-brackets '%F{red}<branch> <%B[<bookmark>]%b >%f%F{yellow}%B<<tags> >%b%f%F{green}<status|modified|unknown><update>%f ' 2>/dev/null >| "$HOME/.zsh_tmp_prompt"
         fi
