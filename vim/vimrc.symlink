@@ -321,7 +321,7 @@ fun! SelectionToTmuxBuffer()
 endfun
 vmap <Leader>B y:call SelectionToTmuxBuffer()<CR>
 
-let vimrc_local_after = "~/.vimrc.local.after"
+let vimrc_local_after = expand("~/.vimrc.local.after")
 if filereadable(vimrc_local_after)
-    source vimrc_local_after
+    silent! execute 'source '.vimrc_local_after
 endif
