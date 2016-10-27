@@ -12,7 +12,7 @@ git branch "$preamend_branch" "$current_branch"
 # Amend current branch.
 git commit --all --amend --no-edit
 
-# gRebase it's child branches.
+# Rebase its child branches.
 git amend-fixup
 
 # Checkout back to the current branch.

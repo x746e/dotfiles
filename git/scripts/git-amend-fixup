@@ -3,36 +3,6 @@
 from subprocess import check_call, check_output, CalledProcessError
 
 
-def get_branches():
-    return [line.decode('utf-8') for line in
-            check_output("git branch | sed -e 's/^[* ]*//'", shell=True).splitlines()]
-
-
-def is_descedant(branch, ancestor):
-    """Whether `ancestor` in an ancestor of `branch`."""
-    if branch == ancestor:
-        return False
-    descedants = [
-        line.decode('utf-8') for line in
-        check_output("git branch --contains '%s' | sed -e 's/^[* ]*//'" % ancestor, shell=True).splitlines()
-    ]
-    return branch in descedants
-
-
-def run(cmd):
-    print(">> executing: %s" % cmd)
-    check_call(cmd, shell=True)
-
-
-def rebase(onto, upstream, branch):
-    run("git branch 'preamend-{branch}' '{branch}'".format(branch=branch))
-    run("git rebase --onto '%s' '%s' '%s'" % (onto, upstream, branch))
-
-
-def drop_branch(branch):
-    run("git branch -D '%s'" % branch)
-
-
 def main():
     branches = get_branches()
     # Get all preamend branches
@@ -42,6 +12,15 @@ def main():
         amended_branch = preamend_branch[len('preamend-'):]
         rebase_children(amended_branch, preamend_branch)
         drop_branch(preamend_branch)
+
+
+def get_branches():
+    return [line.decode('utf-8') for line in
+            check_output("git branch | sed -e 's/^[* ]*//'", shell=True).splitlines()]
+
+
+def drop_branch(branch):
+    run("git branch -D '%s'" % branch)
 
 
 def rebase_children(amended_branch, preamend_branch):
@@ -73,6 +52,27 @@ def rebase_children(amended_branch, preamend_branch):
                                        if is_descedant(branch, preamend_child)]
         assert not preamend_child_has_children
         drop_branch(preamend_child)
+
+
+def is_descedant(branch, ancestor):
+    """Whether `ancestor` in an ancestor of `branch`."""
+    if branch == ancestor:
+        return False
+    descedants = [
+        line.decode('utf-8') for line in
+        check_output("git branch --contains '%s' | sed -e 's/^[* ]*//'" % ancestor, shell=True).splitlines()
+    ]
+    return branch in descedants
+
+
+def run(cmd):
+    print(">> executing: %s" % cmd)
+    check_call(cmd, shell=True)
+
+
+def rebase(onto, upstream, branch):
+    run("git branch 'preamend-{branch}' '{branch}'".format(branch=branch))
+    run("git rebase --onto '%s' '%s' '%s'" % (onto, upstream, branch))
 
 
 if __name__ == '__main__':
