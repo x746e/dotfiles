@@ -61,10 +61,13 @@ case `uname` in
         ;;
 esac
 # Debian specific aliases
-if [ which lsb_release >/dev/null 2>&1 ]; then
-    if [[ ${$(lsb_release -i)##*:} =~ Debian ]]; then
-        alias ack=ack-grep
-    fi
+if which lsb_release >/dev/null 2>&1; then
+    _distributor_id=${"$(lsb_release -i)"##*:	}
+    case "$_distributor_id" in
+        Debian|Ubuntu)
+            alias ack=ack-grep
+            ;;
+    esac
 fi
 
 # Global aliases -- These do not have to be at the beginning of the command
