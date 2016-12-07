@@ -14,13 +14,37 @@ def main():
         drop_branch(preamend_branch)
 
 
+def abort():
+    """
+    Abort unsuccessful amend.
+    """
+    checkout_branch('master')
+    preamend_branches = [branch for branch in get_branches() if branch.startswith('preamend-')]
+
+    # For each preamend-(.*) branch:
+    for preamend_branch in preamend_branches:
+        amended_branch = preamend_branch[len('preamend-'):]
+        # delete corresponding \1 branch
+        drop_branch(amended_branch)
+        # remove preamend- prefix
+        rename_branch(preamend_branch, amended_branch)
+
+
 def get_branches():
     return [line.decode('utf-8') for line in
             check_output("git branch | sed -e 's/^[* ]*//'", shell=True).splitlines()]
 
 
+def checkout_branch(branch):
+    run("git co '%s'" % branch)
+
+
 def drop_branch(branch):
     run("git branch -D '%s'" % branch)
+
+
+def rename_branch(old_name, new_name):
+    run("git branch -m '{old}' '{new}'".format(old=old_name, new=new_name))
 
 
 def rebase_children(amended_branch, preamend_branch):
