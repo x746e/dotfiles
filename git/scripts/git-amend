@@ -4,6 +4,10 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
+repo_root="$(git rev-parse --show-toplevel)"
+current_dir="$PWD"
+cd "$repo_root"
+
 # Mark the currently edited branch before amending.
 current_branch="$(git rev-parse --abbrev-ref HEAD)"
 preamend_branch="preamend-$current_branch"
@@ -17,3 +21,7 @@ git amend-fixup
 
 # Checkout back to the current branch.
 git checkout "$current_branch"
+
+if [ -d "$current_dir" ]; then
+    cd "$current_dir"
+fi

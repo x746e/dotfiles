@@ -1,33 +1,9 @@
 #!/usr/bin/env python3
 # vim: ts=4:sts=4:sw=4
+import functools
+import os
+from contextlib import contextmanager
 from subprocess import check_call, check_output, CalledProcessError
-
-
-def main():
-    branches = get_branches()
-    # Get all preamend branches
-    preamend_branches = [branch for branch in branches if branch.startswith('preamend-')]
-
-    for preamend_branch in preamend_branches:
-        amended_branch = preamend_branch[len('preamend-'):]
-        rebase_children(amended_branch, preamend_branch)
-        drop_branch(preamend_branch)
-
-
-def abort():
-    """
-    Abort unsuccessful amend.
-    """
-    checkout_branch('master')
-    preamend_branches = [branch for branch in get_branches() if branch.startswith('preamend-')]
-
-    # For each preamend-(.*) branch:
-    for preamend_branch in preamend_branches:
-        amended_branch = preamend_branch[len('preamend-'):]
-        # delete corresponding \1 branch
-        drop_branch(amended_branch)
-        # remove preamend- prefix
-        rename_branch(preamend_branch, amended_branch)
 
 
 def get_branches():
@@ -89,6 +65,27 @@ def is_descedant(branch, ancestor):
     return branch in descedants
 
 
+def get_repo_root():
+    return check_output("git rev-parse --show-toplevel", shell=True).strip()
+
+
+@contextmanager
+def cd(new_dir):
+    old_dir = os.getcwd()
+    os.chdir(new_dir)
+    yield
+    if os.path.exists(old_dir):
+        os.chdir(old_dir)
+
+
+def cd_to_repo_root(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+      with cd(get_repo_root()):
+          return func(*args, **kwargs)
+    return wrapper
+
+
 def run(cmd):
     print(">> executing: %s" % cmd)
     check_call(cmd, shell=True)
@@ -97,3 +94,32 @@ def run(cmd):
 def rebase(onto, upstream, branch):
     run("git branch 'preamend-{branch}' '{branch}'".format(branch=branch))
     run("git rebase --onto '%s' '%s' '%s'" % (onto, upstream, branch))
+
+
+@cd_to_repo_root
+def main():
+    branches = get_branches()
+    # Get all preamend branches
+    preamend_branches = [branch for branch in branches if branch.startswith('preamend-')]
+
+    for preamend_branch in preamend_branches:
+        amended_branch = preamend_branch[len('preamend-'):]
+        rebase_children(amended_branch, preamend_branch)
+        drop_branch(preamend_branch)
+
+
+@cd_to_repo_root
+def abort():
+    """
+    Abort unsuccessful amend.
+    """
+    checkout_branch('master')
+    preamend_branches = [branch for branch in get_branches() if branch.startswith('preamend-')]
+
+    # For each preamend-(.*) branch:
+    for preamend_branch in preamend_branches:
+        amended_branch = preamend_branch[len('preamend-'):]
+        # delete corresponding \1 branch
+        drop_branch(amended_branch)
+        # remove preamend- prefix
+        rename_branch(preamend_branch, amended_branch)
