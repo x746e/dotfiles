@@ -69,4 +69,5 @@ set-option -g display-panes-colour colour166 #orange
 
 # clock
 set-window-option -g clock-mode-colour colour64 #green
+set -g status-right '#[fg=blue]%a %Y-%m-%d %H:%M:%S#[default]'
 # }}}
