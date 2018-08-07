@@ -53,6 +53,30 @@ def rebase_children(amended_branch, preamend_branch):
         assert not preamend_child_has_children
         drop_branch(preamend_child)
 
+# TODO:
+# rebase tree:
+#   *       d
+#   |
+#   *       c
+#   | *     e
+# * |/      b
+# | *       a
+# |/
+# *
+#
+# Rebase subtree with root at `a` (a,c,d,e) onto new root `b`:
+#
+# *      d'
+# |
+# *      c'
+# | *    e'
+# |/
+# *      a'
+# |
+# *      b
+# |
+# *
+
 
 def is_descedant(branch, ancestor):
     """Whether `ancestor` in an ancestor of `branch`."""
