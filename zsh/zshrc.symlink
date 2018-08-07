@@ -65,7 +65,6 @@ if which lsb_release >/dev/null 2>&1; then
     _distributor_id=${"$(lsb_release -i)"##*:	}
     case "$_distributor_id" in
         Debian|Ubuntu)
-            alias ack=ack-grep
             ;;
     esac
 fi
@@ -202,8 +201,10 @@ function async-prompt-precmd {
 
             if [ -d "$dot_git/rebase-merge" -o -d "$dot_git/rebase-apply" ]; then
                 is_rebase="yes"
-                branch=$(cat $dot_git/rebase-apply/head-name | sed -e 's#.*/##')
-                onto=$(git branch --points-at $(cat $dot_git/rebase-apply/onto) | grep -v '\(' | sed -e 's/ +//')
+                if [ -f "$dot_git/rebase-apply/head-name" ]; then
+                    branch=$(cat "$dot_git/rebase-apply/head-name" | sed -e 's#.*/##')
+                    onto=$(git branch --points-at $(cat $dot_git/rebase-apply/onto) | grep -v '\(' | sed -e 's/ +//')
+                fi
             else
                 is_rebase="no"
             fi
