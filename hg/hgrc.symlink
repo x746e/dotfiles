@@ -1,11 +1,13 @@
 [alias]
+co = update --check
+di = diff
 qs = qseries -v --summary
 ds = diff --stat
 qds = diff -r qparent: --stat
 glog = log -G
-ll = log -G -f
-dd = diff -c .
-dds = dd --stat
+# ll = log -G -f
+dd = log -r . -v -p
+dds = diff -c . --stat
 lb = log -r 'branch(branch(.))' -G
 #hh = log -r 'head() and not closed() and (user(kirill) or user(tn))'
 hh = heads .
@@ -19,13 +21,13 @@ out = outgoing -G
 cia = commit --amend
 
 [trusted]
-users = tn, kyrylo
+users = tn, kyrylo, ksp
 
 [diff]
 git = 1
 
 [extensions]
-hgext.graphlog = 
+hgext.graphlog =
 hgext.record =
 hgext.extdiff =
 hgext.patchbomb =
@@ -44,18 +46,23 @@ pager =
 #git =
 #hgsubversion =
 histedit =
-prompt = ~/.hg.d/ext/hg-prompt/prompt.py
+# prompt = ~/.hg.d/ext/hg-prompt/prompt.py
 hgext.convert =
 shelve =
+journal =
+purge =
 
 [ui]
 ignore = ~/.hgignore
 style = ~/.hg.d/templates/map-cmdline.compact
-#merge = return 1
-username = Kyrylo Spitsyn <kyrylo@fb.com>
+merge = vimdiff
+# merge = kdiff3
+username = Kirill Spitsyn <tn@0x746e.org.ua>
+interface = text
 
 [merge-tools]
 kdiff3.args = $base $local $other -o $output
+vimdiff.premerge = keep
 
 #[phases]
 #publish = False
@@ -74,7 +81,7 @@ pygments_style = emacs
 
 [pager]
 pager = LESS='FXr' less
-attend = annotate, cat, diff, export, glog, log, qdiff, heads, heap, incoming, out, help, ll, dd, ds, dds, branches, lb, qs
+attend = annotate, cat, diff, di, export, glog, log, qdiff, heads, heap, incoming, out, help, ll, dd, ds, dds, branches, lb, qs, ll, xl, x
 
 [color]
 mode = terminfo
@@ -82,15 +89,7 @@ mode = terminfo
 [bookmarks]
 track.current = True
 
-#[email]
-#method = smtp
-#from = kirill@emediate.se
-#cc =
-#
-#[smtp]
-#host = mail.emediate.se
-#port = 10025
-#username = kirill
-#password = pH9qedes
+[trainingwheels]
+prevent-revert--all = False
 
 # vim: filetype=cfg
