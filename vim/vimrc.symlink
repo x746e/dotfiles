@@ -5,7 +5,7 @@
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
 
-Plugin 'gmarik/Vundle.vim'
+Plugin 'VundleVim/Vundle.vim'
 Plugin 'scrooloose/nerdtree'
 " Plugin 'davidhalter/jedi-vim'
 Plugin 'tpope/vim-dispatch'
@@ -257,6 +257,7 @@ let g:tagbar_autoclose = 1
 let g:tagbar_autofocus = 1
 let g:tagbar_width = 60
 let g:tagbar_compact = 1
+let g:tagbar_ctags_bin = 'ctags'
 let g:tagbar_foldlevel = 0
 nnoremap <silent> <Leader>t :TagbarToggle<CR>
 
