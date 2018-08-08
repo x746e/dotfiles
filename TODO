@@ -23,6 +23,14 @@
 
 * change tmux window title.
 
+=== IDE-like features
+* responsive linter
+* show-usages for symbol under cursor, using clangd or something that
+  understands the semantic
+* show-usages for symbol under cursor, using tags
+* go-to-definition, using clangd and/or tags, maybe something like kythe.io
+* autocompletion
+* Refactoring.  Variable/member/function/class rename; factor out a method.
 
 == zsh
 * try oh-my-zsh
