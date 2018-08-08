@@ -92,4 +92,6 @@ track.current = True
 [trainingwheels]
 prevent-revert--all = False
 
+%include ~/dotfiles-ext/hgrc
+
 # vim: filetype=cfg

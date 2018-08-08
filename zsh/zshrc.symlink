@@ -538,7 +538,8 @@ days-ago() {
 #}
 # }}}
 
-zshrc_local_after="~/.zshrc.local.after"
-if [ -f "$zshrc_local_after" ]; then
-    . $zshrc_local_after
+# dotfiles.ext -- employer-specific zsh settings.
+dotfiles_ext_zshrc="$HOME/dotfiles-ext/zshrc"
+if [ -f "$dotfiles_ext_zshrc" ]; then
+    source "$dotfiles_ext_zshrc"
 fi
