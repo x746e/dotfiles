@@ -18,10 +18,9 @@ Plugin 'mustache/vim-mustache-handlebars'
 
 call vundle#end()
 
-" fb stuff
-if filereadable($ADMIN_SCRIPTS . '/master.vimrc')
-    let g:fb_kill_whitespace = 0
-    source $ADMIN_SCRIPTS/master.vimrc
+let dotfiles_ext_vimrc = expand("~/dotfiles-ext/vimrc")
+if filereadable(dotfiles_ext_vimrc)
+    silent! execute 'source '.dotfiles_ext_vimrc
 endif
 
 " Settings {{{
@@ -323,7 +322,3 @@ endfun
 vmap <Leader>B y:call SelectionToTmuxBuffer()<CR>
 
 
-let dotfiles_ext_vimrc = expand("~/dotfiles-ext/vimrc")
-if filereadable(dotfiles_ext_vimrc)
-    silent! execute 'source '.dotfiles_ext_vimrc
-endif
