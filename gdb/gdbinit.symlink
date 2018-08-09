@@ -1,0 +1,13 @@
+# vim: ft=gdb
+set history save
+set history filename ~/.gdb_history
+set history size 50000
+set print elements 2048
+
+directory ~/dotfiles/gdb
+source python.gdb
+source colorful_backtrace.py
+
+define pp
+  printf "%s\n", ($arg0).c_str()
+end
