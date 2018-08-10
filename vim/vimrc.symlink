@@ -32,11 +32,6 @@ filetype on
 filetype plugin on
 filetype indent on
 
-"set keymap=russian-jcukenwin
-"set iminsert=0
-"set langmap=йq,цw,уe,кr,еt,нy,гu,шi,щo,зp,х[,ъ],фa,ыs,вd,аf,пg,рh,оj,лk,дl,ж\\;,э',яz,чx,сc,мv,иb,тn,ьm,б\\,,ю.,ЙQ,ЦW,УE,КR,ЕT,НY,ГU,ШI,ЩO,ЗP,Х{,Ъ},ФA,ЫS,ВD,АF,ПG,РH,ОJ,ЛK,ДL,Ж:,Э\\",ЯZ,ЧX,СC,МV,ИB,ТN,ЬM,Б<,Ю>,Ё~,№#
-" \\,?,  \\"@, \\;$, :^, ?&, ./
-
 " Automatically setting options in various files
 set modeline
 set modelines=5
@@ -229,6 +224,17 @@ fun! VimGrepInSource(term)
 endfun
 nmap <Leader>* :call VimGrepInSource(expand("<cword>"))<CR>
 
+
+fun! SelectionToTmuxBuffer()
+    " Save register " to file
+    redir! > /tmp/vim-tmux-buffer
+    silent echo @"
+    redir END
+    " Load file to tmux buffer
+    silent ! tmux load-buffer /tmp/vim-tmux-buffer 2>&1 >/dev/null
+    redraw!
+endfun
+vmap <Leader>B y:call SelectionToTmuxBuffer()<CR>
 "" EndFunctions }}}
 
 " Python {{{
@@ -251,7 +257,7 @@ if match(getcwd(), "/pgsql") >=0 || match(getcwd(), "/postgres") >= 0
 endif
 " }}}
 
-
+" Plugin settings {{{
 " tagbar
 let g:tagbar_autoclose = 1
 let g:tagbar_autofocus = 1
@@ -284,6 +290,7 @@ let g:syntastic_c_include_dirs = ['../..']
 "     autocmd CursorHoldI,CompleteDone,CursorHold,InsertLeave * nested update
 " augroup END
 set updatetime=700
+" }}} Plugin settings
 
 " Convenient command to see the difference between the current buffer and the
 " file it was loaded from, thus the changes you made.
@@ -294,32 +301,8 @@ if !exists(":DiffOrig")
        \ | wincmd p | diffthis
 endif
 
-" XXX: wtf?
-runtime! ftplugin/man.vim
-
-" jedi
-" let $PYTHONPATH .= ":/home/tn/hz/jedi/venv/lib/python2.7/site-packages"
-" let g:jedi#use_tabs_not_buffers = 0
-" let g:jedi#auto_vim_configuration = 0
-" let g:jedi#popup_on_dot = 0
-" let g:jedi#popup_select_first = 0
-" let g:jedi#show_call_signatures = 0
-
 " digraphs
 " https://en.wikipedia.org/wiki/Unicode_subscripts_and_superscripts#Other_superscript_and_subscript_characters
 digraphs ^n 8319 " ⁿ
 
 vmap <Leader>h :<C-U>!hg blame -fu <C-R>=expand("%:p") <CR> \| sed -n <C-R>=line("'<") <CR>,<C-R>=line("'>") <CR>p <CR>
-
-fun! SelectionToTmuxBuffer()
-    " Save register " to file
-    redir! > /tmp/vim-tmux-buffer
-    silent echo @"
-    redir END
-    " Load file to tmux buffer
-    silent ! tmux load-buffer /tmp/vim-tmux-buffer 2>&1 >/dev/null
-    redraw!
-endfun
-vmap <Leader>B y:call SelectionToTmuxBuffer()<CR>
-
-
