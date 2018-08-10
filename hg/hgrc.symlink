@@ -19,6 +19,7 @@ bb = log -r 'bookmark()' --template '\033[1;31m[{bookmarks}]\033[0m \033[33m{nod
 inc = incoming -G
 out = outgoing -G
 cia = commit --amend
+xrebase = !$HG rebase --config ui.merge=kdiff3 "$@"
 
 [trusted]
 users = tn, kyrylo, ksp
