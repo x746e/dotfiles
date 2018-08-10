@@ -78,16 +78,16 @@ set tabstop=8
 " however, makes VIM see multiple space characters as tabstops, and so <BS>
 " does the right thing and will delete four spaces (assuming 4 is your
 " setting).
-set softtabstop=4 
+set softtabstop=4
 " This allows you to use the < and > keys from VIM's visual (marking) mode
 " to block indent/unindent regions
-set shiftwidth=4 
+set shiftwidth=4
 " Use spaces instead of tabs
 set expandtab
 " Round indent to multiple of 'shiftwidth'.
 set shiftround
 
-set foldmethod=marker 
+set foldmethod=marker
 set listchars=eol:$,tab:>-
 set backspace=indent,eol,start
 
