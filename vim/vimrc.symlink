@@ -7,11 +7,10 @@ call vundle#begin()
 
 Plugin 'VundleVim/Vundle.vim'
 Plugin 'scrooloose/nerdtree'
-" Plugin 'davidhalter/jedi-vim'
 Plugin 'tpope/vim-dispatch'
 Plugin 'nvie/vim-flake8'
 Plugin 'derekwyatt/vim-scala'
-Plugin 'scrooloose/syntastic'
+Plugin 'vim-syntastic/syntastic'
 Plugin 'tpope/vim-unimpaired'
 Plugin 'tomtom/tcomment_vim'
 Plugin 'mustache/vim-mustache-handlebars'
