@@ -6,6 +6,12 @@
   BTW, the script is already not very portable, as it uses zsh specific read -k
   (which is the same as bash's read -n 1).
 * highlight broken links in ls
+* Add a script, executed by cron, that checks that dotfiles repos are up to
+  date:
+  - ~/dotfiles and ~/dotfiles-ext doesn't have any uncommitted changes
+  - For both repos there's nothing to push or pull
+  The script should be installed somewhere to /etc/cron.d(?) by the main
+  installer script.
 
 == vim
 * Syntax highlighting of SQL inside python files.  See how it was done for
