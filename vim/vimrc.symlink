@@ -235,19 +235,8 @@ fun! SelectionToTmuxBuffer()
     redraw!
 endfun
 vmap <Leader>B y:call SelectionToTmuxBuffer()<CR>
+
 "" EndFunctions }}}
-
-" Python {{{
-"autocmd FileType python set omnifunc=pythoncomplete#Complete
-"autocmd FileType python compiler pylint
-let g:pylint_onwrite = 0
-
-set tags+=$HOME/.vim/tags/python.ctags
-
-let g:no_pep8_maps = 1
-command! Pep8 call Pep8()
-
-" }}}
 
 " for postgresql {{{
 if match(getcwd(), "/pgsql") >=0 || match(getcwd(), "/postgres") >= 0
