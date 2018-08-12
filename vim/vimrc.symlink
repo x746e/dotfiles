@@ -257,8 +257,9 @@ let g:tagbar_foldlevel = 0
 nnoremap <silent> <Leader>t :TagbarToggle<CR>
 
 " buffexplorer
-let g:bufExplorerShowRelativePath=1
-let g:bufExplorerSplitOutPathName=0
+let g:bufExplorerShowRelativePath = 1
+let g:bufExplorerSplitOutPathName = 0
+let g:bufExplorerDisableDefaultKeyMapping = 1
 nnoremap <silent> <Leader>l :BufExplorer<CR>
 
 " Flake8
