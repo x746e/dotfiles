@@ -257,7 +257,7 @@ if match(getcwd(), "/pgsql") >=0 || match(getcwd(), "/postgres") >= 0
 endif
 " }}}
 
-" Plugin settings {{{
+" Plugin settings (& mappings) {{{
 " tagbar
 let g:tagbar_autoclose = 1
 let g:tagbar_autofocus = 1
@@ -290,7 +290,14 @@ let g:syntastic_c_include_dirs = ['../..']
 "     autocmd CursorHoldI,CompleteDone,CursorHold,InsertLeave * nested update
 " augroup END
 set updatetime=700
+
+" YCM
+let g:ycm_auto_trigger = 0
+noremap <silent> <Leader>gg :YcmCompleter GoTo<CR>
+noremap <silent> <Leader>gc :YcmCompleter GoToDefinition<CR>
+noremap <silent> <Leader>gh :YcmCompleter GoToDeclaration<CR>
 " }}} Plugin settings
+
 
 " Convenient command to see the difference between the current buffer and the
 " file it was loaded from, thus the changes you made.
