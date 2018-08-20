@@ -97,6 +97,7 @@ set display=lastline
 
 set background=dark
 colorscheme koehler
+hi Search term=reverse ctermfg=black ctermbg=yellow guifg=black guibg=yellow
 
 " Status line settings {{{
 ":set ruler
