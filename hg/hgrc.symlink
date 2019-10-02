@@ -12,8 +12,8 @@ lb = log -r 'branch(branch(.))' -G
 #hh = log -r 'head() and not closed() and (user(kirill) or user(tn))'
 hh = heads .
 # moving up/down thorugh the history
-gpo = up -r 'parents(.)'
-gpu = up -r 'children(.)'
+gpo = !$HG up -r 'parents(.)' && $HG l
+gpu = !$HG up -r 'children(.)' && $HG l
 postreview = postreview -g
 bb = log -r 'bookmark()' --template '\033[1;31m[{bookmarks}]\033[0m \033[33m{node|short}\033[0m {desc|firstline|strip}\n'
 inc = incoming -G
