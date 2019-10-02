@@ -2,7 +2,10 @@
 set history save
 set history filename ~/.gdb_history
 set history size 50000
+# Set limit on string chars or array elements to print.
 set print elements 2048
+# Set printing of thread events (such as thread start and exit).
+set print thread-events off
 
 directory ~/dotfiles/gdb
 source python.gdb
