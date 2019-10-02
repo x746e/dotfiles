@@ -29,6 +29,8 @@
 
 * change tmux window title.
 
+* auto-update plugins
+
 === IDE-like features
 * responsive linter
 * show-usages for symbol under cursor, using clangd or something that
