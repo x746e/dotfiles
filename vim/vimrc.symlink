@@ -10,6 +10,7 @@ Plugin 'VundleVim/Vundle.vim'
 Plugin 'derekwyatt/vim-scala'
 Plugin 'jlanzarotta/bufexplorer'
 Plugin 'majutsushi/tagbar'
+Plugin 'moll/vim-bbye'
 Plugin 'mustache/vim-mustache-handlebars'
 Plugin 'nvie/vim-flake8'
 Plugin 'scrooloose/nerdtree'
@@ -282,6 +283,9 @@ let g:syntastic_c_include_dirs = ['../..']
 "     autocmd CursorHoldI,CompleteDone,CursorHold,InsertLeave * nested update
 " augroup END
 set updatetime=700
+
+" vim-bbye
+nnoremap <Leader>bw :Bdelete<CR>
 
 " YCM
 let g:ycm_auto_trigger = 0
