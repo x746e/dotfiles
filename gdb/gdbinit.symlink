@@ -10,6 +10,7 @@ set print thread-events off
 directory ~/dotfiles/gdb
 source python.gdb
 source colorful_backtrace.py
+source ~/dotfiles/gdb/commands/attach_by_name.py
 
 define pp
   printf "%s\n", ($arg0).c_str()
