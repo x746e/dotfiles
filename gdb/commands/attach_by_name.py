@@ -8,7 +8,7 @@ class AttachByName(gdb.Command):
         try:
             out = subprocess.check_output('pgrep -x %s' % arg, shell=True).strip()
         except subprocess.CalledProcessError:
-            raise gdb.GdbError("No process called '%s' was found.")
+            raise gdb.GdbError("No process called '%s' was found." % arg)
         assert out, 'empty output'
         pids = map(int, out.split())
         if len(pids) > 1:
