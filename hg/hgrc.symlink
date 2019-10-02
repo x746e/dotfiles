@@ -27,6 +27,10 @@ users = tn, kyrylo, ksp
 [diff]
 git = 1
 
+[extdiff]
+cmd.icdiff = icdiff
+opts.icdiff = --recursive --line-numbers --no-bold
+
 [extensions]
 hgext.graphlog =
 hgext.record =
@@ -52,6 +56,7 @@ hgext.convert =
 shelve =
 journal =
 purge =
+extdiff =
 
 [ui]
 ignore = ~/.hgignore
