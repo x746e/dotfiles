@@ -76,3 +76,9 @@
 * shorten names more then X symbols.
 * remove 'nocorrect' from the beginning.
 * man zshmisc -> zshmisc(1)
+
+== gdb
+=== pretty printers
+- proto messages
+- objects with .ToString() and .DebugString()
+- cgdb doesn't work with colorful bt from newer gdb-s.
