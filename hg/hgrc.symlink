@@ -87,7 +87,7 @@ pygments_style = emacs
 
 [pager]
 pager = LESS='FXr' less
-attend = annotate, cat, diff, di, export, glog, log, qdiff, heads, heap, incoming, out, help, ll, dd, ds, dds, branches, lb, qs, ll, xl, x
+attend = annotate, cat, diff, di, export, glog, log, qdiff, heads, heap, incoming, out, help, ll, dd, ds, dds, branches, lb, qs, ll, xl, x, l, journal, icdiff, lint
 
 [color]
 mode = terminfo
