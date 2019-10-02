@@ -537,6 +537,19 @@ days-ago() {
 #    type_group=${mime_type%%/*}  # 'image/jpeg' → 'image' and so on
 #    echo $file": "$type_group
 #}
+
+# Echoes randomly one of the arguments
+# Usage:
+#   % choice foo bar baz
+#   baz
+#   % choice foo bar baz
+#   bar
+function choice() {
+    echo $@ | fmt -1 | shuf | head -1
+    # idx=$(( $RANDOM % $# + 1 ))
+    # echo ${@[$idx]}
+}
+
 # }}}
 
 # dotfiles.ext -- employer-specific zsh settings.
