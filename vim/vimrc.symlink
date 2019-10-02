@@ -146,7 +146,7 @@ set pastetoggle=<F12>
 map Y y$
 
 " Clear last used search pattern (and highlight for it)
-map <Leader>sc :let @/ = ""<CR>
+map <silent> <Leader>sc :let @/ = ""<CR>
 
 map coS :SyntasticToggleMode<CR>
 
