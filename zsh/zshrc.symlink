@@ -395,6 +395,7 @@ zstyle ':completion:*:functions' ignored-patterns '_*'
 # Disable completing `cd username`.
 zstyle ':completion:*:complete:(cd|pushd):*' tag-order \
   'local-directories path-directories directory-stack' '*'
+unsetopt correct_all
 # }}}
 
 
