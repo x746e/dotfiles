@@ -5,7 +5,7 @@
 
 cd "$(dirname "$0")/.."
 DOTFILES_ROOT="$(pwd)"
-
+DOTFILES_EXT_ROOT="$HOME/dotfiles-ext"
 
 source "$DOTFILES_ROOT/scripts/lib.zsh"
 
@@ -24,7 +24,12 @@ set -o nounset
 install_dotfiles () {
   info 'installing dotfiles'
 
-  for link_target in $(find "$DOTFILES_ROOT" -maxdepth 2 -name '*.symlink')
+  roots=($DOTFILES_ROOT)
+  if [[ -d "$DOTFILES_EXT_ROOT" ]]; then
+    roots+=($DOTFILES_EXT_ROOT)
+  fi
+
+  for link_target in $(find "$roots[@]" -maxdepth 2 -name '*.symlink')
   do
     link_file="$HOME/.$(basename "${link_target%.*}")"
     create_symlink "$link_target" "$link_file"
@@ -38,7 +43,7 @@ run_installers () {
   for installer in $(find "$DOTFILES_ROOT" -maxdepth 2 -name install.sh \! -path '*/scripts/install.sh')
   do
     info "running $installer"
-    sh $verbose "$installer"
+    "$installer"
     success "$installer succeeded"
   done
 }
