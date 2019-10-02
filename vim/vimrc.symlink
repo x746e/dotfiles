@@ -5,6 +5,7 @@
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
 
+Plugin 'HerringtonDarkholme/yats.vim'
 Plugin 'VundleVim/Vundle.vim'
 Plugin 'derekwyatt/vim-scala'
 Plugin 'jlanzarotta/bufexplorer'
