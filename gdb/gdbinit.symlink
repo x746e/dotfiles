@@ -9,7 +9,6 @@ set print thread-events off
 
 directory ~/dotfiles/gdb
 source python.gdb
-source colorful_backtrace.py
 source ~/dotfiles/gdb/commands/_source_all.py
 
 define pp
