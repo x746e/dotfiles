@@ -97,6 +97,7 @@ track.current = True
 
 [trainingwheels]
 prevent-revert--all = False
+prevent-phase--force = false
 
 %include ~/dotfiles-ext/hgrc
 
