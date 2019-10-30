@@ -322,6 +322,8 @@ setopt   correctall autocd recexact longlistjobs
 setopt   autoresume pushdsilent noclobber
 setopt   autopushd pushdminus extendedglob rcquotes mailwarning
 unsetopt bgnice autoparamslash cdablevars
+# Allow having comments in CLI.  Useful for copy pasting snippets.
+setopt interactivecomments
 
 # Autoload zsh modules when they are referenced
 zmodload -F zsh/stat b:zstat
