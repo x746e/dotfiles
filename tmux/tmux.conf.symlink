@@ -25,6 +25,8 @@ bind k confirm-before -p "kill-window #W? (y/n)" kill-window
 
 # misc bindings
 bind c new-window -c "#{pane_current_path}"
+bind '"' split-window -c "#{pane_current_path}"
+bind % split-window -h -c "#{pane_current_path}"
 bind s setw monitor-silence 15
 bind a setw monitor-activity
 bind u setw monitor-silence 0 \; setw -u monitor-activity \; display-message "monitor-silences -> 0; unset monitor-activity"
