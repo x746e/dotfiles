@@ -14,6 +14,6 @@ class AttachByName(gdb.Command):
         if len(pids) > 1:
             raise gdb.GdbError("There are more than one process called '%s'." % arg)
         (pid,) = pids
-        gdb.execute('attach %d' % pid, from_tty=from_ttyTrue)
+        gdb.execute('attach %d' % pid, from_tty=from_tty)
 
 AttachByName()
