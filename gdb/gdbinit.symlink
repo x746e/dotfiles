@@ -11,6 +11,8 @@ set print thread-events off
 
 set pagination off
 
+add-auto-load-safe-path ~/mfiles/learn/linux/linux/
+
 directory ~/dotfiles/gdb
 source python.gdb
 source ~/dotfiles/gdb/commands/_source_all.py
