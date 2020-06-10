@@ -45,9 +45,59 @@
 * look for a scheme: http://zshthem.es/
 * fix shell linter for .zshrc
 
-* save output of each command
-** allow referencing outputs somehow, e.g. get_out -4 | grep XXX
-** ncurses interface that allows folding outputs, filtering, whatever
+=== save output of each command
+* allow referencing outputs somehow, e.g. get_out -4 | grep XXX
+* ncurses interface that allows folding outputs, filtering, whatever
+* start each command with stdout/stderr connected to a pair of pty-s (possibly using zpty module)
+
+I'll have to read about terminal and pseudo terminals, but the general idea should be:
+- get a process eavesdropping on a pty to record everything that is printed to the terminal
+- somehow determine when the terminal is in "ncurses" mode
+- notify that process about start of commands, end of commands, and the exit code
+- write a ncurses interface that will allow:
+  - folding long outputs
+  - index the text for faster searches
+  - preserve command outputs between tmux restarts
+
+https://linux.die.net/man/8/ttysnoop
+https://linux.die.net/man/1/peekfd
+
+Steps:
+- read about pty-s in the linux programming interface / apue.
+- do the exercises
+- a simple python executable, say, "spy" that will run the command with pty-s
+  connected, and safe the stdout/stderr into files.
+  - check it works with:
+    - simple commands that just write to stdout/stderr (e.g. `find`)
+    - something that reads stdin and writes stdout (e.g. `cat`).  IIRC that's
+      called "canonical terminal mode".
+    - something that may do a bit of fancy term stuff (e.g. `passwd`, something
+      that shows iteractive process, e.g. `pipenv`).
+    - something that does a lot of fancy term stuff, e.g. `vim` and `top`.
+    - check how does it work with different zsh redirections
+    - add functional tests for all of the above
+- integration with zsh
+    - run each command through `spy`. each `spy` invocation can be its own
+      process, and its only job will be to not break tty and to save stdout and
+      stderr into something like /tmp/${pid}.(STDOUT|STDERR)
+    - add a `spyd` daemon that zsh will talk to to get pty(s) for each new
+      command. it should also signal to `spyd` what command was run, how much
+      did it take and what was the exit code.  in the future it may be also
+      useful to get more stats about the command as well.
+    - save commands and output somewhere.  output may go in files, metadata can
+      go into a sqlite database.
+    - add functional tests.
+- a ncurses interface for browsing the history
+    - hello world (in python)
+    - a list of commands
+    - a foldable list with output
+    - a list with identical shell prompts
+    - full text search (indexed)
+    - check how does it work with huge outputs
+- check the start latency of the python version of "spy", check the data
+  throughput latency, check the memory footprint, check how much cpu does it
+  need.  probably replace with a c++ or rust version.
+    - 
 
 === prompt
 * add start-time of the command
