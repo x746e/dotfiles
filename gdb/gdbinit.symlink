@@ -9,9 +9,16 @@ set print elements 2048
 # Set printing of thread events (such as thread start and exit).
 set print thread-events off
 
+# Pretty-print structs.
+set print pretty on
+
+# Print full python stacks, not just exception's message.
+set python print-stack full
+
 set pagination off
 
 add-auto-load-safe-path ~/mfiles/learn/linux/linux/
+add-auto-load-safe-path ~/projects/qemu-net/kernels/linux/scripts/gdb/vmlinux-gdb.py
 
 directory ~/dotfiles/gdb
 source python.gdb
