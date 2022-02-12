@@ -17,4 +17,5 @@ class Grep(gdb.Command):
             output_file.flush()
             subprocess.call([b'grep', args[0], output_file.name])
 
+
 Grep()

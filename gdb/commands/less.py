@@ -15,4 +15,5 @@ class Less(gdb.Command):
             output_file.flush()
             subprocess.call('LESS= less %s' % output_file.name, shell=True)
 
+
 Less()
