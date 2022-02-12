@@ -17,7 +17,7 @@ Plugin 'scrooloose/nerdtree'
 Plugin 'tomtom/tcomment_vim'
 Plugin 'tpope/vim-dispatch'
 Plugin 'tpope/vim-unimpaired'
-Plugin 'vim-syntastic/syntastic'
+"Plugin 'vim-syntastic/syntastic'
 
 call vundle#end()
 
@@ -118,7 +118,7 @@ if has("statusline")
     set statusline+=%=
     " syntastic status
     set statusline+=%#warningmsg#
-    set statusline+=%{SyntasticStatuslineFlag()}
+    " set statusline+=%{SyntasticStatuslineFlag()}
     set statusline+=%*
     " todo status
     " set statusline+=%2*
