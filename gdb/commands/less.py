@@ -11,7 +11,7 @@ class Less(gdb.Command):
     def invoke(self, arg, from_tty):
         output = gdb.execute(arg, to_string=True)
         with tempfile.NamedTemporaryFile() as output_file:
-            output_file.write(output)
+            output_file.write(output.encode('utf-8'))
             output_file.flush()
             subprocess.call('LESS= less %s' % output_file.name, shell=True)
 
