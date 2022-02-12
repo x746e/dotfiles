@@ -7,6 +7,9 @@ set -g default-terminal "screen-256color"
 set -g display-time 4000
 set -g set-titles off
 
+# Trackd hooks
+source-file ~/projects/trackd/tmux-hooks.conf
+
 ##
 # Keybindings
 ##
