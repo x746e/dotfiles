@@ -1,3 +1,7 @@
+-- vim: ts=2:sts=2:sw=2
+-- Two-space indentation appears to be the lua style used by neovim itself, and
+-- by many of the plugins.  Not sure why isn't it the default.
+
 -- nvim-tree strongly recommends disable netrw; and it must be done early in
 -- the init.lua 🤷.
 vim.g.loaded_netrw = 1
@@ -14,7 +18,7 @@ local Plug = vim.fn['plug#']
 
 vim.call('plug#begin')
 
--- Why in hell do I need to setup dependencies manually?...
+-- TODO: Why in hell do I need to setup dependencies manually?...
 Plug('nvim-lua/plenary.nvim')
 Plug('nvim-telescope/telescope.nvim')
 
@@ -23,8 +27,19 @@ Plug('nvim-treesitter/nvim-treesitter', {['do'] = ':TSUpdate'})
 Plug('nvim-tree/nvim-web-devicons')  -- optional
 Plug('nvim-tree/nvim-tree.lua')
 
+Plug('stevearc/aerial.nvim')
+
 vim.call('plug#end')
 
+-- TODO: Consider grouping all the plugin related bits into its own module.
+-- Something like ~/.config/nvim/lib/nvim-tree.lua (by plugin) or
+-- ~/.config/nvim/lib/file-browser.lua (by feature).
+-- There, have a plugin installation directive (not sure if possible with
+-- vim-plug), and configuration of the plugin.
+--
+-- Maybe have ~/.config/nvim/features/file-browser.lua, and
+-- ~/.config/nvim/lib/treesitter.lua, for dependencies not neatly mapped to
+-- just one feature.
 
 -- Telescope configuration.
 require('telescope').setup{
@@ -90,3 +105,35 @@ require("nvim-tree").setup({
   },
 })
 vim.keymap.set('n', '<leader>f', ':NvimTreeToggle<CR>')
+
+-- aerial.nvim configuration.
+require("aerial").setup({
+	show_guides = true,
+	layout = {
+		min_width = 0.5,
+	},
+	float = {
+		relative = "editor",
+		max_height = 0.9,
+		min_height = 0.9,
+		max_width = 0.5,
+		min_width = 0.5,
+	},
+	nav = {
+		max_height = 0.9,
+		min_height = 0.9,
+		max_width = 0.5,
+		min_width = 0.5,
+	},
+	keymaps = {
+		["<CR>"] = "actions.jump",
+		["<2-LeftMouse>"] = "actions.jump",
+		["<C-v>"] = "actions.jump_vsplit",
+		["<C-s>"] = "actions.jump_split",
+		["h"] = "actions.left",
+		["l"] = "actions.right",
+		-- This is the only mapping I changed.  Do I need to have the above hardcoded as well?
+		["q"] = "actions.close",
+	},
+})
+vim.keymap.set("n", "<leader>t", "<cmd>AerialToggle float<CR>")
