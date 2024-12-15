@@ -29,6 +29,8 @@ Plug('nvim-tree/nvim-tree.lua')
 
 Plug('stevearc/aerial.nvim')
 
+Plug('tpope/vim-unimpaired')
+
 vim.call('plug#end')
 
 -- TODO: Consider grouping all the plugin related bits into its own module.
