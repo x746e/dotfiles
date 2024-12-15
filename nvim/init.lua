@@ -13,3 +13,14 @@ Plug('nvim-lua/plenary.nvim')
 Plug('nvim-telescope/telescope.nvim')
 
 vim.call('plug#end')
+
+
+-- Telescope config.
+require('telescope').setup{
+  defaults = {
+    layout_strategy = 'horizontal',
+    layout_config = { height = { padding = 0 }, width = { padding = 0 } },
+  }
+}
+local telescope_builtin = require('telescope.builtin')
+vim.keymap.set('n', '<leader>l', telescope_builtin.buffers)
