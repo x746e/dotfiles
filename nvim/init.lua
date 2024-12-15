@@ -51,7 +51,11 @@ require('telescope').setup{
   }
 }
 local telescope_builtin = require('telescope.builtin')
-vim.keymap.set('n', '<leader>l', telescope_builtin.buffers)
+if not vim.g.vscode then
+	vim.keymap.set('n', '<leader>l', telescope_builtin.buffers)
+else
+	vim.keymap.set('n', '<leader>l', "<cmd>lua require('vscode').action('workbench.action.showEditorsInActiveGroup')<CR>")
+end
 
 -- nvim-tree configuration.
 local HEIGHT_RATIO = 1  -- You can change this
@@ -106,7 +110,11 @@ require("nvim-tree").setup({
     },
   },
 })
-vim.keymap.set('n', '<leader>f', ':NvimTreeToggle<CR>')
+if not vim.g.vscode then
+	vim.keymap.set('n', '<leader>f', ':NvimTreeToggle<CR>')
+else
+	vim.keymap.set('n', '<leader>f', "<cmd>lua require('vscode').action('workbench.view.explorer')<CR>")
+end
 
 -- aerial.nvim configuration.
 require("aerial").setup({
@@ -138,4 +146,8 @@ require("aerial").setup({
 		["q"] = "actions.close",
 	},
 })
-vim.keymap.set("n", "<leader>t", "<cmd>AerialToggle float<CR>")
+if not vim.g.vscode then
+	vim.keymap.set("n", "<leader>t", "<cmd>AerialToggle float<CR>")
+else
+	vim.keymap.set('n', '<leader>t', "<cmd>lua require('vscode').action('outline.focus')<CR>")
+end

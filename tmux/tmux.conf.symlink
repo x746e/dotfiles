@@ -3,9 +3,13 @@
 ##
 set -g history-limit 10000000
 set -g visual-silence on
-set -g default-terminal "screen-256color"
+set -g default-terminal "tmux-256color"
+# set -g default-terminal "xterm-kitty"
 set -g display-time 4000
 set -g set-titles off
+set -g extended-keys on
+set -as terminal-features 'tmux*:extkeys'
+set -as terminal-features 'xterm*:extkeys'
 
 # Trackd hooks
 #source-file ~/projects/trackd/tmux-hooks.conf

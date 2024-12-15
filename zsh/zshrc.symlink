@@ -73,7 +73,7 @@ fi
 # line.
 alias -g L='|less'
 alias -g L2=' 2>&1 |less'
-alias -g Lj='| python -mjson.tool | less'
+alias -g Lj='| python3 -mjson.tool | less'
 alias -g H='|head'
 alias -g T='|tail'
 alias -g G='|grep'
@@ -589,3 +589,5 @@ dotfiles_ext_zshrc="$HOME/dotfiles-ext/zshrc"
 if [ -f "$dotfiles_ext_zshrc" ]; then
     source "$dotfiles_ext_zshrc"
 fi
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh

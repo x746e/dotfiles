@@ -1,2 +1,3 @@
 --type-set=configerator=.cinc,.cconf,.mcconf,.thrift-cvalidator
 --type-set=thrift=.thrift
+--ignore-dir=.mypy_cache
