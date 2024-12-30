@@ -4,10 +4,10 @@ set -o errexit
 set -o nounset
 
 if ! which git > /dev/null; then
-  exit
+  exit 1
 fi
 if ! which vim > /dev/null; then
-  exit
+  exit 1
 fi
 
 
