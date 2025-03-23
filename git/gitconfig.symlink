@@ -1,7 +1,8 @@
 [user]
     name = Kirill Spitsyn
     #email = tn@0x746e.org.ua
-    email = ksp@google.com
+    #email = ksp@google.com
+    email = k@spitsyn.me
 
 [merge]
     tool = kdiff3
@@ -29,5 +30,21 @@
 
 [core]
     excludesfile = ~/.gitignore
+    pager = delta
 [push]
     default = current
+
+[core]
+    pager = delta
+
+[interactive]
+    diffFilter = delta --color-only
+
+[delta]
+    navigate = true  # use n and N to move between diff sections
+    dark = true      # or light = true, or omit for auto-detection
+    side-by-side = true
+    line-numbers = true
+
+[merge]
+    conflictstyle = zdiff3
