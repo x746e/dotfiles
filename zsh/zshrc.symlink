@@ -611,5 +611,3 @@ dotfiles_ext_zshrc="$HOME/dotfiles-ext/zshrc"
 if [ -f "$dotfiles_ext_zshrc" ]; then
     source "$dotfiles_ext_zshrc"
 fi
-
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
