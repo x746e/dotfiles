@@ -103,6 +103,10 @@ alias -g NUL="> /dev/null 2>&1"
 alias -g ...='../..'
 alias -g ....='../../..'
 alias -g .....='../../../..'
+# TODO: I don't remember many of these aliases.  It'd be nice to have a way to
+# show all of them quickly.  E.g. first complete my end-of-line aliases first
+# when I press tab after `|` in a pipe.
+alias -g Gviz='| dot -Tpng | display'
 # }}}
 
 # Shell functions
