@@ -591,6 +591,19 @@ function htons() {
     python -c "import socket; print(socket.htons($1))"
 }
 
+# Run the command until it fails.
+# TODO: Count the times it run before failure
+until_fail () {
+    while true
+    do
+	"$@"
+	if [[ $? -ne 0 ]]
+	then
+	    break
+	fi
+    done
+}
+
 # }}}
 
 # dotfiles.ext -- employer-specific zsh settings.
