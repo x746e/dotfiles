@@ -8,6 +8,7 @@ set -g default-terminal "tmux-256color"
 set -g display-time 4000
 set -g set-titles off
 set -g extended-keys on
+set -g focus-events on
 set -as terminal-features 'tmux*:extkeys'
 set -as terminal-features 'xterm*:extkeys'
 
