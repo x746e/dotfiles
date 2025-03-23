@@ -141,6 +141,10 @@ export MANPATH
 
 export PATH="$PATH:$HOME/bin"
 
+# TODO: mkdir it during initial install from the dotfiles.
+# TODO: Make the commands run with sudo use it as well.
+export PYTHONPYCACHEPREFIX="$HOME/.cache/pycache"
+
 # automatically remove duplicates from these arrays
 typeset -U path cdpath fpath manpath
 
