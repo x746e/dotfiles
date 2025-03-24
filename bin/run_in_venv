@@ -1,0 +1,5 @@
+#!/bin/bash
+#
+# Run the command inside $PWD/.venv virtual env.
+
+PATH="$PWD/.venv/bin" exec "$@"

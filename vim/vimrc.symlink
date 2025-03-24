@@ -5,6 +5,14 @@
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
 
+" Neovim specific plugins.
+if has('nvim')
+    " TODO: Migrate to a package manager allowing calling an equivalent of
+    " `Plugin` from elsewhere -- e.g. from a plugin-specific or
+    " feature-specific config file.
+    Plugin 'neovim/nvim-lspconfig'
+endif
+
 Plugin 'HerringtonDarkholme/yats.vim'
 Plugin 'VundleVim/Vundle.vim'
 Plugin 'derekwyatt/vim-scala'

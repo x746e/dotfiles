@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# Log:
+# - What was called.
+# - Current PWD.
+# - PID, PPID.
+
+LOG='/tmp/call_log'
+
+printf "$(date +'%Y-%m-%dT%H:%M:%S')|  cwd=$PWD; cmd=$*; pid=$$; ppid=$PPID\n" >> "$LOG"
+
+exec "$@"
