@@ -1,33 +1,38 @@
+# vim: ft=gitconfig
 [user]
-    name = Kirill Spitsyn
-    #email = tn@0x746e.org.ua
-    email = ksp@google.com
+	name = Kirill Spitsyn
+	#email = tn@0x746e.org.ua
+	email = ksp@google.com
 
 [merge]
-    tool = kdiff3
+	tool = kdiff3
 
 [alias]
-    cin = commit
-    ci = commit --all
-    cia = commit --amend --all
-    co = checkout
-    st = status --short
-    di = diff -M
-    ds = diff --stat -M
-    dc = diff --cached -M
-    dcs = diff --cached --stat -M
-    dd = log -1 -p -M
-    dds = log -1 --stat -M
-    gl = log --decorate --graph --date=relative --pretty=format:'%C(yellow)%h%Creset - %s %C(red)%d%Creset%C(bold blue)<%aN>%Creset (%ad)'
-    glog = log --decorate --graph --date=relative --pretty=format:'%C(yellow)%h%Creset - %s %C(red)%d%Creset%C(bold blue)<%aN>%Creset (%ad)' --all
-    forget = rm --cached
-    # 'add file'. as hg add.
-    af = add -N
+	cin = commit
+	ci = commit --all
+	cia = commit --amend --all
+	co = checkout
+	st = status --short
+	di = diff -M
+	ds = diff --stat -M
+	dc = diff --cached -M
+	dcs = diff --cached --stat -M
+	dd = log -1 -p -M
+	dds = log -1 --stat -M
+	gl = log --decorate --graph --date=relative --pretty=format:'%C(yellow)%h%Creset - %s %C(red)%d%Creset%C(bold blue)<%aN>%Creset (%ad)'
+	glog = log --decorate --graph --date=relative --pretty=format:'%C(yellow)%h%Creset - %s %C(red)%d%Creset%C(bold blue)<%aN>%Creset (%ad)' --all
+	forget = rm --cached
+	# 'add file'. as hg add.
+	af = add -N
 
 [color]
-    ui = true
+	ui = true
 
 [core]
-    excludesfile = ~/.gitignore
+	excludesfile = ~/.gitignore
+
 [push]
-    default = current
+	default = current
+
+[include]
+	path = ~/dotfiles-ext/gitconfig
