@@ -193,7 +193,6 @@ function tmux-window-title-precmd {
 add-zsh-hook precmd tmux-window-title-precmd
 # }}}
 
-
 #** Prompts **# {{{
 # A hook executed before each prompt.
 function async-prompt-precmd {
@@ -272,7 +271,7 @@ promptinit
 prompt mine black cyan cyan $HOST_PROMPT_COLOR
 # }}}
 
-# Some environment variables
+#** Environment Variables **# {{{
 export EDITOR='vim'
 export MAIL=/var/mail/$USERNAME
 
@@ -301,6 +300,7 @@ export HELPDIR=/usr/local/lib/zsh/help  # directory for run-help function to fin
 
 MAILCHECK=300
 DIRSTACKSIZE=20
+# }}}
 
 #** History **# {{{
 HISTSIZE=50000
