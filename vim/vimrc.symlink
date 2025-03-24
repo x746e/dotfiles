@@ -137,7 +137,12 @@ endif
 
 " Setting end }}}
 
-" Mappings {{{
+" Auto commands {{{
+au BufNewFile,BufRead *.sshconfig setfiletype sshconfig
+au BufNewFile,BufRead *.service setfiletype systemd
+" }}}
+
+ " Mappings {{{
 let mapleader = ","
 nmap <S-F7> :!python %<CR>
 
