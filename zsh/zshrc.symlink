@@ -352,6 +352,7 @@ bindkey -s "^Xr" 'source ~/.zshrc\n'
 # Setup new style completion system. To see examples of the old style (compctl
 # based) programmable completion, check Misc/compctl-examples in the zsh
 # distribution.
+fpath=(~/.zsh/completions $fpath)
 autoload -U compinit
 compinit -i
 
