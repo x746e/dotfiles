@@ -26,6 +26,7 @@ Plugin 'tomtom/tcomment_vim'
 Plugin 'tpope/vim-dispatch'
 Plugin 'tpope/vim-unimpaired'
 Plugin 'tpope/vim-fugitive'
+Plugin 'gentoo/gentoo-syntax'
 
 call vundle#end()
 
