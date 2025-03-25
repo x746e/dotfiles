@@ -25,8 +25,7 @@ Plugin 'scrooloose/nerdtree'
 Plugin 'tomtom/tcomment_vim'
 Plugin 'tpope/vim-dispatch'
 Plugin 'tpope/vim-unimpaired'
-"Plugin 'vim-syntastic/syntastic'
-" Plugin 'neoclide/coc.nvim'
+Plugin 'tpope/vim-fugitive'
 
 call vundle#end()
 
