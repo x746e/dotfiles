@@ -77,7 +77,7 @@ set t_vb=
 " A four-space tab indent width is the prefered coding style for Python (and
 " everything else!), although of course some disagree. This page generally
 " assumes you want 4-space indents.
-set tabstop=8
+set tabstop=4
 " People like using real tab character instead of spaces because it makes it
 " easier when pressing BACKSPACE or DELETE, since if the indent is using
 " spaces it will take 4 keystrokes to delete the indent. Using this setting,
@@ -145,7 +145,15 @@ endif
 
 " Setting end }}}
 
-" Mappings {{{
+" Auto commands {{{
+autocmd BufNewFile,BufRead *.sshconfig setfiletype sshconfig
+autocmd BufNewFile,BufRead *.service setfiletype systemd
+autocmd BufNewFile,BufRead gitconfig setfiletype gitconfig
+
+autocmd FileType gitconfig setlocal noexpandtab softtabstop=0 shiftwidth=0
+" }}}
+
+ " Mappings {{{
 let mapleader = ","
 nmap <S-F7> :!python %<CR>
 

@@ -19,12 +19,10 @@ set pagination off
 
 add-auto-load-safe-path ~/mfiles/learn/linux/linux/
 add-auto-load-safe-path ~/projects/qemu-net/kernels/linux/scripts/gdb/vmlinux-gdb.py
-add-auto-load-safe-path /home/ksp/src/linux/scripts/gdb/vmlinux-gdb.py
-add-auto-load-safe-path /home/ksp/src/cpython/python-gdb.py
+add-auto-load-safe-path ~/src/linux/scripts/gdb/vmlinux-gdb.py
+add-auto-load-safe-path ~/src/cpython/python-gdb.py
 
-directory ~/dotfiles/gdb
-source python.gdb
-source ~/dotfiles/gdb/commands/_source_all.py
+source ~/dotfiles/gdb/python.gdb
 
 define pp
   printf "%s\n", ($arg0).c_str()
@@ -34,4 +32,6 @@ define ppb
   printf "%s\n", ($arg0.DebugString()).c_str()
 end
 
-# vim: ft=gdb
+source ~/dotfiles/gdb/source_dir.py
+source-dir ~/dotfiles/gdb/commands/
+source-dir ~/.config/gdb/gdbinit.d/
