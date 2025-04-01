@@ -106,6 +106,10 @@ set linebreak
 set showbreak=->
 set display=lastline
 
+" Format options
+set textwidth=105
+
+" Themes and colors
 set background=dark
 colorscheme koehler
 hi Search term=reverse ctermfg=black ctermbg=yellow guifg=black guibg=yellow
