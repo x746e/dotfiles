@@ -20,7 +20,9 @@ set pagination off
 add-auto-load-safe-path ~/mfiles/learn/linux/linux/
 add-auto-load-safe-path ~/projects/qemu-net/kernels/linux/scripts/gdb/vmlinux-gdb.py
 add-auto-load-safe-path ~/src/linux/scripts/gdb/vmlinux-gdb.py
+add-auto-load-safe-path ~/src/__linux__/llx-linux/scripts/gdb/vmlinux-gdb.py
 add-auto-load-safe-path ~/src/cpython/python-gdb.py
+add-auto-load-safe-path ~/learning/ftrace/linux-src/scripts/gdb/vmlinux-gdb.py
 
 source ~/dotfiles/gdb/python.gdb
 
