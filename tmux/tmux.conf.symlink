@@ -23,19 +23,19 @@ set-window-option -g mode-keys vi
 # Keybindings
 ##
 
-# prefix
+# Prefix.
 unbind-key C-b
 set -g prefix M-Space
 bind q send-prefix
 
-# screen key-bindings
+# `screen(1)`-inspired key-bindings.
 bind Space next-window
 bind ^H previous-window
 bind M-Space last-window
 bind A command-prompt "rename-window '%%'"
 bind k confirm-before -p "kill-window #W? (y/n)" kill-window
 
-# misc bindings
+# Misc bindings.
 bind c new-window -c "#{pane_current_path}"
 bind '"' split-window -c "#{pane_current_path}"
 bind % split-window -h -c "#{pane_current_path}"
@@ -54,6 +54,12 @@ bind R source-file ~/.tmux.conf \; display-message "~/.tmux.conf reloaded"
 bind P move-window -r
 bind < swap-window -t :-1 -d
 bind > swap-window -t :+1 -d
+# TODO: Why doesn't variable expansion doesn't work with `send-keys -F`?
+#bind T send-keys -F stty rows "#{pid}" cols #{pane_width} C-m
+bind T run-shell 'tmux send-keys "stty cols #{pane_width} rows #{pane_height}" Enter'
+
+# Status line.
+set -g status-right '#[fg=colour166]%a %Y-%m-%d %H:%M:%S#[default]'
 
 #### COLOR (Solarized 256) {{{
 
@@ -85,5 +91,4 @@ set-option -g display-panes-colour colour166 #orange
 
 # clock
 set-option -w -g clock-mode-colour colour64 #green
-set -g status-right '#[fg=blue]%a %Y-%m-%d %H:%M:%S#[default]'
 # }}}
