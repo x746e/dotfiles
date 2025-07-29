@@ -44,6 +44,7 @@ alias bkd='date +%FT%H%M'
 alias today='date +%Y-%m-%d'
 case `uname` in
     Linux|CYGWIN*|SunOS)
+        alias ls='ls -F --color'
         alias ll='ls -lhF --color=auto'
         alias l='ls -F --color=auto'
         alias sed='sed -r'
@@ -611,6 +612,32 @@ until_fail () {
     done
 }
 
+lost() {
+    image="$1"
+    sudo losetup --find "$image" --partscan --show
+}
+# }}}
+
+
+# {{{ Notification support
+_deskctl-notify() {
+    local exit_code="$?"
+    local cmd="$history[$HISTCMD]"
+    local summary
+    if [[ $exit_code -eq 0 ]]; then
+        summary="✅ Success"
+    else
+        summary="❌ Failed with $exit_code"
+    fi
+    if [[ -n "$TMUX" ]]; then
+        summary="$summary [$(tmux display -p '#{session_name} → #{window_name}')]"
+    fi
+    local body="Finished: ${(l:80:)cmd}"
+    deskctl notify-send "$summary" "$body"
+
+    return $exit_code
+}
+alias -g NT='; _deskctl-notify'
 # }}}
 
 # dotfiles.ext -- employer-specific zsh settings.
