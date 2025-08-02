@@ -49,7 +49,7 @@ bind / neww top
 bind w run-shell 'tmux choose-tree -wf"##{==:##{session_name},#{session_name}}"'
 bind W choose-tree -s
 bind -Tcopy-mode-vi P send-keys -X copy-pipe "pastebin >| /tmp/paste-url && tmux display-message $(cat /tmp/paste-url)"
-bind -Tcopy-mode-vi C send-keys -X copy-pipe "deskctl set-selection --from-stdin && tmux display-message 'Copied!'"
+bind -Tcopy-mode-vi C send-keys -X copy-pipe "deskctl set-selection --from-stdin && tmux display-message 'Copied!' || tmux display-message 'Copy failed'"
 bind R source-file ~/.tmux.conf \; display-message "~/.tmux.conf reloaded"
 bind P move-window -r
 bind < swap-window -t :-1 -d
