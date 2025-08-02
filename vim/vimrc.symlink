@@ -150,10 +150,11 @@ endif
 
 " Setting end }}}
 
-" Auto commands {{{
+" Filetype detection, ftplugin-like auto commands {{{
 autocmd BufNewFile,BufRead *.sshconfig setfiletype sshconfig
 autocmd BufNewFile,BufRead *.service setfiletype systemd
 autocmd BufNewFile,BufRead gitconfig setfiletype gitconfig
+autocmd BufNewFile,BufRead *.tcss setfiletype css
 
 autocmd FileType gitconfig setlocal noexpandtab softtabstop=0 shiftwidth=0
 " }}}
@@ -162,7 +163,9 @@ autocmd FileType gitconfig setlocal noexpandtab softtabstop=0 shiftwidth=0
 let mapleader = ","
 nmap <S-F7> :!python %<CR>
 
-set pastetoggle=<F12>
+if !has('nvim')
+    set pastetoggle=<F12>
+endif
 
 " Make Y work like D and C.  Not vi-compatable.
 map Y y$
