@@ -2,9 +2,6 @@
 [user]
 	name = Kirill Spitsyn
 	email = k@spitsyn.me
-	#email = tn@0x746e.org.ua
-	#email = ksp@google.com
-	#email = k@spitsyn.me
 
 [merge]
 	tool = kdiff3
