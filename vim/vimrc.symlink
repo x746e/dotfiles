@@ -107,7 +107,7 @@ set showbreak=->
 set display=lastline
 
 " Format options
-set textwidth=105
+set textwidth=93
 
 " Themes and colors
 set background=dark
@@ -254,8 +254,10 @@ fun! SelectionToTmuxBuffer()
     redir! > /tmp/vim-tmux-buffer
     silent echo @"
     redir END
-    " Load file to tmux buffer
+    " Load file to tmux buffer.
     silent ! tmux load-buffer /tmp/vim-tmux-buffer 2>&1 >/dev/null
+    " And also send it to the desktop's copy buffer.
+    silent ! cat /tmp/vim-tmux-buffer | deskctl set-selection --from-stdin
     redraw!
 endfun
 vmap <Leader>B y:call SelectionToTmuxBuffer()<CR>
