@@ -2,4 +2,4 @@
 #
 # Run the command inside $PWD/.venv virtual env.
 
-PATH="$PWD/.venv/bin" exec "$@"
+PATH="$PWD/.venv/bin:$PATH" exec "$@"
