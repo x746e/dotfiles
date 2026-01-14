@@ -33,7 +33,7 @@ case `uname` in
 esac
 alias vlm='less /var/log/messages'
 alias bc='bc -l'
-alias tt='tail -F'
+alias tf='tail -F'
 alias la='l -a'
 alias lla='ll -a'
 # List only directories and symbolic links that point to directories.
