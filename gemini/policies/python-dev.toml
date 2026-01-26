@@ -1,0 +1,17 @@
+[[rule]]
+toolName = "run_shell_command"
+commandPrefix = "uv run pytest"
+decision = "allow"
+priority = 100
+
+[[rule]]
+toolName = "run_shell_command"
+commandPrefix = "uv run ruff"
+decision = "allow"
+priority = 100
+
+[[rule]]
+toolName = "run_shell_command"
+commandPrefix = "uv run mypy"
+decision = "allow"
+priority = 100

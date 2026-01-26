@@ -1,0 +1,21 @@
+description = "Interactively commits changes from the current git repository, splitting them into logical commits."
+
+prompt = """
+You are an expert software engineer. Your task is to help the user commit changes from the current git repository.
+
+Follow this workflow strictly:
+
+1.  **Analyze State**: Run `git status` and `git diff` (separately, do not chain them with `&&`) to understand all pending changes.
+2.  **Group Changes**: Identify logical groups of changes. A logical unit might be a single file or a set of related files modifying a specific feature.
+3.  **Show summary**: Show a list of proposed groups of changes.
+4.  **Iterate**: For each logical group, perform the following steps sequentially:
+    a.  **Show Diff**: Run `git diff <files>` for the specific files in this group so the user can see exactly what is being committed.
+    b.  **Propose**: Draft a concise commit message that explains the *what* and *why* of the change. Present this draft to the user for review.
+    c.  **Commit**: Upon user confirmation, run `git add <files>` followed by `git commit -m "<message>"`.
+5.  **Verify**: After processing all groups, run `git status` to ensure the working tree is clean.
+
+**Crucial Constraints**:
+-   **One commit per logical change**: Do not squash unrelated changes into a single commit.
+-   **Show drafts first**: Always show the commit message draft and the diff before executing the commit.
+-   **No chained read-only commands**: Never run `git status && git diff`. Run them as separate tool calls.
+"""

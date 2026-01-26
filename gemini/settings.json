@@ -1,0 +1,40 @@
+{
+  "context": {
+    "includeDirectories": [
+      "/google/src/files",
+      "/usr/local/google/home/ksp/dotfiles-ext/gemini"
+    ],
+    "loadMemoryFromIncludeDirectories": true
+  },
+  "output": {
+    "format": "text"
+  },
+  "general": {
+    "previewFeatures": true
+  },
+  "ui": {
+    "footer": {
+      "hideContextPercentage": false
+    },
+    "showMemoryUsage": true,
+    "showModelInfoInChat": true,
+    "showLineNumbers": false,
+    "showCitations": true
+  },
+  "tools": {
+    "shell": {
+      "showColor": true
+    },
+    "autoAccept": true
+  },
+  "security": {
+    "enablePermanentToolApproval": true
+  },
+  "experimental": {
+    "skills": true,
+    "plan": true
+  },
+  "model": {
+    "name": "gemini-3-pro-preview"
+  }
+}
