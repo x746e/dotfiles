@@ -1,0 +1,14 @@
+description = "Dumps a structured 'handoff-ready' report of the current investigation state, artifacts, and next steps."
+
+prompt = """
+Generate a comprehensive 'Investigation State Dump' in Markdown. Structure it to include:
+
+1.  Objective: The original goal and any refined understanding of it.
+2.  Key Artifacts: A list of all relevant file paths, critical functions/classes identified, and specific line ranges we are focused on.
+3.  Established Facts: What have we definitively proven? (e.g., 'Function X returns null', 'Build fails at step Y').
+4.  Hypotheses & Status: What theories are we currently testing, which have been discarded, and why?
+5.  Tool Output Summary: Briefly summarize the meaning of the tool outputs we've seen so far (don't just paste logs).
+6.  Next Steps: The exact plan for the next 3 steps.
+
+Write this as if you are handing off the task to another Senior Engineer who has zero context.
+"""
