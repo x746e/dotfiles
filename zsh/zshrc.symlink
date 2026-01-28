@@ -616,6 +616,85 @@ lost() {
     image="$1"
     sudo losetup --find "$image" --partscan --show
 }
+
+backup () {
+    local force=false
+    local target=""
+
+    # Parse args
+    while [[ $# -gt 0 ]]; do
+        local key="$1"
+        case $key in
+            -f|--force)
+                force=true
+                shift
+                ;;
+            *)
+                target="$1"
+                shift
+                ;;
+        esac
+    done
+
+    if [[ -z "$target" ]]; then
+        echo "Usage: backup [-f] <file-or-directory>"
+        return 1
+    fi
+
+    if [[ ! -e "$target" ]]; then
+        echo "Error: '$target' does not exist."
+        return 1
+    fi
+
+    # Ensure backup directory exists
+    local backup_dir="$HOME/backup"
+    mkdir -p "$backup_dir"
+
+    # Size check
+    # 500 MiB = 524288000 bytes
+    local limit=524288000
+    local size=$(du -sb "$target" | cut -f1)
+
+    if [[ $size -gt $limit && "$force" == "false" ]]; then
+        echo "Error: Target size ($size bytes) exceeds limit ($limit bytes)."
+        echo "Use -f to force backup."
+        return 1
+    fi
+
+    # Space check
+    local avail=$(df --output=avail -B1 "$backup_dir" | tail -1)
+    if [[ $avail -lt $size ]]; then
+        echo "Error: Not enough space in $backup_dir. Need $size, have $avail."
+        return 1
+    fi
+
+    # Compression and Filename
+    local base_name=$(basename "$target")
+    local timestamp=$(date +%FT%H%M)
+    local output_file=""
+    local -a tar_cmd
+
+    if command -v zstd >/dev/null; then
+        output_file="${backup_dir}/${base_name}-${timestamp}.tar.zst"
+        tar_cmd=(tar --zstd -cf)
+    elif command -v pigz >/dev/null; then
+        output_file="${backup_dir}/${base_name}-${timestamp}.tar.gz"
+        tar_cmd=(tar -I pigz -cf)
+    else
+        output_file="${backup_dir}/${base_name}-${timestamp}.tar.gz"
+        tar_cmd=(tar -czf)
+    fi
+
+    echo "Backing up '$target' to '$output_file'..."
+    $tar_cmd "$output_file" "$target"
+
+    if [[ $? -eq 0 ]]; then
+        echo "Backup successful."
+    else
+        echo "Backup failed."
+        return 1
+    fi
+}
 # }}}
 
 
