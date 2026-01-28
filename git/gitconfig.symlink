@@ -26,6 +26,7 @@
 	forget = rm --cached
 	# 'add file'. as hg add.
 	af = add -N
+	diff-image = "!f() { cd -- \"${GIT_PREFIX:-.}\"; GIT_DIFF_IMAGE_ENABLED=1 git diff \"$@\"; }; f"
 
 [color]
 	ui = true
@@ -33,6 +34,7 @@
 [core]
 	excludesfile = ~/.gitignore
 	pager = delta
+	attributesfile = ~/.gitattributes
 
 [push]
 	default = current
@@ -48,3 +50,5 @@
 
 [include]
 	path = ~/dotfiles-ext/gitconfig
+[diff "image"]
+	command = /home/ksp/src/git-diff-image/git_diff_image
