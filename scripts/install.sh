@@ -18,16 +18,15 @@ fi
 set -o errexit
 set -o nounset
 
+roots=("$DOTFILES_ROOT")
+if [[ -d "$DOTFILES_EXT_ROOT" ]]; then
+  roots+=("$DOTFILES_EXT_ROOT")
+fi
 
 # install_dotfiles
 #   For all files/directories with `.symlink` suffix in the name, link them into $HOME.
 install_dotfiles () {
   info 'installing dotfiles'
-
-  roots=($DOTFILES_ROOT)
-  if [[ -d "$DOTFILES_EXT_ROOT" ]]; then
-    roots+=($DOTFILES_EXT_ROOT)
-  fi
 
   for link_target in $(find "$roots[@]" -maxdepth 2 -name '*.symlink')
   do
@@ -40,7 +39,7 @@ install_dotfiles () {
 # run_installers
 #   Run custom `install.sh` scripts.
 run_installers () {
-  for installer in $(find "$DOTFILES_ROOT" -maxdepth 2 -name install.sh \! -path '*/scripts/install.sh')
+  for installer in $(find "$roots[@]" -maxdepth 2 -name install.sh \! -path '*/scripts/install.sh')
   do
     info "running $installer"
     "$installer"
