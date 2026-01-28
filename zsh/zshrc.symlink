@@ -616,6 +616,31 @@ lost() {
     image="$1"
     sudo losetup --find "$image" --partscan --show
 }
+
+unzp () {
+    if [[ -z "$1" ]]; then
+        echo "Usage: $0 <zip-archive>" 1>&2
+        return 1
+    fi
+
+    local zip_archive="$1"
+    local mime="$(file --mime-type "$zip_archive" | cut -f 2 -d ' ')"
+
+    if [[ "$mime" != "application/zip" ]]; then
+        echo "Are you sure "$zip_archive" is a zip archive?  It MIME is '$mime'."
+        # TODO: A way to still unzip it.  -f, or ask y/n.
+        return 1
+    fi
+
+    local stem="${${zip_archive##*/}%.*}"
+    local extract_dir="$(dirname "$zip_archive")/$stem"
+    # TODO: If all the archive files are already in a directory:
+    # - if it matches the stem, don't create a new directory with the same name, just extract.
+    # - if it doesn't, give a choice to either select either name, or enter a new one.
+    mkdir "$extract_dir"
+    unzip "$zip_archive" -d "$extract_dir"
+    # TODO: Ask if I want to remove the archive.
+}
 # }}}
 
 
