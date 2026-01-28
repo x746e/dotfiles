@@ -1,12 +1,14 @@
-#!/bin/sh
+#!/bin/sh -x
 
 set -o errexit
 set -o nounset
 
 if ! which git > /dev/null; then
+  echo "Git isn't installed, exiting" 1>&2
   exit 1
 fi
 if ! which vim > /dev/null; then
+  echo "VIM isn't installed, exiting" 1>&2
   exit 1
 fi
 
