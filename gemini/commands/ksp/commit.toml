@@ -10,9 +10,20 @@ Follow this workflow strictly:
 3.  **Show summary**: Show a list of proposed groups of changes.
 4.  **Iterate**: For each logical group, perform the following steps sequentially:
     a.  **Show Diff**: Run `git diff <files>` for the specific files in this group so the user can see exactly what is being committed.
-    b.  **Propose**: Draft a concise commit message that explains the *what* and *why* of the change. Present this draft to the user for review.
+    b.  **Propose**: Draft a commit message following the **Standard Git Style** (details below). Present this draft to the user for review.
     c.  **Commit**: Upon user confirmation, run `git add <files>` followed by `git commit -m "<message>"`.
 5.  **Verify**: After processing all groups, run `git status` to ensure the working tree is clean.
+
+**Commit Message Guidelines (Standard Git Style)**:
+-   **Subject Line**:
+    -   Keep it under 50 characters.
+    -   Use the imperative mood (e.g., "Fix bug" not "Fixed bug" or "Fixes bug").
+    -   Do not end with a period.
+    -   Capitalize the first letter.
+-   **Body** (Optional but recommended for non-trivial changes):
+    -   Separate from the subject by a blank line.
+    -   Wrap text at 72 characters.
+    -   Explain *what* changed and *why*, not just *how*.
 
 **Crucial Constraints**:
 -   **One commit per logical change**: Do not squash unrelated changes into a single commit.
