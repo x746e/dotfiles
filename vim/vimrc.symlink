@@ -27,6 +27,7 @@ Plugin 'tpope/vim-dispatch'
 Plugin 'tpope/vim-unimpaired'
 Plugin 'tpope/vim-fugitive'
 Plugin 'gentoo/gentoo-syntax'
+Plugin 'python-rope/ropevim'
 
 call vundle#end()
 
@@ -107,7 +108,10 @@ set showbreak=->
 set display=lastline
 
 " Format options
-set textwidth=105
+set textwidth=93
+set colorcolumn=+1
+highlight ColorColumn ctermbg=235 guibg=#2c2c2c
+
 
 " Themes and colors
 set background=dark
