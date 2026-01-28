@@ -1,9 +1,14 @@
 [alias]
 co = update --check
+
 ds = diff --stat
 dds = diff -c . --stat
+
+# Preserve a way to get a non-fancy unified diff.
+udiff = diff
 diff = delta
 di = diff
+
 qs = qseries -v --summary
 qds = diff -r qparent: --stat
 glog = log -G

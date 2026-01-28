@@ -8,7 +8,7 @@
   - *Pattern:* `[<topic>] <Subject>`
   - *Examples:*
     - `[zsh] Add backup function`
-    - `[gemini] Update commit command`
+    - `[gemini] Update /ksp:commit`
 
 ## Rules for handling dotfiles/gemini
 
