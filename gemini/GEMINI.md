@@ -4,3 +4,6 @@
 ## Markdown Formatting
 After editing markdown files you *MUST*:
 *   **Formatter:** Format markdown files with `mdformat --number --wrap 80`.
+
+## Shell Safety
+*   **Backticks in Double Quotes:** Do NOT use backticks (`) inside double-quoted strings passed to `run_shell_command`. Shells interpret these as command substitutions. Use single quotes for the outer string, or escape the backticks (`\` `).
