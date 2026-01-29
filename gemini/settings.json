@@ -2,7 +2,8 @@
   "context": {
     "includeDirectories": [
       "/google/src/files",
-      "/usr/local/google/home/ksp/dotfiles-ext/gemini"
+      "/usr/local/google/home/ksp/.gemini",
+      "/usr/local/google/home/ksp/.gemini/ext"
     ],
     "loadMemoryFromIncludeDirectories": true
   },
