@@ -15,3 +15,12 @@ After editing markdown files you *MUST*:
   strings passed to `run_shell_command`. Shells interpret these as command
   substitutions. Use single quotes for the outer string, or escape the backticks
   ("\`").
+
+## Output Formatting
+
+- **Tables vs Lists:** You may use tables for small datasets that fit
+  comfortably within the terminal width without truncation.
+- **Avoid Truncation:** If a table would require truncating content (e.g., using
+  "..." inside cells) or wrapping lines awkwardly to fit, **do not use a
+  table**. Instead, use a bulleted list or a structured Markdown format that
+  allows the full text to be displayed clearly.
