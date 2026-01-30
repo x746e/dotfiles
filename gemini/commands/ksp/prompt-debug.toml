@@ -1,0 +1,5 @@
+description = "Instructs Gemini CLI to help debugging prompts not doing what is expected." 
+
+prompt = """
+@prompt-debug.md
+"""
