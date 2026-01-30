@@ -21,3 +21,9 @@ toolName = "run_shell_command"
 commandPrefix = "git diff"
 decision = "allow"
 priority = 100
+
+[[rule]]
+toolName = "run_shell_command"
+commandPrefix = "git grep"
+decision = "allow"
+priority = 100
