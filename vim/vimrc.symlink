@@ -27,7 +27,7 @@ Plugin 'tpope/vim-dispatch'
 Plugin 'tpope/vim-unimpaired'
 Plugin 'tpope/vim-fugitive'
 Plugin 'gentoo/gentoo-syntax'
-Plugin 'python-rope/ropevim'
+" Plugin 'python-rope/ropevim'
 
 call vundle#end()
 
