@@ -1,0 +1,10 @@
+description = "Captures a text screenshot of a specific tmux window."
+
+prompt = """
+Capture the content of a specific tmux window pane provided by the user (as a 0-based index) to a file named `tui_snapshot.txt` inside the **project's temporary directory**.
+
+Steps:
+1.  Identify the **project's temporary directory** path from your system context.
+2.  Capture the target window's active pane: `tmux capture-pane -pe -t :<user_provided_index> > <temp_dir_path>/tui_snapshot.txt`.
+3.  Read and display the content of that file.
+"""
