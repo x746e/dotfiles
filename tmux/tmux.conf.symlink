@@ -92,3 +92,6 @@ set-option -g display-panes-colour colour166 #orange
 # clock
 set-option -w -g clock-mode-colour colour64 #green
 # }}}
+
+# Create a bug from selection
+bind-key -T copy-mode-vi B send-keys -X copy-pipe-and-cancel 'cat > /tmp/gemini_bug_desc; tmux command-prompt -p "Bug Title:" "run-shell \"cd #{pane_current_path} && cat /tmp/gemini_bug_desc | uv run bugs create --title \\\"%%\\\" --description - && tmux display-message \\\"Bug Created!\\\"\""'
