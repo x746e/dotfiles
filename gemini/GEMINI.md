@@ -15,6 +15,7 @@ After editing markdown files you *MUST*:
   strings passed to `run_shell_command`. Shells interpret these as command
   substitutions. Use single quotes for the outer string, or escape the backticks
   ("\`").
+- **Search:** Use `rg` instead of `grep` to respect `.gitignore` and `.git/`.
 
 ## Output Formatting
 
