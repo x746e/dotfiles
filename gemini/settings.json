@@ -37,5 +37,21 @@
   },
   "model": {
     "name": "gemini-3-pro-preview"
+  },
+  "mcp": {
+    "excluded": []
+  },
+  "mcpServers": {
+    "bugs-mcp": {
+      "command": "uv",
+      "args": [
+        "run",
+        "bugs-mcp"
+      ],
+      "cwd": "/usr/local/google/home/ksp/projects/bbwf",
+      "env": {
+        "PYTHONUNBUFFERED": "1"
+      }
+    }
   }
 }
