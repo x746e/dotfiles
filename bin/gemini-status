@@ -1,0 +1,167 @@
+#!/usr/bin/env python3
+"""
+Checks status of Gemini CLI instances in tmux panes.
+Usage:
+  gemini-status          # Output for tmux status bar (e.g. "✋ 1 ✦ 2 ◇ 1")
+  gemini-status --list   # List details of active instances
+  gemini-status --jump   # Interactive menu to jump to an instance
+"""
+import subprocess
+import sys
+import argparse
+import tty
+import termios
+
+def get_tmux_panes():
+    # Use tabs as separators to handle spaces in titles correctly
+    cmd = ['tmux', 'list-panes', '-a', '-F', '#{session_name}\t#{window_index}\t#{pane_index}\t#{pane_title}']
+    try:
+        output = subprocess.check_output(cmd, text=True)
+    except subprocess.CalledProcessError:
+        return []
+    except FileNotFoundError:
+        return []
+    
+    panes = []
+    for line in output.strip().split('\n'):
+        if not line: continue
+        parts = line.split('\t')
+        if len(parts) < 4: continue
+        
+        session, window, pane, title = parts
+        
+        status = None
+        if '✋' in title:
+            status = 'waiting'
+        elif '✦' in title:
+            status = 'working'
+        elif '◇' in title:
+            status = 'idle'
+        
+        if status:
+            panes.append({
+                'session': session,
+                'window': window,
+                'pane': pane,
+                'title': title.strip(),
+                'status': status,
+                'target': f"{session}:{window}.{pane}"
+            })
+    return panes
+
+def print_status_bar(panes):
+    waiting = [p for p in panes if p['status'] == 'waiting']
+    working = [p for p in panes if p['status'] == 'working']
+    idle = [p for p in panes if p['status'] == 'idle']
+    
+    output_parts = []
+    if waiting:
+        # Red hand, Yellow number for waiting attention
+        output_parts.append(f"#[fg=colour196,bold]✋ #[fg=colour226]{len(waiting)}#[default]")
+    if working:
+        # Gray for working (matching non-selected windows)
+        output_parts.append(f"#[fg=colour244,dim]✦ {len(working)}#[default]")
+    if idle:
+        # Blue for idle
+        output_parts.append(f"#[fg=colour33,bold]◇ {len(idle)}#[default]")
+        
+    if output_parts:
+        print(" " + " ".join(output_parts))
+
+def print_list(panes):
+    if not panes:
+        print("No active Gemini instances found.")
+        return
+
+    # Group by session
+    by_session = {}
+    for p in panes:
+        by_session.setdefault(p['session'], []).append(p)
+        
+    for session, p_list in by_session.items():
+        print(f"Session: {session}")
+        for p in p_list:
+            if p['status'] == 'waiting':
+                icon = "✋"
+            elif p['status'] == 'working':
+                icon = "✦"
+            else:
+                icon = "◇"
+            print(f"  {icon}  Window {p['window']}.{p['pane']}: {p['title']}")
+
+def get_key():
+    fd = sys.stdin.fileno()
+    old_settings = termios.tcgetattr(fd)
+    try:
+        tty.setraw(sys.stdin.fileno())
+        ch = sys.stdin.read(1)
+    finally:
+        termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+    return ch
+
+def interactive_jump(panes):
+    if not panes:
+        print("No active Gemini instances found.")
+        # Wait for a keypress so the popup doesn't close immediately if empty
+        print("Press any key to close...")
+        get_key()
+        return
+
+    # Generate keys: 1-9, then a-z
+    keys = [str(i) for i in range(1, 10)] + [chr(i) for i in range(ord('a'), ord('z') + 1)]
+    
+    mapping = {}
+    print("\033[1mSelect a Gemini instance to jump to:\033[0m")
+    
+    # Sort panes: waiting (0), working (1), idle (2), then by session
+    def sort_key(x):
+        priority = {'waiting': 0, 'working': 1, 'idle': 2}
+        return (priority.get(x['status'], 3), x['session'], x['window'])
+
+    panes.sort(key=sort_key)
+
+    for i, p in enumerate(panes):
+        if i >= len(keys):
+            break
+        key = keys[i]
+        mapping[key] = p
+        
+        if p['status'] == 'waiting':
+            icon = "✋"
+            color_code = "\033[1;38;5;196m" # Bold Red
+        elif p['status'] == 'working':
+            icon = "✦"
+            color_code = "\033[38;5;244m"   # Gray (Not Bold)
+        else:
+            icon = "◇"
+            color_code = "\033[1;38;5;33m"  # Bold Blue
+        
+        print(f" [\033[1;33m{key}\033[0m] {color_code}{icon}\033[0m {p['session']}:{p['window']} - {p['title']}")
+
+    print("\n(Press 'q' or Esc to cancel)")
+    
+    key = get_key()
+    
+    if key in mapping:
+        target = mapping[key]['target']
+        subprocess.run(['tmux', 'switch-client', '-t', target])
+    elif key == 'q' or key == '\x1b': # q or ESC
+        return
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--list', '-l', action='store_true', help='List details')
+    parser.add_argument('--jump', '-j', action='store_true', help='Interactive jump menu')
+    args = parser.parse_args()
+    
+    panes = get_tmux_panes()
+    
+    if args.jump:
+        interactive_jump(panes)
+    elif args.list:
+        print_list(panes)
+    else:
+        print_status_bar(panes)
+
+if __name__ == '__main__':
+    main()
