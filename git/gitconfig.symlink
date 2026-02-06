@@ -10,6 +10,7 @@
 	cin = commit
 	ci = commit --all
 	cia = commit --amend --all
+	amend = cia
 	co = checkout
 	st = status --short
 	di = diff -M
