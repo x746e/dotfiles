@@ -11,7 +11,9 @@
     "format": "text"
   },
   "general": {
-    "previewFeatures": true
+    "previewFeatures": true,
+    "vimMode": true,
+    "preferredEditor": "neovim"
   },
   "ui": {
     "footer": {
@@ -36,19 +38,15 @@
     "plan": true
   },
   "model": {
-    "name": "gemini-3-pro-preview"
+    "name": "auto-gemini-3"
   },
   "mcp": {
     "excluded": []
   },
   "mcpServers": {
     "bugs-mcp": {
-      "command": "uv",
-      "args": [
-        "run",
-        "bugs-mcp"
-      ],
-      "cwd": "/usr/local/google/home/ksp/projects/bbwf",
+      "command": "/usr/local/google/home/ksp/bin/bugs-mcp",
+      "args": [],
       "env": {
         "PYTHONUNBUFFERED": "1"
       }

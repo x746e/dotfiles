@@ -1,3 +1,11 @@
+## Plan Management
+
+- **Persistence:** NEVER delete implementation plan files (typically found in
+  the `<temp-dir>/plans/`).
+- **Archiving:** When a plan is completed, move it to a `<temp-dir>/done/` subdirectory
+  within the `<temp-dir>/plans/` directory
+  (e.g., `mv <temp-dir>/plans/my-task.md <temp-dir>/plans/done/`).
+
 ## TODO.md Management
 
 - **Marking as Completed:** When marking an entry in `TODO.md` as completed,
@@ -25,3 +33,6 @@ After editing markdown files you *MUST*:
   "..." inside cells) or wrapping lines awkwardly to fit, **do not use a
   table**. Instead, use a bulleted list or a structured Markdown format that
   allows the full text to be displayed clearly.
+
+## Gemini Added Memories
+- The user specifically reprimanded me for running `grep` over the Google3 root directory, reinforcing the mandatory rule to use `search_for_files_codesearch` or specific file reads instead of filesystem recursion.
