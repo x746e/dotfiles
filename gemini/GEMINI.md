@@ -36,3 +36,14 @@ After editing markdown files you *MUST*:
 
 ## Gemini Added Memories
 - The user specifically reprimanded me for running `grep` over the Google3 root directory, reinforcing the mandatory rule to use `search_for_files_codesearch` or specific file reads instead of filesystem recursion.
+
+## Tmux Snapshot Instructions
+
+- **Snapshot Instruction:** When asked to "take a snapshot/screenshot" of a tmux
+  pane <PANE_ID>, run `tmux-capture <PANE_ID> <project-temp-dir>/<snapshot_name.ansi>`.
+  Examples:
+  - Prompt: "Take a snapshot of the :2 pane"; Run:
+    `tmux-capture :2 <project-temp-dir>/snapshot_2.ansi`.
+  - Prompt: "Take a look at the failure in :3.1"; Run:
+    `tmux-capture :3.1 <project-temp-dir>/failure.ansi`.
+  * Use `tmux-capture --html` to get the snapshot as html.
