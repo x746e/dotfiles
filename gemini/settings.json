@@ -5,7 +5,10 @@
       "/usr/local/google/home/ksp/.gemini",
       "/usr/local/google/home/ksp/.gemini/ext"
     ],
-    "loadMemoryFromIncludeDirectories": true
+    "loadMemoryFromIncludeDirectories": true,
+    "fileFiltering": {
+      "respectGitIgnore": false
+    }
   },
   "output": {
     "format": "text"
