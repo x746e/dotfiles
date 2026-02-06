@@ -10,4 +10,4 @@ HERE="$(dirname "$(realpath $0)")"
 CONF_DIR="$HOME/.config"
 
 mkdir -p "$CONF_DIR"
-create_symlink "$HERE/dot-config-nvim" "$CONF_DIR/nvim"
+create_symlink "$HERE/config" "$CONF_DIR/nvim"
