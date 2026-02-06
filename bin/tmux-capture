@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+#
+# Captures the content of a tmux pane to stdout or a file.
+#
+# Supports raw text or HTML output (requires 'aha' for HTML).
+#
+# Arguments:
+#   --html         Convert output to HTML.
+#   <pane-id>      Target pane (e.g., %1, top-right).
+#   [output-file]  Output file. Defaults to stdout.
+
+set -eu
+
+USE_HTML=0
+ARGS=()
+
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    --html)
+      USE_HTML=1
+      shift
+      ;;
+    *)
+      ARGS+=("$1")
+      shift
+      ;;
+  esac
+done
+
+# Validate required args
+if [ ${#ARGS[@]} -lt 1 ]; then
+  echo "usage: $0 [--html] <pane-id> [output-file]" >&2
+  exit 1
+fi
+
+PANE_ID="${ARGS[0]}"
+# Check if a second argument exists for output file
+if [ ${#ARGS[@]} -ge 2 ]; then
+    OUTPUT_FILE="${ARGS[1]}"
+else
+    OUTPUT_FILE=""
+fi
+
+# Define capture function
+capture() {
+  if [ "$USE_HTML" -eq 1 ]; then
+    # -pe prints to stdout, escaped.
+    # We pipe to aha.
+    tmux capture-pane -pe -t "$PANE_ID" | aha --no-header
+  else
+    tmux capture-pane -pe -t "$PANE_ID"
+  fi
+}
+
+# Execute
+if [ -n "$OUTPUT_FILE" ]; then
+  capture > "$OUTPUT_FILE"
+else
+  capture
+fi
