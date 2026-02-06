@@ -35,7 +35,7 @@
   },
   "experimental": {
     "skills": true,
-    "plan": true
+    "plan": false
   },
   "model": {
     "name": "auto-gemini-3"
