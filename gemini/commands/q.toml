@@ -1,0 +1,10 @@
+description = "Ask a question, emphasize that the model actually needs to provied an answer."
+
+prompt = """
+*PAUSE* the current procedure, *DO NOT CONTINUE* until responding with an answer to the
+user's question:
+
+{args}
+
+*DO NOT CONTINUE* until an explicit command to continue from the user.
+"""
