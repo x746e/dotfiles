@@ -15,7 +15,7 @@
   },
   "general": {
     "previewFeatures": true,
-    "vimMode": true,
+    "vimMode": false,
     "preferredEditor": "neovim"
   },
   "ui": {
@@ -41,7 +41,7 @@
     "plan": false
   },
   "model": {
-    "name": "auto-gemini-3"
+    "name": "gemini-3-pro-preview"
   },
   "mcp": {
     "excluded": []
