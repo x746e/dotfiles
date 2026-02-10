@@ -113,9 +113,9 @@ def interactive_jump(panes):
     mapping = {}
     print("\033[1mSelect a Gemini instance to jump to:\033[0m")
     
-    # Sort panes: waiting (0), working (1), idle (2), then by session
+    # Sort panes: waiting (0), idle (1), working (2), then by session
     def sort_key(x):
-        priority = {'waiting': 0, 'working': 1, 'idle': 2}
+        priority = {'waiting': 0, 'idle': 1, 'working': 2}
         return (priority.get(x['status'], 3), x['session'], x['window'])
 
     panes.sort(key=sort_key)
