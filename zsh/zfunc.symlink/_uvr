@@ -1,0 +1,31 @@
+#compdef uvr
+
+_uvr_commands() {
+    local -a commands
+    # `uv run` prints the list of commands to stderr and exits with 2.
+    # We redirect stderr to stdout to capture it.
+    commands=(${(f)"$(uv run 2>&1 | sed -n 's/^- //p')"})
+
+    _alternative \
+      'commands:project command:compadd -a commands' \
+      'scripts:python script:_files -g "*.py"' \
+      'executables:executable file:_files -g "*(*)"'
+}
+
+_uvr() {
+    local curcontext="$curcontext" state line
+    typeset -A opt_args
+
+    _arguments \
+      '*::args:->args'
+
+    if [[ "$state" == args ]]; then
+        if (( CURRENT == 1 )); then
+            _uvr_commands
+        else
+            _normal
+        fi
+    fi
+}
+
+_uvr "$@"
