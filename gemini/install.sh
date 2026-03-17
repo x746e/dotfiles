@@ -19,3 +19,9 @@ for link_target in "$DOTFILES_ROOT"/gemini/policies/*; do
   link_file="$HOME/.gemini/policies/$(basename "$link_target")"
   create_symlink "$link_target" "$link_file"
 done
+
+mkdir -p "$HOME/bin"
+for link_target in "$DOTFILES_ROOT"/gemini/bin/*; do
+  link_file="$HOME/bin/$(basename "$link_target")"
+  create_symlink "$link_target" "$link_file"
+done

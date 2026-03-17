@@ -1,0 +1,31 @@
+#!/bin/bash
+# Usage: gemini-sandboxed [args...]
+
+WORKSPACE="$PWD"
+
+RW_PATHS=(
+  "/tmp"
+  "/export/hda3/tmp"
+  "/run"
+  "$WORKSPACE"
+  "$HOME/.gemini"
+  "$HOME/.cache"
+)
+
+BWRAP_ARGS=(
+  "--ro-bind" "/" "/"
+  "--dev-bind" "/dev" "/dev"
+  "--proc" "/proc"
+)
+
+for path in "${RW_PATHS[@]}"; do
+  # Resolve to actual physical path to handle symlinks (like /export/hda3) safely
+  if [ -e "$path" ]; then
+    real_path=$(realpath "$path")
+    if [ -d "$real_path" ]; then
+      BWRAP_ARGS+=("--bind" "$real_path" "$real_path")
+    fi
+  fi
+done
+
+exec bwrap "${BWRAP_ARGS[@]}" gemini --proxy=false "$@"
