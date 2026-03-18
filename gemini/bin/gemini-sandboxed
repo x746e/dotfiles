@@ -12,6 +12,10 @@ RW_PATHS=(
   "$HOME/.cache"
 )
 
+if [[ "$WORKSPACE" =~ ^(/google/src/cloud/[^/]+/[^/]+) ]]; then
+  RW_PATHS+=("${BASH_REMATCH[1]}")
+fi
+
 DOCKER_ARGS=(
   "-i"
   "--rm"
