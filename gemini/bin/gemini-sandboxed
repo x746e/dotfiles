@@ -12,20 +12,42 @@ RW_PATHS=(
   "$HOME/.cache"
 )
 
-BWRAP_ARGS=(
-  "--ro-bind" "/" "/"
-  "--dev-bind" "/dev" "/dev"
-  "--proc" "/proc"
+DOCKER_ARGS=(
+  "-i"
+  "--rm"
+  "--net=host"
+  "--ipc=host"
+  "--pid=host"
+  "-v" "/:/real-root:ro"
+  "-v" "/dev:/real-root/dev:ro"
+  "-v" "/proc:/real-root/proc:ro"
 )
+
+if [ -t 0 ]; then
+  DOCKER_ARGS+=("-t")
+fi
 
 for path in "${RW_PATHS[@]}"; do
   # Resolve to actual physical path to handle symlinks (like /export/hda3) safely
   if [ -e "$path" ]; then
     real_path=$(realpath "$path")
     if [ -d "$real_path" ]; then
-      BWRAP_ARGS+=("--bind" "$real_path" "$real_path")
+      DOCKER_ARGS+=("-v" "$real_path:/real-root$real_path")
     fi
   fi
 done
 
-exec bwrap "${BWRAP_ARGS[@]}" gemini --proxy=false "$@"
+ENV_VARS=(
+  "PATH=$PATH"
+  "HOME=$HOME"
+  "USER=$USER"
+  "LOGNAME=$LOGNAME"
+  "GEMINI_API_KEY=$GEMINI_API_KEY"
+  "TERM=$TERM"
+)
+
+for env_var in "${ENV_VARS[@]}"; do
+  DOCKER_ARGS+=("-e" "$env_var")
+done
+
+exec docker run "${DOCKER_ARGS[@]}" busybox:latest chroot /real-root env --chdir="$WORKSPACE" setpriv --reuid "$(id -u)" --regid "$(id -g)" --init-groups gemini --proxy=false "$@"
