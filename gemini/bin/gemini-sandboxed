@@ -10,6 +10,7 @@ RW_PATHS=(
   "$WORKSPACE"
   "$HOME/.gemini"
   "$HOME/.cache"
+  "/usr/local/google/_blaze_$USER"
 )
 
 if [[ "$WORKSPACE" =~ ^(/google/src/cloud/[^/]+/[^/]+) ]]; then
@@ -25,6 +26,7 @@ DOCKER_ARGS=(
   "-v" "/:/real-root:ro"
   "-v" "/dev:/real-root/dev:ro"
   "-v" "/proc:/real-root/proc:ro"
+  --device /dev/kvm
 )
 
 if [ -t 0 ]; then
