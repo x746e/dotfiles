@@ -1,3 +1,7 @@
+## Temporary Files & Verification
+
+- **Location:** Write temporary files, reproduction scripts, scratchpads, and verification tests (e.g., `repro.py`, `debug_test.py`) to the project's temporary directory: `$HOME/.gemini/tmp/<project-name-or-hash>/`. **FORBIDDEN:** NEVER write these temporary files to the repository root.
+
 ## Plan Management
 
 - **Persistence:** NEVER delete implementation plan files (typically found in
@@ -8,14 +12,8 @@
 
 ## TODO.md Management
 
-- **Marking as Completed:** When marking an entry in `TODO.md` as completed,
+- **Marking as Completed:** When marking an entry already existing in `TODO.md` as completed,
   move it to the top of the "Completed Items" section at the bottom of the file.
-
-## Markdown Formatting
-
-After editing markdown files you *MUST*:
-
-- **Formatter:** Format markdown files with `mdformat --number --wrap 80`.
 
 ## Shell Safety
 
@@ -35,7 +33,10 @@ After editing markdown files you *MUST*:
   allows the full text to be displayed clearly.
 
 ## Gemini Added Memories
-- The user specifically reprimanded me for running `grep` over the Google3 root directory, reinforcing the mandatory rule to use `search_for_files_codesearch` or specific file reads instead of filesystem recursion.
+- The user specifically reprimanded me for running `grep` over the Google3 root directory,
+  reinforcing the mandatory rule to use `search_for_files_codesearch` or specific file reads
+  instead of filesystem recursion.
+- When writing files or executing shell commands, DO NOT use heredocs (e.g., `cat << 'EOF' > file.py`). Instead, prioritize custom tools like `write_file` or `replace` when available.
 
 ## Tmux Snapshot Instructions
 
