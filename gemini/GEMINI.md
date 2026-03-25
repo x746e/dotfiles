@@ -1,14 +1,17 @@
 ## Temporary Files & Verification
 
-- **Location:** Write temporary files, reproduction scripts, scratchpads, and verification tests (e.g., `repro.py`, `debug_test.py`) to the project's temporary directory: `$HOME/.gemini/tmp/<project-name-or-hash>/`. **FORBIDDEN:** NEVER write these temporary files to the repository root.
+- **Location:** Write temporary files, reproduction scripts, scratchpads, and verification
+  tests (e.g., `repro.py`, `debug_test.py`) to the project's temporary directory:
+  `$HOME/.gemini/tmp/<project-name-or-hash>/`. **FORBIDDEN:** NEVER write these temporary
+  files to the repository root.
 
 ## Plan Management
 
-- **Persistence:** NEVER delete implementation plan files (typically found in
-  the `<temp-dir>/plans/`).
+- **Persistence:** NEVER delete implementation plan files (typically found in the
+  `<temp-dir>/plans/`).
 - **Archiving:** When a plan is completed, move it to a `<temp-dir>/done/` subdirectory
-  within the `<temp-dir>/plans/` directory
-  (e.g., `mv <temp-dir>/plans/my-task.md <temp-dir>/plans/done/`).
+  within the `<temp-dir>/plans/` directory (e.g.,
+  `mv <temp-dir>/plans/my-task.md <temp-dir>/plans/done/`).
 
 ## TODO.md Management
 
@@ -17,32 +20,32 @@
 
 ## Shell Safety
 
-- **Backticks in Double Quotes:** Do NOT use backticks (\`) inside double-quoted
-  strings passed to `run_shell_command`. Shells interpret these as command
-  substitutions. Use single quotes for the outer string, or escape the backticks
-  ("\`").
+- **Backticks in Double Quotes:** Do NOT use backticks (\`) inside double-quoted strings
+  passed to `run_shell_command`. Shells interpret these as command substitutions. Use single
+  quotes for the outer string, or escape the backticks ("\`").
 - **Search:** Use `rg` instead of `grep` to respect `.gitignore` and `.git/`.
 
 ## Output Formatting
 
-- **Tables vs Lists:** You may use tables for small datasets that fit
-  comfortably within the terminal width without truncation.
-- **Avoid Truncation:** If a table would require truncating content (e.g., using
-  "..." inside cells) or wrapping lines awkwardly to fit, **do not use a
-  table**. Instead, use a bulleted list or a structured Markdown format that
-  allows the full text to be displayed clearly.
+- **Tables vs Lists:** You may use tables for small datasets that fit comfortably within the
+  terminal width without truncation.
+- **Avoid Truncation:** If a table would require truncating content (e.g., using "..." inside
+  cells) or wrapping lines awkwardly to fit, **do not use a table**. Instead, use a bulleted
+  list or a structured Markdown format that allows the full text to be displayed clearly.
 
 ## Gemini Added Memories
+
 - The user specifically reprimanded me for running `grep` over the Google3 root directory,
   reinforcing the mandatory rule to use `search_for_files_codesearch` or specific file reads
   instead of filesystem recursion.
-- When writing files or executing shell commands, DO NOT use heredocs (e.g., `cat << 'EOF' > file.py`). Instead, prioritize custom tools like `write_file` or `replace` when available.
+- When writing files or executing shell commands, DO NOT use heredocs (e.g.,
+  `cat << 'EOF' > file.py`). Instead, prioritize custom tools like `write_file` or `replace`
+  when available.
 
 ## Tmux Snapshot Instructions
 
-- **Snapshot Instruction:** When asked to "take a snapshot/screenshot" of a tmux
-  pane <PANE_ID>, run `tmux-capture <PANE_ID> <project-temp-dir>/<snapshot_name.ansi>`.
-  Examples:
+- **Snapshot Instruction:** When asked to "take a snapshot/screenshot" of a tmux pane
+  \<PANE_ID>, run `tmux-capture <PANE_ID> <project-temp-dir>/<snapshot_name.ansi>`. Examples:
   - Prompt: "Take a snapshot of the :2 pane"; Run:
     `tmux-capture :2 <project-temp-dir>/snapshot_2.ansi`.
   - Prompt: "Take a look at the failure in :3.1"; Run:
