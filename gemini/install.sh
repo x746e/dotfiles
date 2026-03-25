@@ -25,3 +25,9 @@ for link_target in "$DOTFILES_ROOT"/gemini/bin/*; do
   link_file="$HOME/bin/$(basename "$link_target")"
   create_symlink "$link_target" "$link_file"
 done
+
+for skill_dir in "$DOTFILES_ROOT"/gemini/skills/*; do
+  if [ -d "$skill_dir" ]; then
+    gemini skills link "$skill_dir" --consent
+  fi
+done
