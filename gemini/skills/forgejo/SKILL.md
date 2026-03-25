@@ -20,6 +20,7 @@ This skill provides instructions for interacting with the local Forgejo server u
 - **List repos:** `tea-cli repos ls --login local -o yaml`
 - **Create a repo:** `tea-cli repos create --name <repo_name> --owner <org_name> --description "..." --login local`
   - *Note:* Use `--private` if it should be a private repository.
+- **Git Push/Clone:** See `references/repo-setup.md` for how to configure non-interactive authentication when setting up a new repository remote.
 
 ### 2. Issues
 - **List issues in a repo:** `tea-cli issues ls --repo <owner>/<repo_name> --login local -o yaml`
