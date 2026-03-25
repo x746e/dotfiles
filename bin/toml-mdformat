@@ -4,6 +4,7 @@
 # dependencies = [
 #     "mdformat",
 #     "tomlkit",
+#     "pytest",
 # ]
 # ///
 
@@ -61,7 +62,7 @@ def walk_and_format(node, wrap_length: int, changed=False):
                         changed = True
     return changed
 
-def test():
+def test_format_toml():
     print("Running tests...")
     
     # Test format_markdown_string directly
@@ -98,15 +99,10 @@ def main():
     parser = argparse.ArgumentParser(description="Format markdown inside TOML files.")
     parser.add_argument("--check", action="store_true", help="Check if files need formatting without modifying them.")
     parser.add_argument("--wrap", type=int, default=80, help="Line length for markdown wrapping.")
-    parser.add_argument("--self-test", action="store_true", help="Run self-tests.")
     parser.add_argument("files", nargs="*", help="TOML files to format.")
     
     args = parser.parse_args()
     
-    if args.self_test:
-        test()
-        sys.exit(0)
-        
     if not args.files:
         parser.print_usage()
         sys.exit(1)

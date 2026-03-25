@@ -1,4 +1,5 @@
 * Add README.
+* Add `lint` and `format` tasks to `Justfile` using `ruff`.
 * Rewrite install script into python (e.g. see
   https://github.com/koalaman/shellcheck/wiki/SC2044 for why it's not that a
   great idea to write shell scripts.).  In case if I will ever need to install
@@ -134,3 +135,45 @@ Steps:
 - proto messages
 - objects with .ToString() and .DebugString()
 - cgdb doesn't work with colorful bt from newer gdb-s.
+
+== gemini-status: "Unread" Sessions
+
+### Goal
+Track "unread" Gemini sessions in tmux. A session is "unread" if it finished a
+task (transitioned from "Working" or "Waiting" to "Idle") but the user has not
+yet viewed it (switched to that pane).
+
+### Desired Behavior
+1.  **Detection:**
+    *   If a session goes from `✦` (working) or `✋` (waiting) -> `◇` (idle), it
+        is marked as **Unread**.
+    *   If a session is active (focused), it is marked as **Read**.
+2.  **Status Bar:**
+    *   Show a count of "unread" idle sessions separately.
+    *   Use `◆` (filled diamond) for unread idle sessions.
+    *   Use `◇` (empty diamond) for read idle sessions.
+    *   Example: `✋ 0 ✦ 1 ◆ 2 ◇ 1` (1 working, 2 unread idle, 1 read idle).
+3.  **Jump Menu (`--jump`):**
+    *   Sort unread sessions near the top (below waiting, above read idle).
+    *   Highlight unread sessions with the `◆` icon and a distinct color (e.g.,
+        Bold Blue).
+
+### Implementation Plan
+1.  **State Persistence:**
+    *   Use `~/.gemini/gemini-status-state.json` to store:
+        *   `unread`: List of pane IDs that are unread.
+        *   `statuses`: Dictionary of `{pane_id: last_status}` to detect transitions.
+    *   This state must be updated on every run of `gemini-status`.
+2.  **Logic (`bin/gemini-status`):**
+    *   `load_state()` / `save_state()`: Helpers for atomic JSON file access.
+    *   `get_tmux_panes()`: Update to fetch `#{pane_id}` and `#{pane_active}`.
+    *   `update_unread_status(panes)`:
+        *   Load previous state.
+        *   For each pane:
+            *   If active: Remove from `unread` list.
+            *   If `prev_status` was working/waiting AND `curr_status` is idle: Add to `unread` list.
+        *   Save new state.
+        *   Return modified panes list with an `unread` boolean flag.
+3.  **Visuals:**
+    *   Update `print_status_bar` and `print_list`/`interactive_jump` to handle
+        the `unread` flag and use the `◆` icon.
