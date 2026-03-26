@@ -1,6 +1,7 @@
-______________________________________________________________________
-
-## name: forgejo description: Teaches the agent how to interact with the local Forgejo Git server. Use this when the user wants to read/write issues or create/manage repositories on the local Forgejo instance.
+---
+name: forgejo
+description: Teaches the agent how to interact with the local Forgejo Git server. Use this when the user wants to read/write issues or create/manage repositories on the local Forgejo instance.
+---
 
 # Forgejo Skill
 

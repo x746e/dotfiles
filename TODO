@@ -1,4 +1,6 @@
 * Add README.
+* Move `toml-mdformat` into its own repo, opensource, publish to PyPI.
+* Figure out the way to auto-update `uv tool` installed tools.  (E.g. just with cron?)
 * Add `lint` and `format` tasks to `Justfile` using `ruff`.
 * Rewrite install script into python (e.g. see
   https://github.com/koalaman/shellcheck/wiki/SC2044 for why it's not that a
