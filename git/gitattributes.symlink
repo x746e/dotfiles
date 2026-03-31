@@ -5,3 +5,7 @@
 *.jpg diff=image
 *.png diff=image
 *.svg diff=image
+
+*.ipynb	diff=jupyternotebook
+
+*.ipynb	merge=jupyternotebook

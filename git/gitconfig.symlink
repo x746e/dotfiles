@@ -45,7 +45,21 @@
 	side-by-side = true
 	line-numbers = true
 
-[include]
-	path = ~/dotfiles-ext/gitconfig
 [diff "image"]
 	command = /home/ksp/src/git-diff-image/git_diff_image
+[diff "jupyternotebook"]
+	command = git-nbdiffdriver diff
+[merge "jupyternotebook"]
+	driver = git-nbmergedriver merge %O %A %B %L %P
+	name = jupyter notebook merge driver
+[difftool "nbdime"]
+	cmd = git-nbdifftool diff \"$LOCAL\" \"$REMOTE\" \"$BASE\"
+[difftool]
+	prompt = false
+[mergetool "nbdime"]
+	cmd = git-nbmergetool merge \"$BASE\" \"$LOCAL\" \"$REMOTE\" \"$MERGED\"
+[mergetool]
+	prompt = false
+
+[include]
+	path = ~/dotfiles-ext/gitconfig
