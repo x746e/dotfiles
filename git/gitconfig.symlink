@@ -7,10 +7,9 @@
 	tool = kdiff3
 
 [alias]
-	cin = commit
 	ci = commit --all
-	cia = commit --amend --all
-	amend = cia
+	amend = commit --amend --no-edit
+	cia = amend --all
 	co = checkout
 	st = status --short
 	di = diff -M
