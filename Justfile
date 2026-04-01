@@ -9,13 +9,17 @@ fix:
     git ls-files -z '*.md' | xargs -0 mdformat --number --wrap {{wrap_length}}
     git ls-files -z '*.toml' | xargs -0 toml-mdformat --wrap {{wrap_length}}
     ./scripts/update-ruff-includes
+    ruff check --fix .
+    ruff format .
 
 verify-format:
     git ls-files -z '*.md' | xargs -0 mdformat --check --number --wrap {{wrap_length}}
     git ls-files -z '*.toml' | xargs -0 toml-mdformat --check --wrap {{wrap_length}}
+    ruff format --check .
 
 lint:
     ./scripts/update-ruff-includes --check
+    ruff check .
 
 # Auto-discover and run pytest on all Python tests and PEP 723 standalone scripts
 test:
