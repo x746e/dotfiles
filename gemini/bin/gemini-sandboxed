@@ -50,6 +50,7 @@ ENV_VARS=(
   "LOGNAME=$LOGNAME"
   "GEMINI_API_KEY=$GEMINI_API_KEY"
   "TERM=$TERM"
+  "SANDBOX=bwrap"
 )
 
 for env_var in "${ENV_VARS[@]}"; do
