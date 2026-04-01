@@ -29,7 +29,7 @@ class SourceDir(gdb.Command):
 
         path = Path(args.directory).expanduser()
         if not path.is_dir():
-            raise gdb.GdbError(f"{directory}: no such directory.")
+            raise gdb.GdbError(f"{path}: no such directory.")
 
         source_args = "-v" if args.verbose else ""
         for cmd_file in path.iterdir():
