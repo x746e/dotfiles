@@ -5,17 +5,36 @@
 # requires-python = ">=3.13"
 # ///
 
+import argparse
 import os
 import re
 import sys
 from pathlib import Path
 
 
+def valid_dir(path_str: str) -> Path:
+    path_obj = Path(path_str).expanduser().resolve()
+    if not path_obj.exists():
+        raise argparse.ArgumentTypeError(f"'{path_str}' does not exist")
+    if not path_obj.is_dir():
+        raise argparse.ArgumentTypeError(f"'{path_str}' is not a valid directory")
+    return path_obj
+
+
 def main() -> None:
-    _run_gemini(cli_args=sys.argv[1:])
+    parser = argparse.ArgumentParser(add_help=False)
+    parser.add_argument("--rw-path", action="append", type=valid_dir, default=[])
+    parser.add_argument("--tmpfs", action="append", type=valid_dir, default=[])
+    args, gemini_args = parser.parse_known_args(sys.argv[1:])
+
+    _run_gemini(
+        extra_rw_paths=args.rw_path,
+        tmpfs_paths=args.tmpfs,
+        cli_args=gemini_args,
+    )
 
 
-def _run_gemini(cli_args):
+def _run_gemini(extra_rw_paths: list[Path], tmpfs_paths: list[Path], cli_args: list[str]) -> None:
     cwd = os.getcwd()
     uid = os.getuid()
     gid = os.getgid()
@@ -26,14 +45,16 @@ def _run_gemini(cli_args):
     env_vars |= {"SANDBOX": "sandboxed"}
 
     rw_paths = _get_rw_paths(cwd)
+    rw_paths.extend(extra_rw_paths)
 
     docker_cmd = _build_docker_command(
         cwd=cwd,
         uid=uid,
         gid=gid,
         is_tty=is_tty,
-        env_vars=env_vars,
         rw_paths=rw_paths,
+        tmpfs_paths=tmpfs_paths,
+        env_vars=env_vars,
         cli_args=cli_args,
     )
 
@@ -86,6 +107,7 @@ def _build_docker_command(
     gid: int,
     is_tty: bool,
     rw_paths: list[Path],
+    tmpfs_paths: list[Path],
     env_vars: dict[str, str],
     cli_args: list[str],
 ) -> list[str]:
@@ -117,6 +139,9 @@ def _build_docker_command(
 
     for path in rw_paths:
         docker_args.extend(["-v", f"{path}:/real-root{path}"])
+
+    for path in tmpfs_paths:
+        docker_args.extend(["--tmpfs", f"/real-root{path}"])
 
     for key, value in env_vars.items():
         docker_args.extend(["-e", f"{key}={value}"])
@@ -173,10 +198,10 @@ if "PYTEST_VERSION" in os.environ:
 
 
     def test_build_docker_command_tty():
-        cmd_tty = _build_docker_command("/cwd", 1000, 1000, True, [], {}, ["--arg"])
+        cmd_tty = _build_docker_command("/cwd", 1000, 1000, True, [], [], {}, ["--arg"])
         assert "-t" in cmd_tty
 
-        cmd_notty = _build_docker_command("/cwd", 1000, 1000, False, [], {}, ["--arg"])
+        cmd_notty = _build_docker_command("/cwd", 1000, 1000, False, [], [], {}, ["--arg"])
         assert "-t" not in cmd_notty
 
     def test_build_docker_command_formatting():
@@ -186,6 +211,7 @@ if "PYTEST_VERSION" in os.environ:
             gid=5678,
             is_tty=False,
             rw_paths=[Path("/my/rw")],
+            tmpfs_paths=[],
             env_vars={"MY_ENV": "value"},
             cli_args=["--foo", "bar"],
         )
@@ -207,6 +233,38 @@ if "PYTEST_VERSION" in os.environ:
         assert '--chdir="/my/cwd"' in inner_script
         assert '--reuid "1234"' in inner_script
         assert '--regid "5678"' in inner_script
+
+    def test_build_docker_command_tmpfs():
+        cmd = _build_docker_command(
+            cwd="/my/cwd",
+            uid=1234,
+            gid=5678,
+            is_tty=False,
+            rw_paths=[],
+            tmpfs_paths=[Path("/my/tmpfs")],
+            env_vars={},
+            cli_args=[],
+        )
+        assert "--tmpfs" in cmd
+        assert "/real-root/my/tmpfs" in cmd
+
+    def test_valid_dir(tmp_path):
+        import pytest
+        
+        # Test valid directory
+        valid = valid_dir(str(tmp_path))
+        assert isinstance(valid, Path)
+        assert valid == tmp_path.resolve()
+
+        # Test non-existent path
+        with pytest.raises(argparse.ArgumentTypeError, match="does not exist"):
+            valid_dir(str(tmp_path / "does_not_exist"))
+
+        # Test file instead of directory
+        test_file = tmp_path / "test_file.txt"
+        test_file.touch()
+        with pytest.raises(argparse.ArgumentTypeError, match="is not a valid directory"):
+            valid_dir(str(test_file))
 
 
     def test_e2e():
