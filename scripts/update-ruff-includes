@@ -130,7 +130,8 @@ def main() -> None:
             sys.exit(0)
         else:
             print(
-                "Error: ruff.toml 'extend-include' is out of date. Run without --check to update.",
+                "Error: ruff.toml 'extend-include' is out of date. "
+                "Run without --check to update.",
                 file=sys.stderr,
             )
             sys.exit(1)

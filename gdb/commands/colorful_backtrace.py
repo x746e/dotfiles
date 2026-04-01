@@ -5,7 +5,6 @@ import re
 
 # import struct
 import termios
-import textwrap
 
 
 # Copied from termcolor {{{
@@ -173,25 +172,24 @@ class ColorfulBacktrace(gdb.Command):
         """
         nonlocals = {"first_line": True}
 
-        def print_line(l):
+        def print_line(line_str):
             if nonlocals["first_line"]:
-                print(l)
+                print(line_str)
                 nonlocals["first_line"] = False
             else:
-                print((" " * second_line_indent) + l)
+                print((" " * second_line_indent) + line_str)
 
         width = get_term_width() - second_line_indent
-        len_so_far = 0
         line = ""
         for part in s.split():
             maybe_new_line = line + " " + part if line else part
             if real_len(maybe_new_line) < width:
                 line = maybe_new_line
-                len_so_far = real_len(maybe_new_line)
+                real_len(maybe_new_line)
             else:
                 print_line(line)
                 line = part
-                len_so_far = real_len(line)
+                real_len(line)
         else:
             print_line(line)
 

@@ -8,17 +8,21 @@
 # ]
 # ///
 
-import sys
+"""Formats markdown inside TOML files."""
+
 import argparse
+import sys
+
+import mdformat
 import tomlkit
 from tomlkit.items import String
-import mdformat
 
 
 def format_markdown_string(text: str, wrap_length: int) -> str:
+    """Formats a single markdown string with a specified wrap length."""
     formatted = mdformat.text(text, options={"number": True, "wrap": wrap_length})
-    # TOML ignores the first newline after """. For readability, we always add a leading newline
-    # to multiline strings if they contain one.
+    # TOML ignores the first newline after """. For readability, we always add
+    # a leading newline to multiline strings if they contain one.
     if not formatted.startswith("\n"):
         formatted = "\n" + formatted
 
@@ -26,11 +30,10 @@ def format_markdown_string(text: str, wrap_length: int) -> str:
 
 
 def walk_and_format(node, wrap_length: int, changed=False):
+    """Recursively walks a TOML document and formats markdown strings."""
     if isinstance(node, dict):
         for k, v in node.items():
-            if isinstance(v, dict):
-                changed = walk_and_format(v, wrap_length, changed)
-            elif isinstance(v, list):
+            if isinstance(v, (dict, list)):
                 changed = walk_and_format(v, wrap_length, changed)
             elif isinstance(v, String):
                 original_text = v.unwrap()
@@ -56,9 +59,7 @@ def walk_and_format(node, wrap_length: int, changed=False):
                         changed = True
     elif isinstance(node, list):
         for i, v in enumerate(node):
-            if isinstance(v, dict):
-                changed = walk_and_format(v, wrap_length, changed)
-            elif isinstance(v, list):
+            if isinstance(v, (dict, list)):
                 changed = walk_and_format(v, wrap_length, changed)
             elif isinstance(v, String):
                 original_text = v.unwrap()
@@ -82,10 +83,14 @@ def walk_and_format(node, wrap_length: int, changed=False):
 
 
 def test_format_toml():
+    """Runs tests to verify the TOML formatting works correctly."""
     print("Running tests...")
 
     # Test format_markdown_string directly
-    text = "\n# Heading 1\n\nSome long text that should be wrapped because it exceeds the specified wrap length of 40 characters.\n"
+    text = (
+        "\n# Heading 1\n\nSome long text that should be wrapped because "
+        "it exceeds the specified wrap length of 40 characters.\n"
+    )
     formatted = format_markdown_string(text, 40)
     assert "\n" in formatted
     assert "wrapped\nbecause" in formatted, "Text should be wrapped"
@@ -120,6 +125,7 @@ This is a long task description that should be wrapped at 40 characters limit.
 
 
 def main():
+    """Main CLI entry point for toml-mdformat."""
     parser = argparse.ArgumentParser(description="Format markdown inside TOML files.")
     parser.add_argument(
         "--check",
@@ -143,7 +149,7 @@ def main():
     any_changed = False
 
     for file_path in args.files:
-        with open(file_path, "r", encoding="utf-8") as f:
+        with open(file_path, encoding="utf-8") as f:
             content = f.read()
 
         doc = tomlkit.parse(content)
