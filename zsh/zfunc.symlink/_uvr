@@ -7,24 +7,46 @@ _uvr_commands() {
     commands=(${(f)"$(uv run 2>&1 | sed -n 's/^- //p')"})
 
     _alternative \
-      'commands:project command:compadd -a commands' \
-      'scripts:python script:_files -g "*.py"' \
-      'executables:executable file:_files -g "*(*)"'
+      'commands:project command:compadd -a commands' #\
+      # 'scripts:python script:_files -g "*.py"' \
+      # 'executables:executable file:_files -g "*(*)"'
 }
 
 _uvr() {
-    local curcontext="$curcontext" state line
-    typeset -A opt_args
+    if (( CURRENT == 2 )); then
+        _uvr_commands
+    else
+        # Try to add .venv/bin to PATH so that _normal can find the executable
+        # and potentially trigger _python_argcomplete_global.
+        local workspace_dir
+        workspace_dir="$(uv workspace dir 2>/dev/null)"
+        local -x PATH="$workspace_dir/.venv/bin:$PATH"
+        rehash
+        # Ensure _python_argcomplete_global is defined
+        source ~/.zfunc/_python-argcomplete 2>/dev/null
 
-    _arguments \
-      '*::args:->args'
+        # Shadow BUFFER and CURSOR so argcomplete sees 'bbwf ...' instead of 'uvr bbwf ...'.
+        # argcomplete uses the full command line (BUFFER) to parse arguments, so it needs
+        # to believe it's running directly as 'bbwf' rather than 'uvr bbwf'.
+        local uvr_cmd="${BUFFER%% *}"
+        
+        # Use zsh parameter expansion to remove the command and leading whitespace
+        # We assume standard space separation for now to avoid complexity
+        local modified_buffer="${BUFFER#* }"
+        while [[ "$modified_buffer" == " "* ]]; do
+            modified_buffer="${modified_buffer# }"
+        done
+        
+        local prefix_len=$(( ${#BUFFER} - ${#modified_buffer} ))
+        local modified_cursor=$(( CURSOR - prefix_len ))
+        if (( modified_cursor < 0 )); then modified_cursor=0; fi
 
-    if [[ "$state" == args ]]; then
-        if (( CURRENT == 1 )); then
-            _uvr_commands
-        else
-            _normal
-        fi
+        shift words
+        (( CURRENT-- ))
+
+        ARGCOMPLETE_COMP_LINE="$modified_buffer" \
+        ARGCOMPLETE_COMP_POINT="$modified_cursor" \
+        _python_argcomplete_global
     fi
 }
 
