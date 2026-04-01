@@ -1,21 +1,21 @@
 class BreakReturn(gdb.Command):
-
     def __init__(self):
-        super().__init__('break-return', gdb.COMMAND_BREAKPOINTS, gdb.COMPLETE_NONE)
+        super().__init__("break-return", gdb.COMMAND_BREAKPOINTS, gdb.COMPLETE_NONE)
 
     def invoke(self, arg, from_tty):
         set_break_on_return()
+
 
 BreakReturn()
 
 
 class TemporaryBreakReturn(gdb.Command):
-
     def __init__(self):
-        super().__init__('tbreak-return', gdb.COMMAND_BREAKPOINTS, gdb.COMPLETE_NONE)
+        super().__init__("tbreak-return", gdb.COMMAND_BREAKPOINTS, gdb.COMPLETE_NONE)
 
     def invoke(self, arg, from_tty):
         set_break_on_return(temporary=True)
+
 
 TemporaryBreakReturn()
 
@@ -36,7 +36,7 @@ def set_break_on_return(temporary=False):
     return [
         gdb.Breakpoint('*{instruction["addr"]}', temporary=temporary)
         for instruction in instructions
-        if instruction['asm'].startswith('retq ')
+        if instruction["asm"].startswith("retq ")
     ]
 
 
