@@ -2,6 +2,7 @@ line-length = 93
 extend-include = [
     "bin/gemini-status",
     "bin/toml-mdformat",
+    "gemini/bin/gemini-sandboxed",
     "scripts/update-ruff-includes",
 ]
 

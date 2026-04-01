@@ -5,6 +5,11 @@
 # requires-python = ">=3.13"
 # ///
 
+"""Sandboxed wrapper for Gemini CLI.
+
+Executes Gemini within a restricted Docker container.
+"""
+
 import argparse
 import os
 import re
@@ -13,6 +18,7 @@ from pathlib import Path
 
 
 def valid_dir(path_str: str) -> Path:
+    """Validate that the provided string is a valid, existing directory."""
     path_obj = Path(path_str).expanduser().resolve()
     if not path_obj.exists():
         raise argparse.ArgumentTypeError(f"'{path_str}' does not exist")
@@ -22,6 +28,7 @@ def valid_dir(path_str: str) -> Path:
 
 
 def main() -> None:
+    """Parse arguments and start the sandboxed environment."""
     parser = argparse.ArgumentParser(add_help=False)
     parser.add_argument("--rw-path", action="append", type=valid_dir, default=[])
     parser.add_argument("--tmpfs", action="append", type=valid_dir, default=[])
@@ -34,7 +41,9 @@ def main() -> None:
     )
 
 
-def _run_gemini(extra_rw_paths: list[Path], tmpfs_paths: list[Path], cli_args: list[str]) -> None:
+def _run_gemini(
+    extra_rw_paths: list[Path], tmpfs_paths: list[Path], cli_args: list[str]
+) -> None:
     cwd = os.getcwd()
     uid = os.getuid()
     gid = os.getgid()
@@ -172,11 +181,14 @@ exec env --chdir="{cwd}" setpriv --reuid "{uid}" --regid "{gid}" --init-groups \
     return docker_args
 
 
+# --- Tests ---
+# ruff: disable[D103]
 if "PYTEST_VERSION" in os.environ:
     import contextlib
-    import tempfile
     import subprocess
+    import tempfile
 
+    import pytest
 
     def test_get_allowlisted_env_vars():
         fake_env = {"PATH": "/bin", "USER": "ksp", "SECRET": "hidden"}
@@ -184,18 +196,15 @@ if "PYTEST_VERSION" in os.environ:
         assert result == {"PATH": "/bin", "USER": "ksp"}
         assert "SECRET" not in result
 
-
     def test_generate_rw_paths():
         paths = _generate_rw_paths("/home/ksp/projects/foo")
         assert "/home/ksp/projects/foo" in paths
         assert "~/.gemini" in paths
 
-
     def test_generate_rw_paths_google3():
         paths = _generate_rw_paths("/google/src/cloud/ksp/my_workspace/google3/foo")
         assert "/google/src/cloud/ksp/my_workspace" in paths
         assert "/usr/local/google/_blaze_ksp" in paths
-
 
     def test_build_docker_command_tty():
         cmd_tty = _build_docker_command("/cwd", 1000, 1000, True, [], [], {}, ["--arg"])
@@ -249,8 +258,7 @@ if "PYTEST_VERSION" in os.environ:
         assert "/real-root/my/tmpfs" in cmd
 
     def test_valid_dir(tmp_path):
-        import pytest
-        
+
         # Test valid directory
         valid = valid_dir(str(tmp_path))
         assert isinstance(valid, Path)
@@ -266,13 +274,14 @@ if "PYTEST_VERSION" in os.environ:
         with pytest.raises(argparse.ArgumentTypeError, match="is not a valid directory"):
             valid_dir(str(test_file))
 
-
     def test_e2e():
         with tempfile.TemporaryDirectory() as d, chdir(d):
             bin_dir = Path(d) / "bin"
             bin_dir.mkdir()
             gemini_mock = bin_dir / "gemini"
-            gemini_mock.write_text("#!/bin/sh\ntouch ./rw-test\ntouch ~/rw-test 2>/dev/null\nexit 0\n")
+            gemini_mock.write_text(
+                "#!/bin/sh\ntouch ./rw-test\ntouch ~/rw-test 2>/dev/null\nexit 0\n"
+            )
             gemini_mock.chmod(0o755)
 
             env = os.environ.copy()
@@ -294,15 +303,17 @@ if "PYTEST_VERSION" in os.environ:
             assert Path("rw-test").exists()
             assert not Path("~/rw-test").expanduser().exists()
 
-
     @contextlib.contextmanager
     def chdir(new_cwd):
+        """Context manager to temporarily change the working directory."""
         old_cwd = os.getcwd()
         try:
             os.chdir(new_cwd)
             yield
         finally:
             os.chdir(old_cwd)
+
+# ruff: enable[D103]
 
 
 if __name__ == "__main__":
