@@ -158,7 +158,7 @@ def interactive_jump(panes: list[PaneInfo]) -> None:
 
     # Sort panes: waiting (0), working (1), idle (2), then by session/window
     def sort_key(x: PaneInfo) -> tuple[int, str, str]:
-        priority = {"waiting": 0, "working": 1, "idle": 2}
+        priority = {"waiting": 0, "idle": 1, "working": 2}
         return (priority.get(x["status"], 3), x["session"], x["window"])
 
     panes.sort(key=sort_key)
@@ -244,13 +244,13 @@ def test_sort_logic() -> None:
     ]
 
     def sort_key(x: PaneInfo) -> tuple[int, str, str]:
-        priority = {"waiting": 0, "working": 1, "idle": 2}
+        priority = {"waiting": 0, "idle": 1, "working": 2}
         return (priority.get(x["status"], 3), x["session"], x["window"])
 
     panes.sort(key=sort_key)
     assert panes[0]["status"] == "waiting"
-    assert panes[1]["status"] == "working"
-    assert panes[2]["status"] == "idle"
+    assert panes[1]["status"] == "idle"
+    assert panes[2]["status"] == "working"
 
 
 def main() -> None:
