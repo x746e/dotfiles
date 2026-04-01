@@ -211,14 +211,26 @@ if "PYTEST_VERSION" in os.environ:
 
     def test_e2e():
         with tempfile.TemporaryDirectory() as d, chdir(d):
+            bin_dir = Path(d) / "bin"
+            bin_dir.mkdir()
+            gemini_mock = bin_dir / "gemini"
+            gemini_mock.write_text("#!/bin/sh\ntouch ./rw-test\ntouch ~/rw-test 2>/dev/null\nexit 0\n")
+            gemini_mock.chmod(0o755)
+
+            env = os.environ.copy()
+            env["PATH"] = f"{bin_dir}:{env.get('PATH', '')}"
+
             subprocess.run(
                 [
                     sys.executable,
                     __file__,
+                    "-m",
+                    "flash-lite",
                     "-y",
                     "-p",
                     """Call `run_shell_command("touch ./rw-test; touch ~/rw-test")`""",
                 ],
+                env=env,
                 check=True,
             )
             assert Path("rw-test").exists()
