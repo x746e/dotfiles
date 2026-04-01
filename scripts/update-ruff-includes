@@ -1,0 +1,149 @@
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.10"
+# dependencies = [
+#     "pytest",
+#     "tomlkit",
+# ]
+# ///
+
+"""Utility script to automatically update ruff.toml with extensionless Python scripts.
+
+Ruff relies on file extensions to find Python files by default. This script scans
+the repository for extensionless executable scripts and adds them to the
+`extend-include` array in ruff.toml so that they are linted properly.
+"""
+
+import sys
+from pathlib import Path
+
+import tomlkit
+
+
+def is_extensionless_python_script(filepath: Path) -> bool:
+    """Check if a file is an extensionless Python script based on its shebang."""
+    if not filepath.is_file():
+        return False
+
+    if filepath.suffix:
+        # Ruff automatically picks up .py files. We only care about extensionless files.
+        return False
+
+    with filepath.open("rb") as f:
+        first_line = f.readline().decode("utf-8", errors="ignore").strip()
+
+        # Check for typical Python shebangs
+        if first_line.startswith("#!"):
+            return "python" in first_line or "uv run" in first_line
+
+    return False
+
+def get_python_scripts_to_include(repo_root: Path) -> list[str]:
+    """Find all extensionless Python scripts in bin/ and scripts/ directories."""
+    dirs_to_scan = ["bin", "scripts"]
+    python_scripts = []
+
+    for d in dirs_to_scan:
+        dir_path = repo_root / d
+        if not dir_path.is_dir():
+            continue
+
+        for filepath in sorted(dir_path.iterdir()):
+            if is_extensionless_python_script(filepath):
+                # We want paths in ruff.toml to be relative to the workspace/project root
+                python_scripts.append(f"{d}/{filepath.name}")
+
+    return python_scripts
+
+def update_ruff_toml(repo_root: Path, scripts: list[str]) -> None:
+    """Parse and update the ruff.toml configuration file with the provided scripts."""
+    ruff_toml_path = repo_root / "ruff" / "config" / "ruff.toml"
+
+    if not ruff_toml_path.exists():
+        print(f"Error: Could not find ruff.toml at {ruff_toml_path}", file=sys.stderr)
+        sys.exit(1)
+
+    # Parse and update ruff.toml
+    with ruff_toml_path.open("r", encoding="utf-8") as f:
+        doc = tomlkit.parse(f.read())
+
+    # Create a multiline array for clean formatting
+    arr = tomlkit.array()
+    for script in scripts:
+        arr.append(script)
+    arr.multiline(True)
+
+    doc["extend-include"] = arr
+
+    with ruff_toml_path.open("w", encoding="utf-8") as f:
+        f.write(tomlkit.dumps(doc))
+
+def main() -> None:
+    """Discover extensionless Python scripts and update ruff.toml."""
+    # Determine repo root relative to this script
+    script_path = Path(__file__).resolve()
+    repo_root = script_path.parent.parent
+
+    python_scripts = get_python_scripts_to_include(repo_root)
+    update_ruff_toml(repo_root, python_scripts)
+
+    print(
+        f"Successfully updated 'extend-include' in ruff.toml "
+        f"with {len(python_scripts)} scripts."
+    )
+    for script in python_scripts:
+        print(f"  - {script}")
+
+# --- Tests ---
+# ruff: disable[D103]
+def test_is_extensionless_python_script(tmp_path: Path):
+    # Valid Python script with shebang
+    py_script = tmp_path / "my_script"
+    py_script.write_text("#!/usr/bin/env python\nprint('hello')\n")
+    assert is_extensionless_python_script(py_script) is True
+
+    # Valid uv run script
+    uv_script = tmp_path / "uv_script"
+    uv_script.write_text("#!/usr/bin/env -S uv run\nprint('hello')\n")
+    assert is_extensionless_python_script(uv_script) is True
+
+    # File with extension
+    ext_script = tmp_path / "script.py"
+    ext_script.write_text("#!/usr/bin/env python\nprint('hello')\n")
+    assert is_extensionless_python_script(ext_script) is False
+
+    # Bash script
+    bash_script = tmp_path / "bash_script"
+    bash_script.write_text("#!/bin/bash\necho 'hello'\n")
+    assert is_extensionless_python_script(bash_script) is False
+
+    # Empty file
+    empty_file = tmp_path / "empty"
+    empty_file.write_text("")
+    assert is_extensionless_python_script(empty_file) is False
+
+def test_get_python_scripts_to_include(tmp_path: Path):
+    # Setup mock repo structure
+    bin_dir = tmp_path / "bin"
+    bin_dir.mkdir()
+    scripts_dir = tmp_path / "scripts"
+    scripts_dir.mkdir()
+
+    # Create files
+    (bin_dir / "valid_script").write_text("#!/usr/bin/env python\n")
+    (bin_dir / "bash_script").write_text("#!/bin/bash\n")
+    (scripts_dir / "uv_script").write_text("#!/usr/bin/env -S uv run --script\n")
+    (scripts_dir / "ignored.py").write_text("#!/usr/bin/env python\n")
+
+    found_scripts = get_python_scripts_to_include(tmp_path)
+
+    assert "bin/valid_script" in found_scripts
+    assert "scripts/uv_script" in found_scripts
+    assert "bin/bash_script" not in found_scripts
+    assert "scripts/ignored.py" not in found_scripts
+    assert len(found_scripts) == 2
+
+# ruff: enable[D103]
+
+if __name__ == "__main__":
+    main()

@@ -10,6 +10,7 @@ verify: test
 fix:
     git ls-files -z '*.md' | xargs -0 mdformat --number --wrap {{wrap_length}}
     git ls-files -z '*.toml' | xargs -0 toml-mdformat --wrap {{wrap_length}}
+    ./scripts/update-ruff-includes
 
 # Auto-discover and run pytest on all Python tests and PEP 723 standalone scripts
 test:

@@ -1,4 +1,10 @@
 line-length = 93
+extend-include = [
+    "bin/gemini-status",
+    "bin/gemini-status-v2",
+    "bin/toml-mdformat",
+    "scripts/update-ruff-includes",
+]
 
 [lint]
-select = ["E", "F", "I", "B", "UP", "A", "C4", "SIM", "RUF", "PLC0415"]
+select = ["E", "F", "I", "B", "UP", "A", "C4", "SIM", "RUF", "PLC0415", "D1"]
