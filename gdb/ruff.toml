@@ -1,0 +1,2 @@
+# Add `gdb` as a builtin because these scripts are loaded into the GDB Python runtime.
+builtins = ["gdb"]
