@@ -2,12 +2,7 @@
 # Usage: gemini-sandboxed.py [args...]
 #
 # /// script
-# requires-python = ">=3.10"
-# dependencies = [
-#     "mdformat",
-#     "tomlkit",
-#     "pytest",
-# ]
+# requires-python = ">=3.13"
 # ///
 
 import os
