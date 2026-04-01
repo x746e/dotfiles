@@ -1,78 +1,244 @@
-#!/bin/bash
-# Usage: gemini-sandboxed [args...]
+#!/usr/bin/env -S uv run --script
+# Usage: gemini-sandboxed.py [args...]
+#
+# /// script
+# requires-python = ">=3.10"
+# dependencies = [
+#     "mdformat",
+#     "tomlkit",
+#     "pytest",
+# ]
+# ///
 
-set -e
+import os
+import re
+import sys
+from pathlib import Path
 
-WORKSPACE="$PWD"
 
-RW_PATHS=(
-  "/tmp"
-  "/export/hda3/tmp"
-  "/run"
-  "$WORKSPACE"
-  "$HOME/.gemini"
-  "$HOME/.cache"
-  "$HOME/.local/share/uv"
-  "$HOME/.local/state/bbwf"
-  "/usr/local/google/_blaze_$USER"
-)
+def main() -> None:
+    _run_gemini(cli_args=sys.argv[1:])
 
-if [[ "$WORKSPACE" =~ ^(/google/src/cloud/[^/]+/[^/]+) ]]; then
-  RW_PATHS+=("${BASH_REMATCH[1]}")
-fi
 
-DOCKER_ARGS=(
-  "-i"
-  "--rm"
-  "--net=host"
-  "--ipc=host"
-  "--pid=host"
-  "--cap-add=SYS_ADMIN"
-  "--security-opt" "apparmor=unconfined"
-  "--security-opt" "seccomp=unconfined"
-  "-v" "/:/real-root:ro"
-  "-v" "/dev:/real-root/dev:ro"
-  "-v" "/proc:/real-root/proc:ro"
-  "--device" "/dev/kvm"
-)
+def _run_gemini(cli_args):
+    cwd = os.getcwd()
+    uid = os.getuid()
+    gid = os.getgid()
+    is_tty = sys.stdin.isatty()
 
-if [ -t 0 ]; then
-  DOCKER_ARGS+=("-t")
-fi
+    env_vars = _get_allowlisted_env_vars(os.environ)
+    # `gemini-cli` displays the contents of `$SANDBOX` in the footer.
+    env_vars |= {"SANDBOX": "sandboxed"}
 
-for path in "${RW_PATHS[@]}"; do
-  # Resolve to actual physical path to handle symlinks (like /export/hda3) safely
-  if [ -e "$path" ]; then
-    real_path=$(realpath "$path")
-    if [ -d "$real_path" ]; then
-      DOCKER_ARGS+=("-v" "$real_path:/real-root$real_path")
-    fi
-  fi
-done
+    rw_paths = _get_rw_paths(cwd)
 
-ENV_VARS=(
-  "PATH=$PATH"
-  "HOME=$HOME"
-  "USER=$USER"
-  "LOGNAME=$LOGNAME"
-  "GEMINI_API_KEY=$GEMINI_API_KEY"
-  "TERM=$TERM"
-  "SANDBOX=sandboxed"
-)
+    docker_cmd = _build_docker_command(
+        cwd=cwd,
+        uid=uid,
+        gid=gid,
+        is_tty=is_tty,
+        env_vars=env_vars,
+        rw_paths=rw_paths,
+        cli_args=cli_args,
+    )
 
-for env_var in "${ENV_VARS[@]}"; do
-  DOCKER_ARGS+=("-e" "$env_var")
-done
+    # Replace the current process with docker
+    os.execvp(docker_cmd[0], docker_cmd)
 
-exec docker run "${DOCKER_ARGS[@]}" busybox:latest sh -c '
-  mkdir -p /real-root/tmp/old_root
-  mount --rbind /real-root /real-root
-  cd /real-root
-  pivot_root . tmp/old_root
-  umount -l /tmp/old_root
-  mount -t proc proc /proc
-  WORKSPACE=$1; shift
-  REUID=$1; shift
-  REGID=$1; shift
-  exec env --chdir="$WORKSPACE" setpriv --reuid "$REUID" --regid "$REGID" --init-groups gemini --proxy=false "$@"
-' -- "$WORKSPACE" "$(id -u)" "$(id -g)" "$@"
+
+def _get_allowlisted_env_vars(environ: dict[str, str]) -> dict[str, str]:
+    allowlist = ["PATH", "HOME", "USER", "LOGNAME", "GEMINI_API_KEY", "TERM"]
+    return {name: environ[name] for name in allowlist if name in environ}
+
+
+def _generate_rw_paths(cwd: str) -> list[str]:
+    paths = [
+        "/tmp",
+        "/export/hda3/tmp",
+        "/run",
+        cwd,
+        "~/.gemini",
+        "~/.cache",
+        "~/.local/share/uv",
+        "~/.local/state/bbwf",
+    ]
+
+    # Google3 workspace extraction
+    match = re.match(r"^(?P<workspace>/google/src/cloud/(?P<user>\w+)/[^/]+)", cwd)
+    if match:
+        paths.append(match.group("workspace"))
+        paths.append(f"/usr/local/google/_blaze_{match.group('user')}")
+
+    return paths
+
+
+def _get_rw_paths(cwd: str) -> list[Path]:
+    paths = _generate_rw_paths(cwd)
+    paths_obj = [Path(p).expanduser() for p in paths]
+
+    resolved = []
+    for path_obj in paths_obj:
+        path_obj = path_obj.resolve()
+        assert path_obj.exists()
+        assert path_obj.is_dir()
+        resolved.append(path_obj)
+    return resolved
+
+
+def _build_docker_command(
+    cwd: str,
+    uid: int,
+    gid: int,
+    is_tty: bool,
+    rw_paths: list[Path],
+    env_vars: dict[str, str],
+    cli_args: list[str],
+) -> list[str]:
+    docker_args = [
+        "docker",
+        "run",
+        "-i",
+        "--rm",
+        "--net=host",
+        "--ipc=host",
+        "--pid=host",
+        "--cap-add=SYS_ADMIN",
+        "--security-opt",
+        "apparmor=unconfined",
+        "--security-opt",
+        "seccomp=unconfined",
+        "-v",
+        "/:/real-root:ro",
+        "-v",
+        "/dev:/real-root/dev:ro",
+        "-v",
+        "/proc:/real-root/proc:ro",
+        "--device",
+        "/dev/kvm",
+    ]
+
+    if is_tty:
+        docker_args.append("-t")
+
+    for path in rw_paths:
+        docker_args.extend(["-v", f"{path}:/real-root{path}"])
+
+    for key, value in env_vars.items():
+        docker_args.extend(["-e", f"{key}={value}"])
+
+    gemini_command = 'gemini --proxy=false "$@"'
+    inner_script = f"""
+mkdir -p /real-root/tmp/old_root
+mount --rbind /real-root /real-root
+cd /real-root
+pivot_root . tmp/old_root
+umount -l /tmp/old_root
+mount -t proc proc /proc
+exec env --chdir="{cwd}" setpriv --reuid "{uid}" --regid "{gid}" --init-groups \\
+    {gemini_command}
+"""
+
+    docker_args.extend(
+        [
+            "busybox:latest",
+            "sh",
+            "-c",
+            inner_script,
+            "--",
+        ]
+    )
+    docker_args.extend(cli_args)
+
+    return docker_args
+
+
+if "PYTEST_VERSION" in os.environ:
+    import contextlib
+    import tempfile
+    import subprocess
+
+
+    def test_get_allowlisted_env_vars():
+        fake_env = {"PATH": "/bin", "USER": "ksp", "SECRET": "hidden"}
+        result = _get_allowlisted_env_vars(fake_env)
+        assert result == {"PATH": "/bin", "USER": "ksp"}
+        assert "SECRET" not in result
+
+
+    def test_generate_rw_paths():
+        paths = _generate_rw_paths("/home/ksp/projects/foo")
+        assert "/home/ksp/projects/foo" in paths
+        assert "~/.gemini" in paths
+
+
+    def test_generate_rw_paths_google3():
+        paths = _generate_rw_paths("/google/src/cloud/ksp/my_workspace/google3/foo")
+        assert "/google/src/cloud/ksp/my_workspace" in paths
+        assert "/usr/local/google/_blaze_ksp" in paths
+
+
+    def test_build_docker_command_tty():
+        cmd_tty = _build_docker_command("/cwd", 1000, 1000, True, [], {}, ["--arg"])
+        assert "-t" in cmd_tty
+
+        cmd_notty = _build_docker_command("/cwd", 1000, 1000, False, [], {}, ["--arg"])
+        assert "-t" not in cmd_notty
+
+    def test_build_docker_command_formatting():
+        cmd = _build_docker_command(
+            cwd="/my/cwd",
+            uid=1234,
+            gid=5678,
+            is_tty=False,
+            rw_paths=[Path("/my/rw")],
+            env_vars={"MY_ENV": "value"},
+            cli_args=["--foo", "bar"],
+        )
+
+        # Check mounts
+        assert "-v" in cmd
+        assert "/my/rw:/real-root/my/rw" in cmd
+
+        # Check env vars
+        assert "-e" in cmd
+        assert "MY_ENV=value" in cmd
+
+        # Check args appended at the end
+        assert cmd[-2:] == ["--foo", "bar"]
+
+        # Check inner script interpolation
+        script_idx = cmd.index("-c") + 1
+        inner_script = cmd[script_idx]
+        assert '--chdir="/my/cwd"' in inner_script
+        assert '--reuid "1234"' in inner_script
+        assert '--regid "5678"' in inner_script
+
+
+    def test_e2e():
+        with tempfile.TemporaryDirectory() as d, chdir(d):
+            subprocess.run(
+                [
+                    sys.executable,
+                    __file__,
+                    "-y",
+                    "-p",
+                    """Call `run_shell_command("touch ./rw-test; touch ~/rw-test")`""",
+                ],
+                check=True,
+            )
+            assert Path("rw-test").exists()
+            assert not Path("~/rw-test").expanduser().exists()
+
+
+    @contextlib.contextmanager
+    def chdir(new_cwd):
+        old_cwd = os.getcwd()
+        try:
+            os.chdir(new_cwd)
+            yield
+        finally:
+            os.chdir(old_cwd)
+
+
+if __name__ == "__main__":
+    main()
