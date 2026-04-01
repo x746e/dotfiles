@@ -6,6 +6,7 @@ wrap_length := "93"
 verify: test
     git ls-files -z '*.md' | xargs -0 mdformat --check --number --wrap {{wrap_length}}
     git ls-files -z '*.toml' | xargs -0 toml-mdformat --check --wrap {{wrap_length}}
+    ./scripts/update-ruff-includes --check
 
 fix:
     git ls-files -z '*.md' | xargs -0 mdformat --number --wrap {{wrap_length}}

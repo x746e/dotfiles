@@ -14,6 +14,7 @@ the repository for extensionless executable scripts and adds them to the
 `extend-include` array in ruff.toml so that they are linted properly.
 """
 
+import argparse
 import sys
 from pathlib import Path
 
@@ -55,8 +56,12 @@ def get_python_scripts_to_include(repo_root: Path) -> list[str]:
 
     return python_scripts
 
-def update_ruff_toml(repo_root: Path, scripts: list[str]) -> None:
-    """Parse and update the ruff.toml configuration file with the provided scripts."""
+def update_ruff_toml(repo_root: Path, scripts: list[str], check_only: bool = False) -> bool:
+    """Parse and update the ruff.toml configuration file with the provided scripts.
+
+    Returns True if the file is up-to-date or successfully updated,
+    False if it needs an update and check_only is True.
+    """
     ruff_toml_path = repo_root / "ruff" / "config" / "ruff.toml"
 
     if not ruff_toml_path.exists():
@@ -66,6 +71,21 @@ def update_ruff_toml(repo_root: Path, scripts: list[str]) -> None:
     # Parse and update ruff.toml
     with ruff_toml_path.open("r", encoding="utf-8") as f:
         doc = tomlkit.parse(f.read())
+
+    current_includes = list(doc.get("extend-include", []))
+    if current_includes == scripts:
+        return True
+
+    if check_only:
+        added = set(scripts) - set(current_includes)
+        removed = set(current_includes) - set(scripts)
+        if added:
+            print(f"Missing from ruff.toml: {', '.join(added)}")
+        if removed:
+            print(f"Extra in ruff.toml: {', '.join(removed)}")
+        if not added and not removed:
+            print("Order of scripts differs in ruff.toml")
+        return False
 
     # Create a multiline array for clean formatting
     arr = tomlkit.array()
@@ -77,15 +97,28 @@ def update_ruff_toml(repo_root: Path, scripts: list[str]) -> None:
 
     with ruff_toml_path.open("w", encoding="utf-8") as f:
         f.write(tomlkit.dumps(doc))
+    return True
 
 def main() -> None:
     """Discover extensionless Python scripts and update ruff.toml."""
+    parser = argparse.ArgumentParser(description="Update ruff.toml with extensionless Python scripts.")
+    parser.add_argument("--check", action="store_true", help="Check if ruff.toml is up-to-date without modifying it.")
+    args = parser.parse_args()
+
     # Determine repo root relative to this script
     script_path = Path(__file__).resolve()
     repo_root = script_path.parent.parent
 
     python_scripts = get_python_scripts_to_include(repo_root)
-    update_ruff_toml(repo_root, python_scripts)
+    is_up_to_date = update_ruff_toml(repo_root, python_scripts, check_only=args.check)
+
+    if args.check:
+        if is_up_to_date:
+            print("ruff.toml is up-to-date.")
+            sys.exit(0)
+        else:
+            print("Error: ruff.toml 'extend-include' is out of date. Run without --check to update.", file=sys.stderr)
+            sys.exit(1)
 
     print(
         f"Successfully updated 'extend-include' in ruff.toml "
@@ -142,6 +175,45 @@ def test_get_python_scripts_to_include(tmp_path: Path):
     assert "bin/bash_script" not in found_scripts
     assert "scripts/ignored.py" not in found_scripts
     assert len(found_scripts) == 2
+
+def test_update_ruff_toml_updates_file(tmp_path: Path):
+    # Setup mock repo structure
+    ruff_dir = tmp_path / "ruff" / "config"
+    ruff_dir.mkdir(parents=True)
+    ruff_toml = ruff_dir / "ruff.toml"
+    ruff_toml.write_text("extend-include = ['old_script']\n")
+
+    # Test update (check_only=False)
+    scripts = ["new_script", "another_script"]
+    result = update_ruff_toml(tmp_path, scripts, check_only=False)
+    assert result is True
+    assert "new_script" in ruff_toml.read_text()
+    assert "old_script" not in ruff_toml.read_text()
+
+def test_update_ruff_toml_check_only(tmp_path: Path):
+    # Setup mock repo structure
+    ruff_dir = tmp_path / "ruff" / "config"
+    ruff_dir.mkdir(parents=True)
+    ruff_toml = ruff_dir / "ruff.toml"
+    ruff_toml.write_text("extend-include = ['new_script', 'another_script']\n")
+
+    scripts = ["new_script", "another_script"]
+
+    # Test check_only=True when up-to-date
+    result = update_ruff_toml(tmp_path, scripts, check_only=True)
+    assert result is True
+
+    # Test check_only=True when order differs
+    scripts_reversed = ["another_script", "new_script"]
+    result = update_ruff_toml(tmp_path, scripts_reversed, check_only=True)
+    assert result is False
+
+    # Test check_only=True when out-of-date
+    scripts.append("yet_another_script")
+    old_content = ruff_toml.read_text()
+    result = update_ruff_toml(tmp_path, scripts, check_only=True)
+    assert result is False
+    assert ruff_toml.read_text() == old_content
 
 # ruff: enable[D103]
 
