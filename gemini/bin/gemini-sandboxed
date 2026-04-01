@@ -1,6 +1,8 @@
 #!/bin/bash
 # Usage: gemini-sandboxed [args...]
 
+set -e
+
 WORKSPACE="$PWD"
 
 RW_PATHS=(
@@ -10,6 +12,8 @@ RW_PATHS=(
   "$WORKSPACE"
   "$HOME/.gemini"
   "$HOME/.cache"
+  "$HOME/.local/share/uv"
+  "$HOME/.local/state/bbwf"
   "/usr/local/google/_blaze_$USER"
 )
 
@@ -23,10 +27,13 @@ DOCKER_ARGS=(
   "--net=host"
   "--ipc=host"
   "--pid=host"
+  "--cap-add=SYS_ADMIN"
+  "--security-opt" "apparmor=unconfined"
+  "--security-opt" "seccomp=unconfined"
   "-v" "/:/real-root:ro"
   "-v" "/dev:/real-root/dev:ro"
   "-v" "/proc:/real-root/proc:ro"
-  --device /dev/kvm
+  "--device" "/dev/kvm"
 )
 
 if [ -t 0 ]; then
@@ -50,11 +57,22 @@ ENV_VARS=(
   "LOGNAME=$LOGNAME"
   "GEMINI_API_KEY=$GEMINI_API_KEY"
   "TERM=$TERM"
-  "SANDBOX=bwrap"
+  "SANDBOX=sandboxed"
 )
 
 for env_var in "${ENV_VARS[@]}"; do
   DOCKER_ARGS+=("-e" "$env_var")
 done
 
-exec docker run "${DOCKER_ARGS[@]}" busybox:latest chroot /real-root env --chdir="$WORKSPACE" setpriv --reuid "$(id -u)" --regid "$(id -g)" --init-groups gemini --proxy=false "$@"
+exec docker run "${DOCKER_ARGS[@]}" busybox:latest sh -c '
+  mkdir -p /real-root/tmp/old_root
+  mount --rbind /real-root /real-root
+  cd /real-root
+  pivot_root . tmp/old_root
+  umount -l /tmp/old_root
+  mount -t proc proc /proc
+  WORKSPACE=$1; shift
+  REUID=$1; shift
+  REGID=$1; shift
+  exec env --chdir="$WORKSPACE" setpriv --reuid "$REUID" --regid "$REGID" --init-groups gemini --proxy=false "$@"
+' -- "$WORKSPACE" "$(id -u)" "$(id -g)" "$@"
