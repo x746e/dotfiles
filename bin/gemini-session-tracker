@@ -1,0 +1,304 @@
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.14"
+# dependencies = [
+#     "rich",
+# ]
+# ///
+"""
+gemini-session-tracker - Background daemon to track Gemini CLI sessions.
+
+This script runs bpftrace to monitor the Node.js process opening session log files,
+and maintains a mapping of pane_pid -> Session ID in ~/.gemini/tmp/pid_session_map.json.
+It requires sudo privileges for bpftrace.
+"""
+
+import argparse
+import json
+import logging
+import os
+import re
+import signal
+import subprocess
+import sys
+from collections.abc import Callable
+
+from rich.logging import RichHandler
+
+GEMINI_TMP = os.path.expanduser("~/.gemini/tmp")
+MAP_FILE = os.path.join(GEMINI_TMP, "pid_session_map.json")
+
+# Regex to extract session ID from the filename
+# e.g. /path/to/chats/session-2026-03-21T17-49-d1fbe8ee.json -> d1fbe8ee
+# or /path/to/chats/session-latest-d1fbe8ee-3870-4f94-bffe-b79e56d5e11d.json ->
+#    d1fbe8ee-3870-4f94-bffe-b79e56d5e11d
+SESSION_RE = re.compile(
+    r"session-.*?-([a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}|[a-f0-9]{8})\.json"
+)
+
+# BPF script to trace openat syscalls for node processes
+BPF_SCRIPT = """
+tracepoint:syscalls:sys_enter_openat
+/comm == "node_for_gemini" || comm == "node"/
+{
+    $filename = str(args->filename);
+    printf("PID: %d | File: %s\\n", pid, $filename);
+}
+"""
+
+
+def setup_logging(verbose: bool) -> logging.Logger:
+    """Configures the root logger with rich formatting."""
+    level = logging.DEBUG if verbose else logging.INFO
+    logging.basicConfig(
+        level=level,
+        format="%(message)s",
+        datefmt="[%X]",
+        handlers=[RichHandler(rich_tracebacks=True, markup=True)],
+    )
+    return logging.getLogger("tracker")
+
+
+def load_map(map_path: str = MAP_FILE) -> dict[str, str]:
+    """Loads the PID to Session ID mapping from a JSON file."""
+    if os.path.exists(map_path):
+        with open(map_path) as f:
+            return json.load(f)
+    return {}
+
+
+def save_map(pid_map: dict[str, str], map_path: str = MAP_FILE) -> None:
+    """Saves the PID to Session ID mapping to a JSON file."""
+    os.makedirs(os.path.dirname(map_path), exist_ok=True)
+    with open(map_path, "w") as f:
+        json.dump(pid_map, f, indent=2)
+
+
+def _get_environ(pid: int, proc_dir: str = "/proc") -> dict[str, str]:
+    """Reads the environment variables for a given PID from /proc/<pid>/environ."""
+    environ_path = f"{proc_dir}/{pid}/environ"
+    env_vars = {}
+    try:
+        with open(environ_path, "rb") as f:
+            data = f.read()
+    except (FileNotFoundError, PermissionError, ProcessLookupError):
+        # The process may have exited before we could read its environment, or we may lack
+        # permissions.
+        pass
+    else:
+        for item in data.split(b"\0"):
+            if item and b"=" in item:
+                key, value = item.decode("utf-8", errors="replace").split("=", 1)
+                env_vars[key] = value
+    return env_vars
+
+
+def get_pane_pid_for_process(
+    pid: int,
+    logger: logging.Logger,
+    environ_getter: Callable[[int], dict[str, str]] = _get_environ,
+    sid_getter: Callable[[int], int] = os.getsid,
+) -> str:
+    """Gets the pane PID for a process, preferring TMUX_PANE_SID from its environment."""
+    env = environ_getter(pid)
+    if "TMUX_PANE_SID" in env:
+        return env["TMUX_PANE_SID"]
+
+    return str(sid_getter(pid))
+
+
+def parse_and_update_map(line: str, pid_map: dict[str, str], logger: logging.Logger) -> None:
+    """Parses a single bpftrace output line and updates the pid map if necessary."""
+    if not line.startswith("PID:"):
+        logger.debug("Line does not start with PID:, skipping.")
+        return
+
+    parts = line.split(" | File: ")
+    if len(parts) != 2:
+        logger.debug("Could not split line into PID and File, skipping.")
+        return
+
+    try:
+        pid_str = parts[0].split(":")[1].strip()
+        pid = int(pid_str)
+        filename = parts[1].strip()
+    except ValueError:
+        logger.debug("Could not parse PID to integer, skipping.")
+        return
+
+    match = SESSION_RE.search(filename)
+    if not match:
+        logger.debug(f"File path {filename} did not match session regex, skipping.")
+        return
+
+    session_id = match.group(1)
+    logger.debug(f"Parsed Session ID: [cyan]{session_id}[/] for Node PID: {pid}")
+    try:
+        str_pane_pid = get_pane_pid_for_process(pid, logger)
+
+        if pid_map.get(str_pane_pid) != session_id:
+            pid_map[str_pane_pid] = session_id
+            save_map(pid_map)
+            logger.info(
+                f"Mapped Pane PID [yellow]{str_pane_pid}[/] "
+                f"(Node PID [yellow]{pid}[/]) to Session [cyan]{session_id}[/]"
+            )
+        else:
+            logger.debug(
+                f"Pane PID {str_pane_pid} already mapped to {session_id}, no update needed."
+            )
+    except ProcessLookupError:
+        logger.debug(
+            f"ProcessLookupError: Process {pid} exited before we could get its SID."
+        )
+
+
+def main() -> None:
+    """Main CLI entry point to run the bpftrace daemon."""
+    parser = argparse.ArgumentParser(description="Gemini CLI Session Tracker Daemon")
+    parser.add_argument(
+        "-v", "--verbose", action="store_true", help="Enable verbose debug logging"
+    )
+    args = parser.parse_args()
+
+    logger = setup_logging(args.verbose)
+    logger.info("[bold green]Starting Gemini session tracker...[/]")
+    pid_map = load_map()
+
+    process = subprocess.Popen(
+        ["sudo", "-n", "stdbuf", "-oL", "bpftrace", "-e", BPF_SCRIPT],
+        stdout=subprocess.PIPE,
+        stderr=sys.stderr,
+        text=True,
+        bufsize=1,  # Line buffered
+    )
+
+    def cleanup(signum: int | None, frame: object | None) -> None:
+        logger.info("[bold red]Stopping tracker...[/]")
+        process.terminate()
+        sys.exit(0)
+
+    signal.signal(signal.SIGINT, cleanup)
+    signal.signal(signal.SIGTERM, cleanup)
+
+    if process.stdout is None:
+        logger.error("Failed to start bpftrace stdout")
+        sys.exit(1)
+
+    try:
+        for line in process.stdout:
+            line = line.strip()
+            if not line:
+                continue
+
+            logger.debug(f"Read line: {line}")
+            parse_and_update_map(line, pid_map, logger)
+
+    except KeyboardInterrupt:
+        cleanup(None, None)
+    finally:
+        process.terminate()
+
+
+def test_load_map(tmp_path) -> None:
+    """Test map loading with valid, missing, and corrupt JSON."""
+    import pytest  # noqa: PLC0415
+
+    map_file = tmp_path / "map.json"
+
+    # Missing file
+    assert load_map(str(map_file)) == {}
+
+    # Valid JSON
+    map_file.write_text('{"123": "abc"}')
+    assert load_map(str(map_file)) == {"123": "abc"}
+
+    # Corrupt JSON
+    map_file.write_text('{"123": abc}')
+    with pytest.raises(json.JSONDecodeError):
+        load_map(str(map_file))
+
+
+def test_save_map(tmp_path) -> None:
+    """Test saving the map to a file."""
+    map_file = tmp_path / "subdir" / "map.json"
+    data = {"456": "def"}
+
+    save_map(data, str(map_file))
+
+    assert map_file.exists()
+    assert json.loads(map_file.read_text()) == data
+
+
+def test_session_re() -> None:
+    """Test the session ID extraction regex."""
+    valid_paths = {
+        (
+            "/home/user/.gemini/tmp/chats/"
+            "session-2026-03-21T17-49-d1fbe8ee-3870-4f94-bffe-b79e56d5e11d.json"
+        ): "d1fbe8ee-3870-4f94-bffe-b79e56d5e11d",
+        (
+            "session-latest-d1fbe8ee-3870-4f94-bffe-b79e56d5e11d.json"
+        ): "d1fbe8ee-3870-4f94-bffe-b79e56d5e11d",
+        (
+            "/usr/local/google/home/ksp/.gemini/tmp/dotfiles/chats/"
+            "session-2026-04-01T20-49-0a8caf59.json"
+        ): "0a8caf59",
+    }
+    for path, expected in valid_paths.items():
+        match = SESSION_RE.search(path)
+        assert match is not None
+        assert match.group(1) == expected
+
+    invalid_paths = [
+        "session.json",  # missing dashes/UUID structure
+        "some-other-file.json",
+        "session-2026-03-21T17-49-d1fbe8ee-3870-4f94-bffe-b79e56d5e11d.txt",
+    ]
+    for path in invalid_paths:
+        assert SESSION_RE.search(path) is None
+
+
+def test_get_environ(tmp_path) -> None:
+    """Test reading and parsing the environ file."""
+    # Create dummy process directory structure
+    proc_dir = tmp_path / "123"
+    proc_dir.mkdir(parents=True)
+    environ_file = proc_dir / "environ"
+    mock_data = b"PATH=/bin\0TMUX_PANE_SID=9999\0USER=ksp\0"
+    environ_file.write_bytes(mock_data)
+
+    env = _get_environ(123, proc_dir=str(tmp_path))
+    assert env == {"PATH": "/bin", "TMUX_PANE_SID": "9999", "USER": "ksp"}
+
+
+def test_get_pane_pid_for_process_env() -> None:
+    """Test get_pane_pid_for_process when TMUX_PANE_SID is present."""
+    logger = logging.getLogger("test")
+
+    def environ_getter(pid: int) -> dict[str, str]:
+        return {"TMUX_PANE_SID": "9999"}
+
+    assert get_pane_pid_for_process(123, logger, environ_getter=environ_getter) == "9999"
+
+
+def test_get_pane_pid_for_process_fallback() -> None:
+    """Test get_pane_pid_for_process fallback to getsid."""
+    logger = logging.getLogger("test")
+
+    def environ_getter(pid: int) -> dict[str, str]:
+        return {}
+
+    def sid_getter(pid: int) -> int:
+        return 8888
+
+    assert (
+        get_pane_pid_for_process(
+            123, logger, environ_getter=environ_getter, sid_getter=sid_getter
+        )
+        == "8888"
+    )
+
+
+if __name__ == "__main__":
+    main()

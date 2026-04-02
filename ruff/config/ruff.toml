@@ -1,5 +1,6 @@
 line-length = 93
 extend-include = [
+    "bin/gemini-session-tracker",
     "bin/gemini-status",
     "bin/toml-mdformat",
     "gemini/bin/gemini-sandboxed",

@@ -51,7 +51,8 @@ def _run_gemini(
 
     env_vars = _get_allowlisted_env_vars(os.environ)
     # `gemini-cli` displays the contents of `$SANDBOX` in the footer.
-    env_vars |= {"SANDBOX": "sandboxed"}
+    # TMUX_PANE_SID is used by the tracker daemon.
+    env_vars |= {"SANDBOX": "sandboxed", "TMUX_PANE_SID": str(os.getsid(0))}
 
     rw_paths = _get_rw_paths(cwd)
     rw_paths.extend(extra_rw_paths)

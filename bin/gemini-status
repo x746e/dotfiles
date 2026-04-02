@@ -16,6 +16,7 @@ import argparse
 import glob
 import hashlib
 import json
+import logging
 import os
 import subprocess
 import sys
@@ -26,6 +27,8 @@ from typing import TypedDict
 
 GEMINI_HOME = os.path.expanduser("~/.gemini")
 PROJECTS_JSON = os.path.join(GEMINI_HOME, "projects.json")
+
+logger = logging.getLogger(__name__)
 
 
 class PaneInfo(TypedDict):
@@ -38,17 +41,14 @@ class PaneInfo(TypedDict):
     status: str
     target: str
     summary: str | None
+    pane_pid: str
 
 
 def get_git_root(path: str) -> str:
     """Finds the git root for the given path, or returns the path itself."""
-    try:
-        # Run git rev-parse to find the root
-        cmd = ["git", "-C", path, "rev-parse", "--show-toplevel"]
-        root = subprocess.check_output(cmd, stderr=subprocess.DEVNULL, text=True).strip()
-        return root
-    except subprocess.CalledProcessError:
-        return path
+    cmd = ["git", "-C", path, "rev-parse", "--show-toplevel"]
+    root = subprocess.check_output(cmd, stderr=subprocess.DEVNULL, text=True).strip()
+    return root
 
 
 def get_project_tmp_dir(
@@ -73,63 +73,15 @@ def get_project_tmp_dir(
     return os.path.join(gemini_home, "tmp", project_hash)
 
 
-def capture_tmux_pane(target: str) -> list[str] | None:
-    """Captures the output of a specific tmux pane."""
-    try:
-        cmd = ["tmux", "capture-pane", "-p", "-t", target, "-S", "-20"]
-        return subprocess.check_output(cmd, text=True).splitlines()
-    except subprocess.CalledProcessError:
-        return None
-
-
 def get_session_summary(
     project_root: str,
-    target: str,
-    pane_capturer: Callable[[str], list[str] | None] = capture_tmux_pane,
+    session_id: str,
     tmp_dir_resolver: Callable[[str], str] = get_project_tmp_dir,
 ) -> str | None:
-    """
-    Attempts to retrieve the session summary by matching pane content
-    to entries in logs.json.
-    """
+    """Retrieves the summary from the correct session JSON file."""
     project_tmp = tmp_dir_resolver(project_root)
-    logs_path = os.path.join(project_tmp, "logs.json")
-
-    if not os.path.exists(logs_path):
-        return None
-
-    pane_lines = pane_capturer(target)
-    if pane_lines is None:
-        return None
-
-    file_size = os.path.getsize(logs_path)
-
-    if file_size > 10 * 1024 * 1024:
-        return None
-
-    with open(logs_path) as f:
-        logs = json.load(f)
-
-    if not logs:
-        return None
-
-    session_id = None
-    for entry in reversed(logs):
-        if entry.get("message"):
-            msg = entry["message"].strip()
-            msg_first_line = msg.split("\n")[0][:100]
-
-            for line in pane_lines:
-                if msg_first_line and msg_first_line in line:
-                    session_id = entry.get("sessionId")
-                    break
-        if session_id:
-            break
-
-    if not session_id:
-        return None
-
     chats_dir = os.path.join(project_tmp, "chats")
+
     pattern = os.path.join(chats_dir, f"session-*{session_id}*.json")
     files = glob.glob(pattern)
 
@@ -139,19 +91,44 @@ def get_session_summary(
         files = glob.glob(pattern)
 
     if not files:
+        logger.debug(f"Could not find any session file for {session_id} in {chats_dir}")
         return None
 
     files.sort(key=os.path.getmtime, reverse=True)
     latest_session_file = files[0]
 
-    with open(latest_session_file) as f:
-        session_data = json.load(f)
-        return session_data.get("summary")
+    try:
+        with open(latest_session_file) as f:
+            session_data = json.load(f)
+
+            # Use generated summary if available
+            summary = session_data.get("summary")
+            if summary:
+                logger.debug(f"Found 'summary' key in {latest_session_file}")
+                return summary
+
+            # Fallback to the user's initial prompt
+            messages = session_data.get("messages", [])
+            if messages:
+                first_msg = messages[0]
+                content = first_msg.get("displayContent") or first_msg.get("content")
+                if content and isinstance(content, list) and content[0].get("text"):
+                    logger.debug(f"Fell back to first message text in {latest_session_file}")
+                    return content[0]["text"].split("\n")[0][:60]
+
+            logger.debug(f"No summary or messages found in {latest_session_file}")
+            return None
+    # Catch JSONDecodeError/OSError to gracefully handle race conditions where
+    # the active Gemini process is concurrently writing to or rotating the file.
+    except (json.JSONDecodeError, OSError) as e:
+        logger.debug(f"Failed to read or parse {latest_session_file}: {e}")
+        return None
 
 
 def parse_tmux_output(
     output: str,
     summary_fetcher: Callable[[str, str], str | None] | None = None,
+    pid_map: dict[str, str] | None = None,
 ) -> list[PaneInfo]:
     """Parses 'tmux list-panes' output into a list of PaneInfo dicts."""
     panes: list[PaneInfo] = []
@@ -159,10 +136,10 @@ def parse_tmux_output(
         if not line:
             continue
         parts = line.split("\t")
-        if len(parts) < 5:
+        if len(parts) < 6:
             continue
 
-        session, window, pane, title, cwd = parts
+        session, window, pane, title, cwd, pane_pid = parts
 
         status = None
         if "✋" in title:
@@ -175,9 +152,15 @@ def parse_tmux_output(
         if status:
             target = f"{session}:{window}.{pane}"
             summary = None
-            if summary_fetcher:
-                project_root = get_git_root(cwd)
-                summary = summary_fetcher(project_root, target)
+            if summary_fetcher and pid_map is not None:
+                if pane_pid in pid_map:
+                    logger.debug(
+                        f"Pane PID {pane_pid} found in map -> Session {pid_map[pane_pid]}"
+                    )
+                    project_root = get_git_root(cwd)
+                    summary = summary_fetcher(project_root, pid_map[pane_pid])
+                else:
+                    logger.debug(f"Pane PID {pane_pid} not found in tracking map.")
 
             panes.append(
                 {
@@ -188,12 +171,15 @@ def parse_tmux_output(
                     "status": status,
                     "target": target,
                     "summary": summary,
+                    "pane_pid": pane_pid,
                 }
             )
     return panes
 
 
-def get_tmux_panes(fetch_summary: bool = False) -> list[PaneInfo]:
+def get_tmux_panes(
+    fetch_summary: bool = False, pid_map: dict[str, str] | None = None
+) -> list[PaneInfo]:
     """Retrieves and parses active tmux panes containing Gemini markers."""
     # Use tabs as separators to handle spaces in titles correctly
     cmd = [
@@ -201,7 +187,7 @@ def get_tmux_panes(fetch_summary: bool = False) -> list[PaneInfo]:
         "list-panes",
         "-a",
         "-F",
-        "#{session_name}\t#{window_index}\t#{pane_index}\t#{pane_title}\t#{pane_current_path}",
+        "#{session_name}\t#{window_index}\t#{pane_index}\t#{pane_title}\t#{pane_current_path}\t#{pane_pid}",
     ]
     try:
         output = subprocess.check_output(cmd, text=True)
@@ -209,7 +195,7 @@ def get_tmux_panes(fetch_summary: bool = False) -> list[PaneInfo]:
         return []
 
     fetcher = get_session_summary if fetch_summary else None
-    return parse_tmux_output(output, summary_fetcher=fetcher)
+    return parse_tmux_output(output, summary_fetcher=fetcher, pid_map=pid_map)
 
 
 def print_status_bar(panes: list[PaneInfo]) -> None:
@@ -338,10 +324,10 @@ def interactive_jump(panes: list[PaneInfo]) -> None:
 def test_parse_tmux_output() -> None:
     """Tests parsing tmux output."""
     raw = (
-        "sess1\t0\t0\t✋ gemini: working\t/tmp\n"
-        "sess1\t0\t1\t✦ gemini: thinking\t/tmp\n"
-        "sess2\t1\t0\t◇ gemini: idle\t/tmp\n"
-        "sess2\t2\t0\tregular bash\t/tmp\n"
+        "sess1\t0\t0\t✋ gemini: working\t/tmp\t1234\n"
+        "sess1\t0\t1\t✦ gemini: thinking\t/tmp\t5678\n"
+        "sess2\t1\t0\t◇ gemini: idle\t/tmp\t9012\n"
+        "sess2\t2\t0\tregular bash\t/tmp\t3456\n"
     )
     panes = parse_tmux_output(raw)
     assert len(panes) == 3
@@ -349,14 +335,17 @@ def test_parse_tmux_output() -> None:
     assert panes[0]["status"] == "waiting"
     assert panes[0]["target"] == "sess1:0.0"
     assert panes[0]["summary"] is None
+    assert panes[0]["pane_pid"] == "1234"
 
     assert panes[1]["status"] == "working"
     assert panes[1]["target"] == "sess1:0.1"
     assert panes[1]["summary"] is None
+    assert panes[1]["pane_pid"] == "5678"
 
     assert panes[2]["status"] == "idle"
     assert panes[2]["target"] == "sess2:1.0"
     assert panes[2]["summary"] is None
+    assert panes[2]["pane_pid"] == "9012"
 
 
 def test_sort_logic() -> None:
@@ -370,6 +359,7 @@ def test_sort_logic() -> None:
             "title": "idle",
             "target": "a:1.0",
             "summary": None,
+            "pane_pid": "123",
         },
         {
             "status": "waiting",
@@ -379,6 +369,7 @@ def test_sort_logic() -> None:
             "title": "waiting",
             "target": "b:1.0",
             "summary": None,
+            "pane_pid": "456",
         },
         {
             "status": "working",
@@ -388,6 +379,7 @@ def test_sort_logic() -> None:
             "title": "working",
             "target": "a:2.0",
             "summary": None,
+            "pane_pid": "789",
         },
     ]
 
@@ -440,33 +432,8 @@ def test_get_session_summary(tmp_path) -> None:
     def tmp_dir_resolver(p):
         return str(project_tmp)
 
-    # Test failure: logs.json missing
-    assert (
-        get_session_summary("/proj", "sess:0.0", tmp_dir_resolver=tmp_dir_resolver) is None
-    )
-
-    # Write logs.json
-    logs_json = project_tmp / "logs.json"
-    logs_json.write_text(json.dumps([{"sessionId": "12345", "message": "hello world"}]))
-
-    # Mock subprocess.check_output to return matching pane content
-    def mock_pane_capturer(t):
-        return [
-            "some pane text",
-            "hello world",
-            "more text",
-        ]
-
-    # Test failure: Session file missing
-    assert (
-        get_session_summary(
-            "/proj",
-            "sess:0.0",
-            pane_capturer=mock_pane_capturer,
-            tmp_dir_resolver=tmp_dir_resolver,
-        )
-        is None
-    )
+    # Test failure: session files missing
+    assert get_session_summary("/proj", "12345", tmp_dir_resolver=tmp_dir_resolver) is None
 
     # Write session file
     session_file = chats_dir / "session-12345.json"
@@ -476,54 +443,38 @@ def test_get_session_summary(tmp_path) -> None:
     assert (
         get_session_summary(
             "/proj",
-            "sess:0.0",
-            pane_capturer=mock_pane_capturer,
+            "12345",
             tmp_dir_resolver=tmp_dir_resolver,
         )
         == "This is a test summary"
     )
 
-    # Test failure case 2: Exception raised during subprocess
-    def mock_pane_capturer_fail(t):
-        return None
-
-    # Ensure it's caught
+    # Intentionally malform the session file
+    session_file.write_text('{"summary": malformed')
     assert (
         get_session_summary(
             "/proj",
-            "sess:0.0",
-            pane_capturer=mock_pane_capturer_fail,
+            "12345",
             tmp_dir_resolver=tmp_dir_resolver,
         )
         is None
     )
 
-    # Intentionally malform the session file
-    session_file.write_text('{"summary": malformed')
-    try:
-        get_session_summary(
-            "/proj",
-            "sess:0.0",
-            pane_capturer=mock_pane_capturer,
-            tmp_dir_resolver=tmp_dir_resolver,
-        )
-        raise AssertionError("Expected JSONDecodeError")
-    except json.JSONDecodeError:
-        pass
-
 
 def test_parse_tmux_output_with_summary() -> None:
     """Tests parsing tmux output with summary fetching."""
 
-    def mock_fetcher(p, t):
-        return "Mocked Summary" if p == "/tmp" else None
+    def mock_fetcher(p, s):
+        return "Mocked Summary" if s == "my_session" else None
 
-    raw = "sess1\t0\t0\t✋ gemini: working\t/tmp\n"
-    panes = parse_tmux_output(raw, summary_fetcher=mock_fetcher)
+    pid_map = {"1234": "my_session"}
+    raw = f"sess1\t0\t0\t✋ gemini: working\t{os.getcwd()}\t1234\n"
+    panes = parse_tmux_output(raw, summary_fetcher=mock_fetcher, pid_map=pid_map)
 
     assert len(panes) == 1
     assert panes[0]["target"] == "sess1:0.0"
     assert panes[0]["summary"] == "Mocked Summary"
+    assert panes[0]["pane_pid"] == "1234"
 
 
 def main() -> None:
@@ -531,10 +482,24 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--list", "-l", action="store_true", help="List details")
     parser.add_argument("--jump", "-j", action="store_true", help="Interactive jump menu")
+    parser.add_argument("-v", "--verbose", action="store_true", help="Enable debug logging")
     args = parser.parse_args()
 
+    level = logging.DEBUG if args.verbose else logging.WARNING
+    logging.basicConfig(level=level, format="%(levelname)s: %(message)s")
+
     fetch_summary = args.list or args.jump
-    panes = get_tmux_panes(fetch_summary=fetch_summary)
+
+    pid_map = {}
+    if fetch_summary:
+        map_file = os.path.join(GEMINI_HOME, "tmp", "pid_session_map.json")
+        if os.path.exists(map_file):
+            with open(map_file) as f:
+                pid_map = json.load(f)
+        else:
+            logger.debug(f"Tracking map not found at {map_file}")
+
+    panes = get_tmux_panes(fetch_summary=fetch_summary, pid_map=pid_map)
 
     if args.jump:
         interactive_jump(panes)
