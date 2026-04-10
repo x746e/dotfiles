@@ -49,7 +49,7 @@ def _run_gemini(
     gid = os.getgid()
     is_tty = sys.stdin.isatty()
 
-    env_vars = _get_allowlisted_env_vars(os.environ)
+    env_vars = _get_env_vars()
     # `gemini-cli` displays the contents of `$SANDBOX` in the footer.
     # TMUX_PANE_SID is used by the tracker daemon.
     env_vars |= {"SANDBOX": "sandboxed", "TMUX_PANE_SID": str(os.getsid(0))}
@@ -72,9 +72,10 @@ def _run_gemini(
     os.execvp(docker_cmd[0], docker_cmd)
 
 
-def _get_allowlisted_env_vars(environ: dict[str, str]) -> dict[str, str]:
-    allowlist = ["PATH", "HOME", "USER", "LOGNAME", "GEMINI_API_KEY", "TERM"]
-    return {name: environ[name] for name in allowlist if name in environ}
+def _get_env_vars(environ: dict[str, str] | None = None) -> dict[str, str]:
+    if environ is None:
+        return dict(os.environ)
+    return dict(environ)
 
 
 def _generate_rw_paths(cwd: str) -> list[str]:
@@ -191,11 +192,10 @@ if "PYTEST_VERSION" in os.environ:
 
     import pytest
 
-    def test_get_allowlisted_env_vars():
+    def test_get_env_vars():
         fake_env = {"PATH": "/bin", "USER": "ksp", "SECRET": "hidden"}
-        result = _get_allowlisted_env_vars(fake_env)
-        assert result == {"PATH": "/bin", "USER": "ksp"}
-        assert "SECRET" not in result
+        result = _get_env_vars(fake_env)
+        assert result == {"PATH": "/bin", "USER": "ksp", "SECRET": "hidden"}
 
     def test_generate_rw_paths():
         paths = _generate_rw_paths("/home/ksp/projects/foo")
