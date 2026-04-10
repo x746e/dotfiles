@@ -57,6 +57,7 @@ bind > swap-window -t :+1 -d
 # TODO: Why doesn't variable expansion doesn't work with `send-keys -F`?
 #bind T send-keys -F stty rows "#{pid}" cols #{pane_width} C-m
 bind T run-shell 'tmux send-keys "stty cols #{pane_width} rows #{pane_height}" Enter'
+bind ^ run-shell 'tmux send-keys "export TERM=xterm-256color" Enter; tmux send-keys "alias ls=\"ls --almost-all --classify\"" Enter; tmux send-keys "alias l=ls" Enter; tmux send-keys "alias ll=ls -l" Enter; tmux send-keys "alias ip=\"ip -c\"" Enter'
 
 # Status line.
 set -g status-right '#(gemini-status) #[fg=colour166]%a %Y-%m-%d %H:%M:%S#[default]'
