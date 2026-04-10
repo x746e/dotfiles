@@ -31,8 +31,11 @@ do not limit your analysis to these**:
 
 Provide concrete suggestions to fix this behavior.
 
-- **Context/Docs Updates:** How should the `GEMINI.md` or system instructions be rewritten to
-  be more robust? (e.g., changing phrasing, removing contradictions, moving location, adding
-  negative constraints).
+- **Context/Docs Updates:** How should the `GEMINI.md`, system instructions, or a custom
+  command be rewritten to be more robust? (e.g., changing phrasing, removing contradictions,
+  moving location, adding negative constraints).
+- **Finding the Custom Command** Look for the commands in
+  `~/projects/gemini-extensions/**/.toml`, ~/dotfiles/gemini/commands, or
+  \`$CWD/.gemini/commnads.
 - **Prompt Refinement:** How should the user's prompt be rephrased to ensure the correct
   context i triggered?
