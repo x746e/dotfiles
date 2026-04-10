@@ -4,3 +4,4 @@
 *.pyc
 /.idea/
 /.multi_agent/
+/.coverage*
