@@ -12,6 +12,7 @@ set -g extended-keys on
 set -g focus-events on
 set -as terminal-features 'tmux*:extkeys'
 set -as terminal-features 'xterm*:extkeys'
+set -as terminal-features '*:hyperlinks'
 
 # Should be autodetected from $EDITOR, but somehow sometimes it is not 🤷.
 set-window-option -g mode-keys vi
