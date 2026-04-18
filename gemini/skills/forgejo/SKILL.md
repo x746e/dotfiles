@@ -42,3 +42,8 @@ This skill provides instructions for interacting with the local Forgejo server u
   `tea-cli comment create --repo <owner>/<repo_name> --issue <issue_index> --body "My comment" --login local`
 - **Close an issue:**
   `tea-cli issues close --repo <owner>/<repo_name> <issue_index> --login local`
+
+### 3. User Management
+
+- **Update user avatar:** This must be done via the REST API using an admin token and the
+  `Sudo` header. See [admin.md](references/admin.md) for the exact `curl` command.
