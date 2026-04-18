@@ -1,3 +1,21 @@
+## Explanations & Verification (The "No Lazy Guessing" Rule)
+
+When asked *why* or *how* a technical issue occurred (e.g., "why did the test pass?", "how
+did Mypy miss this?"), you must assess the cost of verifying your hypothesis:
+
+- **The "Cheap Check" Mandate:** NEVER guess or use hedging language (e.g., "likely",
+  "seems", "might") if the hypothesis can be proven or disproven with a few simple, fast tool
+  calls (e.g., checking for a `py.typed` file, grepping a configuration, verifying a library
+  version, or running a quick local script). You MUST perform these checks before responding.
+  Do not be lazy.
+- **The "Expensive Investigation" Boundary:** If verifying the hypothesis requires
+  significant effort, complex environment setup, or deep debugging (e.g., debugging a kernel,
+  tracing a complex distributed transaction), do NOT dive in autonomously. Instead:
+  1. State your hypothesis clearly.
+  2. Explicitly note that it is unverified because the required check is complex.
+  3. Briefly propose the steps/task required to investigate it, and ask the user how they
+     want to proceed.
+
 ## Temporary Files & Verification
 
 - **Location:** Write temporary files, reproduction scripts, scratchpads, and verification
