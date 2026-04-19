@@ -41,6 +41,24 @@
 - When writing files or executing shell commands, DO NOT use heredocs (e.g.,
   `cat << 'EOF' > file.py`). Instead, prioritize custom tools like `write_file` or `replace`
   when available.
+- **Forgejo Issue Lifecycle Workflow** When asked to perform reconnaissance, planning, or
+  execution for a Forgejo issue, you MUST keep the issue state in sync with your work by
+  following these steps:
+  - **Reconnaissance / Triage:** When analyzing or triaging an issue, always use `lfc` to
+    post a summary of your findings as a comment and add the `triaged` label to the issue.
+  - **Planning:** When proposing a plan for an issue, always use `lfc` to post the plan as a
+    comment and add the `planned` label to the issue.
+  - **Execution:** When implementing a fix and creating a commit, ensure your final commit
+    message includes `Fixes #<ID>` on the last line so the issue is automatically closed when
+    pushed.
+  - **Finding Work (Issue Queues):** You can use `lfc issue list` and labels to determine
+    what to do next based on the user's request:
+    - **"What untriaged issues do we have?" or "What should we triage?":** Search for open
+      issues that lack the `triaged` label.
+    - **"Let's work on issue planning" or "What issues need planning?":** Search for open
+      issues that have the `triaged` label but lack the `planned` label.
+    - **"What should we do next?" or "What issues are ready for execution?":** Search for
+      open issues that have the `planned` label.
 
 ## Tmux Snapshot Instructions
 
