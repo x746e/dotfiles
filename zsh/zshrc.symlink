@@ -724,6 +724,66 @@ unzp () {
     unzip "$zip_archive" -d "$extract_dir"
     # TODO: Ask if I want to remove the archive.
 }
+
+unpack () {
+    if [[ -z "$1" ]]; then
+        echo "Usage: $0 <archive>" 1>&2
+        return 1
+    fi
+
+    local archive="$1"
+    if [[ ! -f "$archive" ]]; then
+        echo "Error: File '$archive' not found." 1>&2
+        return 1
+    fi
+
+    local mime="$(file --mime-type "$archive" | cut -f 2 -d ' ')"
+
+    local filename="${archive##*/}"
+    local stem="${filename%.*}"
+    if [[ "$filename" == *.tar.* ]]; then
+        stem="${stem%.tar}"
+    fi
+
+    local extract_dir="$(dirname "$archive")/$stem"
+
+    case "$mime" in
+        application/zip)
+            mkdir -p "$extract_dir"
+            unzip "$archive" -d "$extract_dir"
+            ;;
+        application/x-tar|application/gzip|application/x-bzip2|application/x-xz|application/zstd)
+            mkdir -p "$extract_dir"
+            if ! tar xf "$archive" -C "$extract_dir" 2>/dev/null; then
+                case "$archive" in
+                    *.gz)  gunzip -c "$archive" > "$extract_dir/$stem" ;;
+                    *.bz2) bunzip2 -c "$archive" > "$extract_dir/$stem" ;;
+                    *.xz)  xzcat "$archive" > "$extract_dir/$stem" ;;
+                    *.zst) zstdcat "$archive" > "$extract_dir/$stem" ;;
+                    *)     echo "Error: Failed to extract." 1>&2
+                           rmdir "$extract_dir" 2>/dev/null
+                           return 1 ;;
+                esac
+            fi
+            ;;
+        application/vnd.rar)
+            mkdir -p "$extract_dir"
+            unrar x "$archive" "$extract_dir/"
+            ;;
+        application/x-7z-compressed)
+            mkdir -p "$extract_dir"
+            7z x "$archive" -o"$extract_dir"
+            ;;
+        application/vnd.debian.binary-package)
+            mkdir -p "$extract_dir"
+            dpkg-deb -x "$archive" "$extract_dir"
+            ;;
+        *)
+            echo "Error: Unsupported MIME type '$mime' for '$archive'." 1>&2
+            return 1
+            ;;
+    esac
+}
 # }}}
 
 
